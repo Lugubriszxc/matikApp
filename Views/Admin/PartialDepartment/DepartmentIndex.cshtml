@@ -1,0 +1,33 @@
+<h1>Department Index</h1>
+
+<button type="button" title="Create Department" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalDepartmentCreate">
+  <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i>
+</button>
+
+@Html.Partial("PartialDepartment/DepartmentCreate")
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    var inputtedDepName;
+
+    $(document).ready(function(){
+        $("#createDepartment").click((e) => {
+        
+        inputtedDepName = $("#inputDepartmentName").val();
+        //AJAX ADD DEPARTMENT
+        $.ajax
+        ({
+            url: "../api/adminapi/createDepartment",
+            type: "POST",
+            data:
+            {
+                dep : inputtedDepName,
+            },
+            })
+            .done(function()
+            {
+              //document.querySelector(".parent").innerHTML = "";
+              $("#addStockForm")[0].reset();
+            });
+        });
+    });
+</script>
