@@ -18422,6 +18422,11 @@
       "FilePath": "c:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
       "TargetPath": "Views\\Shared\\_ValidationScriptsPartial.cshtml",
       "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\Views\\Admin\\PartialDepartment\\DepartmentTable.cshtml",
+      "TargetPath": "Views\\Admin\\PartialDepartment\\DepartmentTable.cshtml",
+      "FileKind": "mvc"
     }
   ],
   "SerializationFormat": "0.3"

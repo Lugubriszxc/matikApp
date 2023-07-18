@@ -25,5 +25,9 @@ namespace matikApp.Controllers
 
             return Ok();
         }
+
+        public ActionResult<List<Department>> getDepartment(){
+            return  _context.Departments.ToList();
+        }
     }
 }
