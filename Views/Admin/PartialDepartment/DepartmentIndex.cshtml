@@ -57,9 +57,21 @@
         [
           { data: 'departmentId'},
           { data: 'departmentName'},
+          { 
+            data : 'departmentId',
+            render : function (data, type, row)
+            {
+              return btnDepartment(data);
+            } 
+          },
         ]
     });
     }
+  }
+
+  function btnDepartment(departmentId)
+  {
+    return "<center><a class='btn btn-success departmentUpdate' data-departmentId=" + departmentId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger departmentDelete' data-departmentId=" + departmentId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
   }
 
 
