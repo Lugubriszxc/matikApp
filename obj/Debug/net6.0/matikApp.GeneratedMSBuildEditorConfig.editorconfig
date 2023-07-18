@@ -8,49 +8,49 @@ build_property.PlatformNeutralAssembly =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = matikApp
 build_property.RootNamespace = matikApp
-build_property.ProjectDir = c:\Users\Neil Chris\Desktop\for capstone\matikApp\
+build_property.ProjectDir = C:\Users\Neil Chris\Desktop\for capstone\matikApp\
 build_property.RazorLangVersion = 6.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = c:\Users\Neil Chris\Desktop\for capstone\matikApp
+build_property.MSBuildProjectDirectory = C:\Users\Neil Chris\Desktop\for capstone\matikApp
 build_property._RazorSourceGeneratorDebug = 
 
-[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/Index.cshtml]
+[C:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialDepartment/DepartmentCreate.cshtml]
+[C:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialDepartment/DepartmentCreate.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbERlcGFydG1lbnRcRGVwYXJ0bWVudENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialDepartment/DepartmentIndex.cshtml]
+[C:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialDepartment/DepartmentIndex.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbERlcGFydG1lbnRcRGVwYXJ0bWVudEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Home/Index.cshtml]
+[C:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Home/Privacy.cshtml]
+[C:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Shared/Error.cshtml]
+[C:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/_ViewImports.cshtml]
+[C:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/_ViewStart.cshtml]
+[C:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Shared/_Layout.cshtml]
+[C:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-gnzdutr391

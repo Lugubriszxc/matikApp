@@ -12,10 +12,14 @@
     $(document).ready(function(){
         $("#createDepartment").click((e) => {
         
-        inputtedDepName = $("#inputDepartmentName").val();
-        //AJAX ADD DEPARTMENT
-        $.ajax
-        ({
+        const inputtedDepName = $("#inputDepartmentName").val();
+
+        console.log(inputtedDepName);
+        if(inputtedDepName.length !== 0)
+        {
+          //AJAX ADD DEPARTMENT
+          $.ajax
+          ({
             url: "../api/adminapi/createDepartment",
             type: "POST",
             data:
@@ -25,10 +29,15 @@
             })
             .done(function()
             {
-              //hahhaaha
               //document.querySelector(".parent").innerHTML = "";
-              $("#addStockForm")[0].reset();
-            });
+              $("#createDepartmentForm")[0].reset();
+              $("#modalDepartmentCreate").modal("toggle");
+          });
+        }
+        else
+        {
+          alert("Input the name first.");
+        }
         });
     });
 </script>
