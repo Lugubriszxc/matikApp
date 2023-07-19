@@ -6,13 +6,26 @@
 
 @Html.Partial("PartialDepartment/DepartmentCreate")
 @Html.Partial("PartialDepartment/DepartmentTable")
+@Html.Partial("PartialDepartment/DepartmentUpdate")
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 <script>
+    var selectedDepartment;
+    var selectedDepartmentId;
     var inputtedDepName;
+    var departmentList = {};
 
     $(document).ready(function(){
+      getDepartment();
       displayDepartmentData();
+
+    function getDepartment(){
+      $.ajax("../api/adminapi/getDepartment")
+      .done(function(result){
+        departmentList = result;
+      });
+    }
+
         $("#createDepartment").click((e) => {
         
         const inputtedDepName = $("#inputDepartmentName").val();
@@ -67,13 +80,59 @@
         ]
     });
     }
+
+    getDepartment();
   }
 
   function btnDepartment(departmentId)
   {
     return "<center><a class='btn btn-success departmentUpdate' data-departmentId=" + departmentId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger departmentDelete' data-departmentId=" + departmentId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
   }
+  
 
+  $("tbody").delegate(".departmentUpdate", "click", function(e){
+    //console.log("I was clicked");
+    var i = e.target.closest("a").getAttribute("data-departmentId");
+    if(i != null){
+      $("#createDepartmentForm")[0].reset();
+      $("#modalDepartmentUpdate").modal("toggle");
+
+      selectedDepartmentId = i;
+      selectedDepartment = departmentList.find(element => element.departmentId == i);
+
+      //console.log(selectedDepartmentId);
+      oFormObject = document.forms["updateDepartmentForm"];
+      initForm(oFormObject, selectedDepartment);
+    }
+  });
+
+  
+    function initForm(form, data){
+
+        Object.getOwnPropertyNames(data).forEach(function(item){
+          //console.log(form.elements[item.charAt(0).toUpperCase() + item.slice(1)]);
+          var currentElem = form.elements[item.charAt(0).toUpperCase() + item.slice(1)];
+
+          if( currentElem == null ){return;}
+
+          if(currentElem.tagName == "SELECT"){
+            var selectChildren = Array.from(currentElem.children);
+            var matchedOpt = selectChildren.find(opt => opt.value == selectedProd.category);
+            if(matchedOpt){
+              matchedOpt.selected = true;
+            }
+          }else{
+            form.elements[item.charAt(0).toUpperCase() + item.slice(1)].setAttribute("value",data[item]); 
+          }
+        });
+    }
+
+  $("tbody").delegate(".departmentDelete", "click", function(e){
+    var i = e.target.closest("a").getAttribute("data-departmentId");
+    if(i != null){
+      //Insert code here for the delete
+    }
+  });
 
       //Don't touch
     });
