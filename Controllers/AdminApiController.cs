@@ -29,5 +29,22 @@ namespace matikApp.Controllers
         public ActionResult<List<Department>> getDepartment(){
             return  _context.Departments.ToList();
         }
+
+        public IActionResult updateDepartment(string dep, int departmentId)
+        {
+            var res = _context.Departments.Where(element => element.DepartmentId == departmentId).FirstOrDefault();
+            res.DepartmentName = dep;
+            _context.Departments.Update(res);
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        public IActionResult deleteDepartment(int departmentId)
+        {
+            var res = _context.Departments.Where(element => element.DepartmentId == departmentId).FirstOrDefault();
+            _context.Departments.Remove(res);
+            _context.SaveChanges();
+            return Ok();
+        }
     }
 }
