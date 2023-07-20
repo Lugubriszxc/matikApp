@@ -6,14 +6,20 @@
 
 <!--Import partials and extensions here-->
 @Html.Partial("PartialCourse/CourseCreate")
+@Html.Partial("PartialCourse/CourseTable")
+
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 <script>
 //global variables in this section
+var courseDepList = {};
+
 $(document).ready(function(){
 
     //calling the functions
     populateDepartment();
+    displayCourseData();
+    getCourse();
 
     //This is used to populate the department select
     function populateDepartment()
@@ -39,6 +45,7 @@ $(document).ready(function(){
         });
     }
 
+    //Confirm add course btn
     $("#createCourse").click((e) => {
         var arrData = {};
 
@@ -69,12 +76,63 @@ $(document).ready(function(){
             {
               $("#createCourseForm")[0].reset();
               $("#modalCourseCreate").modal("toggle");
-              //displayDepartmentData();
+              displayCourseData();
             });
         }else{
             alert("Input the required information first before proceeding");
         }
     });
+
+    function displayCourseData()
+    {
+        $('#courseData').DataTable().destroy();
+        if (!$.fn.DataTable.isDataTable('#courseData')) {
+        $('#courseData').DataTable({
+            ajax: {
+            url: '../api/adminapi/getCourseDep', // API endpoint to retrieve department
+            dataSrc: ''
+            },
+            columns:
+            [
+            { data: 'courseId'},
+            { data: 'courseName'},
+            { data: 'departmentName'},
+            { 
+                data : 'courseId',
+                render : function (data, type, row)
+                {
+                 return btnCourse(data);
+                } 
+            },
+            ]
+        });
+    }
+      getCourse();
+    }
+
+    function btnCourse(courseId)
+    {
+        return "<center><a class='btn btn-success courseUpdate' data-courseId=" + courseId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger courseDelete' data-courseId=" + courseId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+    }
+
+    $("tbody").delegate(".courseUpdate", "click", function(e){
+    //console.log("I was clicked");
+    var i = e.target.closest("a").getAttribute("data-courseId");
+    console.log(i);
+  });
+
+  $("tbody").delegate(".courseDelete", "click", function(e){
+    var i = e.target.closest("a").getAttribute("data-courseId");
+    console.log(i);
+  });
+
+    //get the course department list
+    function getCourse(){
+      $.ajax("../api/adminapi/getCourseDep")
+      .done(function(result){
+        courseDepList = result;
+      });
+    }
 
 //don't touch this
 });

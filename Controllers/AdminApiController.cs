@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using matikApp.Models;
+using matikApp.ViewModel;
 
 namespace matikApp.Controllers
 {
@@ -53,6 +54,26 @@ namespace matikApp.Controllers
             _context.SaveChanges();
 
             return Ok();
+        }
+
+        public IActionResult getCourseDep()
+        {
+            var res = 
+            (
+                from d in _context.Departments
+                join c in _context.Courses
+                on d.DepartmentId equals c.DepartmentId
+
+                select new CorDep
+                {
+                    DepartmentId = d.DepartmentId,
+                    DepartmentName = d.DepartmentName,
+                    CourseId = c.CourseId,
+                    CourseName = c.CourseName
+                }
+            ).ToList();
+
+            return Ok(res);
         }
     }
 }
