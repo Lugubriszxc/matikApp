@@ -15,8 +15,12 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\Neil Chris\Desktop\for capstone\matikApp
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
+[C:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialCourse/CourseCreate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbENvdXJzZVxDb3Vyc2VDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialCourse/CourseIndex.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbENvdXJzZVxDb3Vyc2VJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialDepartment/DepartmentCreate.cshtml]

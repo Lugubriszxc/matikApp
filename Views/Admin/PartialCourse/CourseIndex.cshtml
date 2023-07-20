@@ -1,0 +1,81 @@
+<h1>Course Index</h1>
+
+<button type="button" title="Create Course" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalCourseCreate">
+  <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i>
+</button>
+
+<!--Import partials and extensions here-->
+@Html.Partial("PartialCourse/CourseCreate")
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+<script>
+//global variables in this section
+$(document).ready(function(){
+
+    //calling the functions
+    populateDepartment();
+
+    //This is used to populate the department select
+    function populateDepartment()
+    {
+        $.ajax("../api/adminapi/getDepartment")
+        .done(function(result){
+        //console.log(result);
+        var template = document.querySelector("template#departmentOptionTemplate");
+        var parent = document.querySelectorAll("#departmentSelect");
+        
+        for(i = 0; i < parent.length; i++){
+          result.forEach(function (item){
+            //console.log(item.departmentName);
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.departmentId;
+            cloned.querySelector("option").innerText= item.departmentName;
+
+            parent[i].prepend(cloned);
+          });
+        }
+        //to deselect a selected option
+        $("select").val([]);
+        });
+    }
+
+    $("#createCourse").click((e) => {
+        var arrData = {};
+
+        //count the number of element inside the form
+        var formelements = $("#createCourseForm .form-group");
+
+        //getting the data from the form
+        var formInputs = $("#createCourseForm").serializeArray();
+        formInputs.forEach(function(item){
+            arrData[item.name] = item.value;
+        });
+
+        if(formInputs.length === formelements.length)
+        {
+            //if all elements are not empty
+
+            //AJAX ADD COURSE
+          $.ajax
+          ({
+            url: "../api/adminapi/createCourse",
+            type: "POST",
+            data:
+            {
+                cor : arrData,
+            },
+            })
+            .done(function()
+            {
+              $("#createCourseForm")[0].reset();
+              $("#modalCourseCreate").modal("toggle");
+              //displayDepartmentData();
+            });
+        }else{
+            alert("Input the required information first before proceeding");
+        }
+    });
+
+//don't touch this
+});
+</script>

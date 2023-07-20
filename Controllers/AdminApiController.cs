@@ -46,5 +46,13 @@ namespace matikApp.Controllers
             _context.SaveChanges();
             return Ok();
         }
+
+        public IActionResult createCourse(Course cor)
+        {
+            _context.Courses.Add(cor);
+            _context.SaveChanges();
+
+            return Ok();
+        }
     }
 }
