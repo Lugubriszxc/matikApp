@@ -75,5 +75,16 @@ namespace matikApp.Controllers
 
             return Ok(res);
         }
+
+        public ActionResult<List<Course>> getCourse(){
+            return  _context.Courses.ToList();
+        }
+
+        public IActionResult updateCourse(Course cor)
+        {
+            _context.Courses.Update(cor);
+            _context.SaveChanges();
+            return Ok();
+        }
     }
 }
