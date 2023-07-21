@@ -10,11 +10,12 @@
 @Html.Partial("PartialCourse/CourseUpdate")
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 //global variables in this section
 var courseDepList = {};
-var selectedCourse;
+var selectedCourse; 
 var selectedCourseId;
 var courseList = {};
 
@@ -81,11 +82,22 @@ $(document).ready(function(){
               $("#createCourseForm")[0].reset();
               $("#modalCourseCreate").modal("toggle");
               displayCourseData();
+              displaySavedProgress();
             });
         }else{
-            alert("Input the required information first before proceeding");
+            alertError();
         }
     });
+
+    function displaySavedProgress()
+    {
+      Swal.fire({
+      icon: 'success',
+      title: 'Your work has been saved',
+      showConfirmButton: false,
+      timer: 1500
+      })
+    }
 
     function displayCourseData()
     {
@@ -178,7 +190,34 @@ $(document).ready(function(){
 
   //update click course
   $("#updateCourse").click(function(){
+    alertSaveChanges();
+  });
 
+  function alertSaveChanges()
+  {
+    Swal.fire({
+      title: 'Do you want to save the changes?',
+      showCancelButton: true,
+      confirmButtonText: 'Save',
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+    if (result.isConfirmed) {
+      proceedUpdate();
+    }
+    })
+  }
+
+  function alertError()
+  {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Input the necessary elements!',
+    })
+  }
+
+  function proceedUpdate()
+  {
     var arrData = {};
 
     //count the number of element inside the form
@@ -210,9 +249,10 @@ $(document).ready(function(){
         $("#updateCourseForm")[0].reset();
         $("#modalCourseUpdate").modal("toggle");
         displayCourseData();
+        displaySavedProgress();
       });
     }
-  });
+  }
 
 //don't touch this
 });

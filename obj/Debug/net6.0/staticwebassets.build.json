@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "cTU3lGLnnDk8YdN23C4yT/4JMWFHtD8+e3RAxpFb6Ws=",
+  "Hash": "7fDMmGMpRJdskfk6j2YUqGJj5eV9jFvtYGEfYC1kMHs=",
   "Source": "matikApp",
   "BasePath": "_content/matikApp",
   "Mode": "Default",
@@ -1103,6 +1103,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\lib\\jquery\\LICENSE.txt"
+    },
+    {
+      "Identity": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\wwwroot\\lib\\sweetalert\\sweetalert2.js",
+      "SourceId": "matikApp",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\wwwroot\\",
+      "BasePath": "_content/matikApp",
+      "RelativePath": "lib/sweetalert/sweetalert2.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\lib\\sweetalert\\sweetalert2.js"
     }
   ]
 }
