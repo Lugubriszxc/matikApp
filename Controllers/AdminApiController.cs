@@ -86,5 +86,13 @@ namespace matikApp.Controllers
             _context.SaveChanges();
             return Ok();
         }
+
+        public IActionResult deleteCourse(int courseId)
+        {
+            var res = _context.Courses.Where(element => element.CourseId == courseId).FirstOrDefault();
+            _context.Courses.Remove(res);
+            _context.SaveChanges();
+            return Ok();
+        }
     }
 }

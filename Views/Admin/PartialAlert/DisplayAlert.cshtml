@@ -1,0 +1,45 @@
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function(){
+        function displaySavedProgress()
+        {
+            Swal.fire({
+            icon: 'success',
+            title: 'Your work has been saved',
+            showConfirmButton: false,
+            timer: 1500
+            })
+        }
+
+        function alertSaveChanges()
+        {
+            Swal.fire({
+            title: 'Do you want to save the changes?',
+            showDenyButton: true,
+            confirmButtonText: 'Save',
+            denyButtonText: `Don't save`,
+            }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                return '1';
+            }else(result.isDenied){   
+                return '0';
+            }
+            })
+        }
+
+        function alertError()
+        {
+            Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Input the necessary elements!',
+            })
+        }
+
+
+
+    //don't touch this
+    });
+</script>
