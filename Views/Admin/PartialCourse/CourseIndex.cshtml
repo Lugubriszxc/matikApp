@@ -65,7 +65,7 @@ $(document).ready(function(){
             arrData[item.name] = item.value;
         });
 
-        if(formInputs.length === formelements.length)
+        if(formInputs.length === formelements.length && formInputs[0].value !== '')
         {
             //if all elements are not empty
             //AJAX ADD COURSE
@@ -286,7 +286,7 @@ $(document).ready(function(){
 
     arrData.courseId = selectedCourseId;
 
-    if(formInputs.length === formelements.length)
+    if(formInputs.length === formelements.length && formInputs[0].value !== '')
     {
       //AJAX UPDATE DEPARTMENT
       $.ajax

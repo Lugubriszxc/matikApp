@@ -17,11 +17,9 @@ namespace matikApp.Controllers
             _context = context;
         }
 
-        public IActionResult createDepartment(string dep)
+        public IActionResult createDepartment(Department dep)
         {
-            Department d = new Department();
-            d.DepartmentName = dep;
-            _context.Departments.Add(d);
+            _context.Departments.Add(dep);
             _context.SaveChanges();
 
             return Ok();
@@ -31,11 +29,9 @@ namespace matikApp.Controllers
             return  _context.Departments.ToList();
         }
 
-        public IActionResult updateDepartment(string dep, int departmentId)
+        public IActionResult updateDepartment(Department dep)
         {
-            var res = _context.Departments.Where(element => element.DepartmentId == departmentId).FirstOrDefault();
-            res.DepartmentName = dep;
-            _context.Departments.Update(res);
+            _context.Departments.Update(dep);
             _context.SaveChanges();
             return Ok();
         }

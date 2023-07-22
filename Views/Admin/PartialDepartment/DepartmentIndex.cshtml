@@ -9,6 +9,7 @@
 @Html.Partial("PartialDepartment/DepartmentUpdate")
 @Html.Partial("PartialDepartment/DepartmentDelete")
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     var selectedDepartment;
@@ -27,12 +28,18 @@
       });
     }
 
-        $("#createDepartment").click((e) => {
-        
-        const inputtedDepName = $("#inputDepartmentName").val();
+    $("#createDepartment").click((e) => {
+      //const inputtedDepName = $("#inputDepartmentName").val();
+      var arrData = {};
+      var formelements = $("#createDepartmentForm .form-group");
 
-        console.log(inputtedDepName);
-        if(inputtedDepName.length !== 0)
+       //getting the data from the form
+        var formInputs = $("#createDepartmentForm").serializeArray();
+        formInputs.forEach(function(item){
+            arrData[item.name] = item.value;
+        });
+      
+        if(formInputs.length === formelements.length && formInputs[0].value !== '')
         {
           //AJAX ADD DEPARTMENT
           $.ajax
@@ -41,7 +48,7 @@
             type: "POST",
             data:
             {
-                dep : inputtedDepName,
+                dep : arrData
             },
             })
             .done(function()
@@ -50,13 +57,33 @@
               $("#createDepartmentForm")[0].reset();
               $("#modalDepartmentCreate").modal("toggle");
               displayDepartmentData();
+              displaySavedProgress();
           });
         }
         else
         {
-          alert("Input the name first.");
+          alertError();
         }
-        });
+      });
+
+  function alertError()
+  {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Input the necessary elements!',
+    })
+  }
+
+  function displaySavedProgress()
+  {
+    Swal.fire({
+      icon: 'success',
+      title: 'Your work has been saved',
+      showConfirmButton: false,
+      timer: 1500
+      })
+  }
         
   function displayDepartmentData()
   {
@@ -81,7 +108,6 @@
         ]
     });
     }
-
     getDepartment();
   }
 
@@ -101,11 +127,24 @@
       selectedDepartmentId = i;
       selectedDepartment = departmentList.find(element => element.departmentId == i);
 
-      //console.log(selectedDepartmentId);
       oFormObject = document.forms["updateDepartmentForm"];
       initForm(oFormObject, selectedDepartment);
     }
   });
+
+  function alertSaveChanges()
+  {
+      Swal.fire({
+      title: 'Do you want to save the changes?',
+      confirmButtonText: 'Save',
+      showCancelButton: true,
+      }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+          updateDepartmentHolder();
+      }
+    })
+  }
 
   
     function initForm(form, data){
@@ -129,57 +168,104 @@
     }
 
   $("#updateDepartment").click(function(){
+    alertSaveChanges();
+  });
 
-    var inputtedDepName = $("#inputDepartmentNameUpdate").val();
-    console.log(inputtedDepName);
-    if(inputtedDepName.length !== 0)
+  function updateDepartmentHolder()
+  {
+    var arrData = {};
+    var formelements = $("#updateDepartmentForm .form-group");
+
+    //getting the data from the form
+    var formInputs = $("#updateDepartmentForm").serializeArray();
+    formInputs.forEach(function(item){
+        arrData[item.name] = item.value;
+    });
+    arrData.departmentId = selectedDepartmentId;
+
+    if(formInputs.length === formelements.length && formInputs[0].value !== '')
     {
-      //AJAX UPDATE DEPARTMENT
+      proceedUpdate(arrData);
+    }else
+    {
+      alertError();
+    }
+  }
+
+  function proceedUpdate(arrData)
+  {
+    //AJAX UPDATE DEPARTMENT
           $.ajax
           ({
             url: "../api/adminapi/updateDepartment",
             type: "POST",
             data:
             {
-                dep : inputtedDepName,
-                departmentId : selectedDepartmentId
+                dep : arrData,
             },
             })
             .done(function()
             {
-              //document.querySelector(".parent").innerHTML = "";
               $("#updateDepartmentForm")[0].reset();
               $("#modalDepartmentUpdate").modal("toggle");
               displayDepartmentData();
+              displaySavedProgress();
           });
-    }
-  });
+  }
 
   $("tbody").delegate(".departmentDelete", "click", function(e){
     var i = e.target.closest("a").getAttribute("data-departmentId");
     if(i != null){
       //Insert code here for the delete
       selectedDepartmentId = i;
-      $("#modalDeleteDepartment").modal("toggle");
+      alertDeleteConfirmation();
     }
   });
 
-  $("#deleteDepartmentBtn").click(function(){
+  function alertDeleteConfirmation()
+  {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+    if (result.isConfirmed) {
+      proceedDelete();
+    }
+    })
+  }
+
+  function proceedDelete()
+  {
     //AJAX DELETE DEPARTMENT
-          $.ajax
-          ({
-            url: "../api/adminapi/deleteDepartment",
-            type: "POST",
-            data:
-            {
-              departmentId : selectedDepartmentId
-            },
-            })
-            .done(function()
-            {
-              displayDepartmentData();
-          });
-  });
+    $.ajax
+      ({
+        url: "../api/adminapi/deleteDepartment",
+        type: "POST",
+        data:
+        {
+          departmentId : selectedDepartmentId
+        },
+        })
+        .done(function()
+        {
+          displayDepartmentData();
+          alertDeleteInfo();
+      });
+  }
+
+  function alertDeleteInfo()
+  {
+    Swal.fire(
+      'Deleted!',
+      'Your file has been deleted.',
+      'success'
+      )
+  }
 
       //Don't touch
     });
