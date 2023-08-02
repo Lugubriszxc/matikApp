@@ -1,0 +1,51 @@
+@* <h4>Dean Create</h4> *@
+
+@* This is modal *@
+
+<template id="departmentOptionTemplate">
+  <option value=""></option>
+</template>
+
+<div class="modal fade" id="modalDeanCreate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Assign Dean</h5>
+        <button type="button" id="modalDeanCreateClose" class="btn-close btn-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body deanCreate d-flex justify-content-center">
+       <div>
+            <div class="cardInfo" style="width: 25rem;">
+            <h4><div class="info-title" id="info-title">
+            </div></h4>
+            <strong><div class="info-Stocks"></div></strong>
+            <hr/>
+            <form id="createDeanForm">
+            <div class="form-group">
+                <label name="" class="control-label">First Name</label>
+                <input type="text" name="dean_fname" id="inputFName" class="form-control" placeholder="First name" required/>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Middle Name (Optional)</label>
+                <input type="text" name="dean_mname" id="inputMName" class="form-control" placeholder="Middle name" required/>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Last Name</label>
+                <input type="text" name="dean_lname" id="inputLName" class="form-control" placeholder="Last name" required/>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Department</label>
+                <select id="departmentSelect" name="DepartmentId" class="form-select"></select>
+            </div>
+            </form>
+            <hr/>
+      </div>
+       </div>
+      </div>
+      <div class="modal-footer">
+        <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>!-->
+        <button type="button" class="btn btn-primary" id="createDean">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>

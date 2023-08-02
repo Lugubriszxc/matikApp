@@ -17,6 +17,7 @@ namespace matikApp.Controllers
             _context = context;
         }
 
+        //Department Section
         public IActionResult createDepartment(Department dep)
         {
             _context.Departments.Add(dep);
@@ -44,6 +45,7 @@ namespace matikApp.Controllers
             return Ok();
         }
 
+       //Course Section API
         public IActionResult createCourse(Course cor)
         {
             _context.Courses.Add(cor);
@@ -89,6 +91,29 @@ namespace matikApp.Controllers
             _context.Courses.Remove(res);
             _context.SaveChanges();
             return Ok();
+        }
+
+        //Dean Section API
+        public IActionResult getDeanDep()
+        {
+            var res = 
+            (
+                from d in _context.Departments
+                join den in _context.Deans
+                on d.DepartmentId equals den.DepartmentId
+
+                select new DeanDep
+                {
+                    DeanId = den.DeanId,
+                    DeanFname = den.DeanFname,
+                    DeanMname = den.DeanMname,
+                    DeanLname = den.DeanLname,
+                    DepartmentId = d.DepartmentId,
+                    DepartmentName = d.DepartmentName,
+                }
+            ).ToList();
+
+            return Ok(res);
         }
     }
 }

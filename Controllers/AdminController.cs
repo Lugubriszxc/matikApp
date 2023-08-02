@@ -35,6 +35,11 @@ namespace matikApp.Controllers
             return View("PartialCourse/CourseIndex");
         }
 
+        public IActionResult DeanIndex()
+        {
+            return View("PartialDean/DeanIndex");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

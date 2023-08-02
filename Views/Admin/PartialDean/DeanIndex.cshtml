@@ -1,0 +1,111 @@
+<h4>Index Dean</h4>
+<button type="button" title="Create Course" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalDeanCreate">
+  <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i>
+</button>
+
+@Html.Partial("PartialDean/DeanTable")
+@Html.Partial("PartialDean/DeanCreate")
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function(){
+    
+    //call for the functions by default
+    populateDepartment();
+    populateDeanTable();
+    testingDataFetch();
+
+    //to populate the department option 
+    function populateDepartment()
+    {
+        $.ajax("../api/adminapi/getDepartment")
+        .done(function(result){
+        //console.log(result);
+        var template = document.querySelector("template#departmentOptionTemplate");
+        var parent = document.querySelectorAll("#departmentSelect");
+        
+        for(i = 0; i < parent.length; i++){
+          result.forEach(function (item){
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.departmentId;
+            cloned.querySelector("option").innerText= item.departmentName;
+
+            parent[i].prepend(cloned);
+          });
+        }
+        //to deselect a selected option
+        $("select").val([]);
+        });
+    }
+
+    //to populate the table
+    function populateDeanTable()
+    {
+        $('#deanData').DataTable().destroy();
+        if(!$.fn.DataTable.isDataTable('#deanData'))
+        {
+            $('#deanData').DataTable({
+                ajax:
+                {
+                    url: '../api/adminapi/getDeanDep',
+                    dataSrc: ''
+                },
+                columns:
+                [
+                    {data: 'deanId'},
+                    {
+                        data: 'deanId',
+                        render : function(data, type, row)
+                        {
+                            var firstname = row['deanFname'];
+                            var middlename = row['deanMname'];
+                            var lastname = row['deanLname'];
+
+                            var combined;
+
+                            if(middlename.value === "")
+                            {
+                                combined = firstname + ' ' + lastname;
+                            }
+                            else
+                            {
+                                combined = firstname + ' ' + middlename + ' ' + lastname; 
+                            }
+
+                            return combined;
+                        }
+                    },
+                    {data: 'departmentName'},
+                    {
+                        data: 'deanId',
+                        render : function (data, type, row)
+                        {
+                            return btnDean(data);
+                        }
+                    },
+                ]
+            });
+        }
+    }
+
+    //to render buttons in action index
+    function btnDean(deanId)
+    {
+        return "<center><a class='btn btn-success deanUpdate' data-deanId=" + deanId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger deanDelete' data-deanId=" + deanId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+    }
+
+    //this is just to test the fetching of data from the API
+    function testingDataFetch()
+    {
+        //the dean department class
+        $.ajax("../api/adminapi/getDeanDep")
+        .done(function(result){
+            console.log(result);
+        });
+    }
+
+
+    //don't touch this
+    });
+</script>
