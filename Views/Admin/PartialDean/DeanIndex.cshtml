@@ -105,6 +105,103 @@
         });
     }
 
+    //this is to create a dean and save it to the database
+    $("#createDean").click((e) => {
+        var arrData = {};
+
+        //count the number of element inside the form
+        var formelements = $("#createDeanForm .form-group");
+
+        //getting the data from the form
+        var formInputs = $("#createDeanForm").serializeArray();
+        formInputs.forEach(function(item){
+            arrData[item.name] = item.value;
+        });
+
+        console.log(arrData);
+
+        let emptyEl = new Boolean(false);
+        //alternative of bool
+        if(formInputs[0].value === '' || formInputs[2].value === '')
+        {
+            //if the firstname or lastname are empty then return true or 0
+            emptyEl = Boolean(true);
+        }
+        else{
+            //if the firstname and lastname are not empty then return false or 1
+            emptyEl = Boolean(false);
+        }
+
+        if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
+        {
+            //if all elements are not empty
+
+            let isDeanRegistered = new Boolean(false);
+            //checking if the department has already a dean
+            $.ajax({
+                url: "../api/adminapi/checkDeanDep",
+                type: "POST",
+                data:
+                {
+                    depID : formInputs[3].value,
+                },
+            })
+            .done(function(result){
+                isDeanRegistered = Boolean(result);
+            });
+
+            //if the department has no dean
+            if(isDeanRegistered === Boolean(false))
+            {   
+                //Call API to add Dean
+                $.ajax({
+                    url: "../api/adminapi/createDean",
+                    type: "POST",
+                    data:
+                    {
+                        den : arrData,
+                    },
+                })
+                .done(function(){
+                    $("#createDeanForm")[0].reset();
+                    $("#modalDeanCreate").modal("toggle");
+                    alertSuccess();
+                    populateDeanTable();
+                });
+            }
+            else
+            {
+                alertError("There is already a designated dean in this department.");
+            }
+        }
+        else   
+        {
+            alertError("Input the necessary elements!");
+        }
+
+    });
+
+    //display error alert
+    function alertError(message)
+    {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: message,
+        })
+    }
+
+    //display success action
+    function alertSuccess()
+    {
+        Swal.fire({
+            icon: 'success',
+            title: 'Your work has been saved', 
+            showConfirmButton: false,
+            timer: 1500
+        })
+    }
+
 
     //don't touch this
     });

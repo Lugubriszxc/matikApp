@@ -96,12 +96,17 @@ namespace matikApp.Controllers
         //Dean Section API
         public IActionResult getDeanDep()
         {
-            var res = 
-            (
+            //var res = new List<DeanDep>{};
+            var res = new object();
+
+            //applying a try catch to return an empty string instead of null
+            try{
+                res = 
+                (
                 from d in _context.Departments
                 join den in _context.Deans
                 on d.DepartmentId equals den.DepartmentId
-
+                
                 select new DeanDep
                 {
                     DeanId = den.DeanId,
@@ -111,9 +116,50 @@ namespace matikApp.Controllers
                     DepartmentId = d.DepartmentId,
                     DepartmentName = d.DepartmentName,
                 }
-            ).ToList();
+                ).ToList();
+            }catch{
+                res = 
+                (
+                from d in _context.Departments
+                join den in _context.Deans
+                on d.DepartmentId equals den.DepartmentId
+
+                select new DeanDep
+                {
+                    DeanId = den.DeanId,
+                    DeanFname = den.DeanFname,
+                    DeanMname = "",
+                    DeanLname = den.DeanLname,
+                    DepartmentId = d.DepartmentId,
+                    DepartmentName = d.DepartmentName,
+                }
+                ).ToList();
+            }
 
             return Ok(res);
+        }
+
+        //query to create a dean
+        public IActionResult createDean(Dean den)
+        {
+            _context.Deans.Add(den);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        //query to return true or false if the department has already a dean.
+        public IActionResult checkDeanDep(int depID)
+        {
+            bool isDepDeanRegistered = false;
+
+            //if the row has already the departmentID then this will return true
+            var res = _context.Deans.Where(element => element.DepartmentId == depID).FirstOrDefault();
+            if(res == null)
+            {isDepDeanRegistered = false;}
+            else{isDepDeanRegistered = true;}
+            
+            return Ok(isDepDeanRegistered);
         }
     }
 }
