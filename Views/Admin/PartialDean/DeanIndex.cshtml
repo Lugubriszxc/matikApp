@@ -5,6 +5,7 @@
 
 @Html.Partial("PartialDean/DeanTable")
 @Html.Partial("PartialDean/DeanCreate")
+@Html.Partial("PartialDean/DeanUpdate")
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -13,6 +14,7 @@
     //initialize the variables here as global
     var selectedDeanId;
     var selectedDean;
+    var deanList = {};
 
 
     $(document).ready(function(){
@@ -92,6 +94,8 @@
                 ]
             });
         }
+        //get the deans list 
+        getDeans();
     }
 
     //to render buttons in action index
@@ -107,6 +111,15 @@
         $.ajax("../api/adminapi/getDeanDep")
         .done(function(result){
             console.log(result);
+        });
+    }
+
+    //this is to get the data of deans from the API and store it to array
+    function getDeans()
+    {
+        $.ajax("../api/adminapi/getDeans")
+        .done(function(result){
+            deanList = result;
         });
     }
 
@@ -211,6 +224,40 @@
             alertSuccess();
             populateDeanTable();
         })
+    }
+
+    //when clicking the update button
+    $("tbody").delegate(".deanUpdate", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-deanId");
+        if(i != null)
+        {
+            $("#createDeanForm")[0].reset();
+            $("#modalDeanUpdate").modal("toggle");
+
+            selectedDeanId = i;
+            selectedDean = deanList.find(element => element.deanId == i);
+
+            oFormObject = document.forms["updateDeanForm"];
+            initForm(oFormObject, selectedDean);
+        }
+    });
+
+    function initForm(form, data){
+        Object.getOwnPropertyNames(data).forEach(function(item){
+        var currentElem = form.elements[item.charAt(0).toUpperCase() + item.slice(1)];
+
+        if( currentElem == null ){return;}
+
+        if(currentElem.tagName == "SELECT"){
+            var selectChildren = Array.from(currentElem.children);
+            var matchedOpt = selectChildren.find(opt => opt.value == selectedDean.departmentId);
+        if(matchedOpt){
+            matchedOpt.selected = true;
+        }
+        }else{
+            form.elements[item.charAt(0).toUpperCase() + item.slice(1)].setAttribute("value",data[item]); 
+        }
+        });
     }
 
     //display error alert

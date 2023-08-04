@@ -176,5 +176,10 @@ namespace matikApp.Controllers
 
             return Ok();
         }
+
+        //query to fetch the dean list
+        public ActionResult<List<Dean>> getDeans(){
+            return  _context.Deans.ToList();
+        }
     }
 }
