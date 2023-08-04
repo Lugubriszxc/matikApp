@@ -128,7 +128,7 @@ namespace matikApp.Controllers
                 {
                     DeanId = den.DeanId,
                     DeanFname = den.DeanFname,
-                    DeanMname = "",
+                    DeanMname = " ",
                     DeanLname = den.DeanLname,
                     DepartmentId = d.DepartmentId,
                     DepartmentName = d.DepartmentName,
@@ -142,6 +142,10 @@ namespace matikApp.Controllers
         //query to create a dean
         public IActionResult createDean(Dean den)
         {
+            if(den.DeanMname == null)
+            {
+                den.DeanMname = "";
+            }
             _context.Deans.Add(den);
             _context.SaveChanges();
 
@@ -160,6 +164,17 @@ namespace matikApp.Controllers
             else{isDepDeanRegistered = true;}
             
             return Ok(isDepDeanRegistered);
+        }
+
+        //query to delete the selected dean
+        public IActionResult deleteDean(int deanId)
+        {
+            _context.Deans.Remove(_context.Deans.Find(deanId));
+            _context.SaveChanges();
+
+            //_context.Database.ExecuteSqlRaw(deletecommand);
+
+            return Ok();
         }
     }
 }
