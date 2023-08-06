@@ -151,8 +151,10 @@ $(document).ready(function(){
 
       selectedCourseId = i;
       selectedCourse = courseList.find(element => element.courseId == i);
+      @* console.log(selectedCourse); *@
 
       oFormObject = document.forms["updateCourseForm"];
+      @* console.log(oFormObject); *@
       initForm(oFormObject, selectedCourse);
     }
   });

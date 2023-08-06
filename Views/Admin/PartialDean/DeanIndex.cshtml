@@ -136,7 +136,7 @@
             arrData[item.name] = item.value;
         });
 
-        console.log(arrData);
+        //console.log(arrData);
 
         let emptyEl = new Boolean(false);
         //alternative of bool
@@ -238,19 +238,22 @@
             selectedDean = deanList.find(element => element.deanId == i);
 
             oFormObject = document.forms["updateDeanForm"];
+            //console.log(oFormObject);
             initForm(oFormObject, selectedDean);
         }
     });
 
+    //to populate the selected element to the form
     function initForm(form, data){
         Object.getOwnPropertyNames(data).forEach(function(item){
         var currentElem = form.elements[item.charAt(0).toUpperCase() + item.slice(1)];
+        //console.log(currentElem);
 
         if( currentElem == null ){return;}
 
         if(currentElem.tagName == "SELECT"){
             var selectChildren = Array.from(currentElem.children);
-            var matchedOpt = selectChildren.find(opt => opt.value == selectedDean.departmentId);
+            var matchedOpt = selectChildren.find(opt => opt.value == selectedDean.deanId);
         if(matchedOpt){
             matchedOpt.selected = true;
         }
@@ -259,6 +262,85 @@
         }
         });
     }
+
+    function proceedUpdate()
+    {
+        var arrData = {};
+
+        //count the number of elements inside  the form
+        var formelements = $("#updateDeanForm .form-group");
+
+        //getting the data from the form
+        var formInputs = $("#updateDeanForm").serializeArray();
+        formInputs.forEach(function(item){
+            arrData[item.name] = item.value;
+        });
+
+        arrData.deanId = selectedDeanId;
+
+        let emptyEl = new Boolean(false);
+        //alternative of bool
+        if(formInputs[0].value === '' || formInputs[2].value === '')
+        {
+            //if the firstname or lastname are empty then return true or 0
+            emptyEl = Boolean(true);
+        }
+        else{
+            //if the firstname and lastname are not empty then return false or 1
+            emptyEl = Boolean(false);
+        }
+
+        //if all elements are not empty
+        if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
+        {
+            let isDeanRegistered = new Boolean(false);
+            //checking if the department has already a dean
+            $.ajax({
+                url: "../api/adminapi/checkDeanDep",
+                type: "POST",
+                data:
+                {
+                    depID : formInputs[3].value,
+                },
+            })
+            .done(function(result){
+                isDeanRegistered = Boolean(result);
+
+                //if the department has no dean
+                if(isDeanRegistered === Boolean(false))
+                {   
+                    //Call API to add Dean
+                    $.ajax({
+                        url: "../api/adminapi/updateDean",
+                        type: "POST",
+                        data:
+                        {
+                            den : arrData,
+                        },
+                    })
+                    .done(function(){
+                        $("#updateDeanForm")[0].reset();
+                        $("#modalDeanUpdate").modal("toggle");
+                        alertSuccess();
+                        populateDeanTable();
+                    });
+                }
+                else
+                {
+                    alertError("There is already a designated dean in this department.");
+                }
+            });
+        }
+        else   
+        {
+            alertError("Input the necessary elements!");
+        }
+    }
+
+    //after clicking update
+    $("#updateDean").click(function(){
+        alertSaveChanges();
+    });
 
     //display error alert
     function alertError(message)
@@ -295,6 +377,20 @@
         }).then((result) => {
             if(result.isConfirmed){
                 deleteDean(selectedDeanId);
+            }
+        })
+    }
+
+    //display update confirmation
+    function alertSaveChanges()
+    {
+        Swal.fire({
+            title: 'Do you want to save the changes?',
+            showCancelButton: true,
+            confirmButtonText: 'Save',
+        }).then((result) => {
+            if(result.isConfirmed){
+                proceedUpdate();
             }
         })
     }

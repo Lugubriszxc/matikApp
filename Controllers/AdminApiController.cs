@@ -181,5 +181,17 @@ namespace matikApp.Controllers
         public ActionResult<List<Dean>> getDeans(){
             return  _context.Deans.ToList();
         }
+
+        //query to update the dean
+        public IActionResult updateDean(Dean den)
+        {
+            if(den.DeanMname == null)
+            {
+                den.DeanMname = "";
+            }
+            _context.Deans.Update(den);
+            _context.SaveChanges();
+            return Ok();
+        }
     }
 }
