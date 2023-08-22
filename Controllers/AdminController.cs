@@ -40,6 +40,14 @@ namespace matikApp.Controllers
             return View("PartialDean/DeanIndex");
         }
 
+        public IActionResult Menu(){
+            return View("Widget/Menu");
+        }
+
+        public IActionResult InstructorIndex(){
+            return View("PartialInstructor/InstructorIndex");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

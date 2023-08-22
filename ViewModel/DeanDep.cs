@@ -7,7 +7,7 @@ namespace matikApp.ViewModel
 {
     public class DeanDep
     {
-        //A class for both course and department
+        //A class for both dean and department
         public int DeanId { get; set; }
         public string DeanFname { get; set; }
         public string DeanMname { get; set; }

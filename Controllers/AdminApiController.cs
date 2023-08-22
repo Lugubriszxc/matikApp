@@ -193,5 +193,92 @@ namespace matikApp.Controllers
             _context.SaveChanges();
             return Ok();
         }
+
+        //Instructor Section API
+        public IActionResult getInstructorDep()
+        {
+            //var res = new List<DeanDep>{};
+            var res = new object();
+
+            //applying a try catch to return an empty string instead of null
+            try{
+                res = 
+                (
+                from d in _context.Departments
+                join i in _context.Instructors
+                on d.DepartmentId equals i.DepartmentId
+                
+                select new InstructorDep
+                {
+                    InstructorId = i.InstructorId,
+                    InstructorFname = i.InstructorFname,
+                    InstructorMname = i.InstructorMname,
+                    InstructorLname = i.InstructorLname,
+                    DepartmentId = d.DepartmentId,
+                    DepartmentName = d.DepartmentName,
+                }
+                ).ToList();
+            }catch{
+                res = 
+                (
+                from d in _context.Departments
+                join i in _context.Instructors
+                on d.DepartmentId equals i.DepartmentId
+
+                select new InstructorDep
+                {
+                    InstructorId = i.InstructorId,
+                    InstructorFname = i.InstructorFname,
+                    InstructorMname = " ",
+                    InstructorLname = i.InstructorLname,
+                    DepartmentId = d.DepartmentId,
+                    DepartmentName = d.DepartmentName,
+                }
+                ).ToList();
+            }
+
+            return Ok(res);
+        }
+
+        //query to fetch the instructor list
+        public ActionResult<List<Instructor>> getInstructors(){
+            return  _context.Instructors.ToList();
+        }
+
+        //query to create a dean
+        public IActionResult createInstructor(Instructor i)
+        {
+            if(i.InstructorMname == null)
+            {
+                i.InstructorMname = "";
+            }
+            _context.Instructors.Add(i);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        //query to delete the selected instructor
+        public IActionResult deleteInstructor(int instructorId)
+        {
+            _context.Instructors.Remove(_context.Instructors.Find(instructorId));
+            _context.SaveChanges();
+
+            //_context.Database.ExecuteSqlRaw(deletecommand);
+
+            return Ok();
+        }
+
+        //query to update the dean
+        public IActionResult updateInstructor(Instructor i)
+        {
+            if(i.InstructorMname == null)
+            {
+                i.InstructorMname = "";
+            }
+            _context.Instructors.Update(i);
+            _context.SaveChanges();
+            return Ok();
+        }
     }
 }

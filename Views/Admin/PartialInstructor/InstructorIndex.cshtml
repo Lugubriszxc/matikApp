@@ -1,29 +1,32 @@
-<center><h1>Dean</h1></center>
-<button type="button" title="Create Dean" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalDeanCreate">
-  <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Create Dean
+<center>
+    <h1>Instructor</h1>
+</center>
+
+<button type="button" title="Create Instructor" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalInstructorCreate">
+  <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Create Instructor
 </button>
 
 <br><br>
 
-@Html.Partial("PartialDean/DeanTable")
-@Html.Partial("PartialDean/DeanCreate")
-@Html.Partial("PartialDean/DeanUpdate")
+<!--Import the partials here-->
+@Html.Partial("PartialInstructor/InstructorTable")
+@Html.Partial("PartialInstructor/InstructorCreate")
+@Html.Partial("PartialInstructor/InstructorUpdate")
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    
     //initialize the variables here as global
-    var selectedDeanId;
-    var selectedDean;
-    var deanList = {};
-
+    var selectedInstructorId;
+    var selectedInstructor;
+    var instructorList = {};
 
     $(document).ready(function(){
     //call for the functions by default
     populateDepartment();
-    populateDeanTable();
-    testingDataFetch();
+    populateInstructorTable();
+
 
     //to populate the department option 
     function populateDepartment()
@@ -48,28 +51,28 @@
         });
     }
 
-    //to populate the table
-    function populateDeanTable()
+    //to populate the instructor table
+    function populateInstructorTable()
     {
-        $('#deanData').DataTable().destroy();
-        if(!$.fn.DataTable.isDataTable('#deanData'))
+        $('#instructorData').DataTable().destroy();
+        if(!$.fn.DataTable.isDataTable('#instructorData'))
         {
-            $('#deanData').DataTable({
+            $('#instructorData').DataTable({
                 ajax:
                 {
-                    url: '../api/adminapi/getDeanDep',
+                    url: '../api/adminapi/getInstructorDep',
                     dataSrc: ''
                 },
                 columns:
                 [
-                    {data: 'deanId'},
+                    {data: 'instructorId'},
                     {
-                        data: 'deanId',
+                        data: 'instructorId',
                         render : function(data, type, row)
                         {
-                            var firstname = row['deanFname'];
-                            var middlename = row['deanMname'];
-                            var lastname = row['deanLname'];
+                            var firstname = row['instructorFname'];
+                            var middlename = row['instructorMname'];
+                            var lastname = row['instructorLname'];
 
                             var combined;
 
@@ -87,53 +90,43 @@
                     },
                     {data: 'departmentName'},
                     {
-                        data: 'deanId',
+                        data: 'instructorId',
                         render : function (data, type, row)
                         {
-                            return btnDean(data);
+                            return btnInstructor(data);
                         }
                     },
                 ]
             });
         }
-        //get the deans list 
-        getDeans();
+        //get the instructors list 
+        getInstructor();
     }
 
     //to render buttons in action index
-    function btnDean(deanId)
+    function btnInstructor(instructorId)
     {
-        return "<center><a class='btn btn-success deanUpdate' data-deanId=" + deanId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger deanDelete' data-deanId=" + deanId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+        return "<center><a class='btn btn-success instructorUpdate' data-instructorId=" + instructorId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger instructorDelete' data-instructorId=" + instructorId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
     }
 
-    //this is just to test the fetching of data from the API
-    function testingDataFetch()
+    //get the data of the instructor and store it to array
+    function getInstructor()
     {
-        //the dean department class
-        $.ajax("../api/adminapi/getDeanDep")
+        $.ajax("../api/adminapi/getInstructors")
         .done(function(result){
-            console.log(result);
+            instructorList = result;
         });
     }
 
-    //this is to get the data of deans from the API and store it to array
-    function getDeans()
-    {
-        $.ajax("../api/adminapi/getDeans")
-        .done(function(result){
-            deanList = result;
-        });
-    }
-
-    //this is to create a dean and save it to the database
-    $("#createDean").click((e) => {
+    //this is to create a instructor and save it to the database
+    $("#createInstructor").click((e) => {
         var arrData = {};
 
         //count the number of element inside the form
-        var formelements = $("#createDeanForm .form-group");
+        var formelements = $("#createInstructorForm .form-group");
 
         //getting the data from the form
-        var formInputs = $("#createDeanForm").serializeArray();
+        var formInputs = $("#createInstructorForm").serializeArray();
         formInputs.forEach(function(item){
             arrData[item.name] = item.value;
         });
@@ -155,42 +148,21 @@
         //if all elements are not empty
         if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
         {
-            let isDeanRegistered = new Boolean(false);
-            //checking if the department has already a dean
+
+            //Call API to add Instructor
             $.ajax({
-                url: "../api/adminapi/checkDeanDep",
+                url: "../api/adminapi/createInstructor",
                 type: "POST",
                 data:
                 {
-                    depID : formInputs[3].value,
+                    i : arrData,
                 },
             })
-            .done(function(result){
-                isDeanRegistered = Boolean(result);
-
-                //if the department has no dean
-                if(isDeanRegistered === Boolean(false))
-                {   
-                    //Call API to add Dean
-                    $.ajax({
-                        url: "../api/adminapi/createDean",
-                        type: "POST",
-                        data:
-                        {
-                            den : arrData,
-                        },
-                    })
-                    .done(function(){
-                        $("#createDeanForm")[0].reset();
-                        $("#modalDeanCreate").modal("toggle");
-                        alertSuccess();
-                        populateDeanTable();
-                    });
-                }
-                else
-                {
-                    alertError("There is already a designated dean in this department.");
-                }
+            .done(function(){
+                $("#createInstructorForm")[0].reset();
+                $("#modalInstructorCreate").modal("toggle");
+                alertSuccess();
+                populateInstructorTable();
             });
         }
         else   
@@ -201,47 +173,46 @@
     });
 
     //when clicking the delete button
-    $("tbody").delegate(".deanDelete", "click", function(e){
-        var i = e.target.closest("a").getAttribute("data-deanId");
+    $("tbody").delegate(".instructorDelete", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-instructorId");
         if(i != null)
         {
             //Insert code here for delete
-            selectedDeanId = i;
-            alertDeleteConfirmation(selectedDeanId);
+            selectedInstructorId = i;
+            alertDeleteConfirmation(selectedInstructorId);
         }
     });
 
-    //after confirming delete, call this
-    function deleteDean(selectedDeanId)
+    //after confirming delete, call this function
+    function deleteInstructor(selectedInstructorId)
     {
-        //AJAX delete dean
+        //AJAX delete instructor
         $.ajax({
-            url: "../api/adminapi/deleteDean",
+            url: "../api/adminapi/deleteInstructor",
             type: "POST",
             data:
             {
-                deanId : selectedDeanId,
+                instructorId : selectedInstructorId,
             },
         }).done(function(){
             alertSuccess();
-            populateDeanTable();
+            populateInstructorTable();
         })
     }
 
     //when clicking the update button
-    $("tbody").delegate(".deanUpdate", "click", function(e){
-        var i = e.target.closest("a").getAttribute("data-deanId");
+    $("tbody").delegate(".instructorUpdate", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-instructorId");
         if(i != null)
         {
-            $("#createDeanForm")[0].reset();
-            $("#modalDeanUpdate").modal("toggle");
+            $("#createInstructorForm")[0].reset();
+            $("#modalInstructorUpdate").modal("toggle");
 
-            selectedDeanId = i;
-            selectedDean = deanList.find(element => element.deanId == i);
+            selectedInstructorId = i;
+            selectedInstructor = instructorList.find(element => element.instructorId == i);
 
-            oFormObject = document.forms["updateDeanForm"];
-            //console.log(oFormObject);
-            initForm(oFormObject, selectedDean);
+            oFormObject = document.forms["updateInstructorForm"];
+            initForm(oFormObject, selectedInstructor);
         }
     });
 
@@ -255,7 +226,7 @@
 
         if(currentElem.tagName == "SELECT"){
             var selectChildren = Array.from(currentElem.children);
-            var matchedOpt = selectChildren.find(opt => opt.value == selectedDean.departmentId);
+            var matchedOpt = selectChildren.find(opt => opt.value == selectedInstructor.departmentId);
         if(matchedOpt){
             matchedOpt.selected = true;
         }
@@ -265,20 +236,25 @@
         });
     }
 
+    //after clicking update
+    $("#updateInstructor").click(function(){
+        alertSaveChanges();
+    });
+
     function proceedUpdate()
     {
         var arrData = {};
 
         //count the number of elements inside  the form
-        var formelements = $("#updateDeanForm .form-group");
+        var formelements = $("#updateInstructorForm .form-group");
 
         //getting the data from the form
-        var formInputs = $("#updateDeanForm").serializeArray();
+        var formInputs = $("#updateInstructorForm").serializeArray();
         formInputs.forEach(function(item){
             arrData[item.name] = item.value;
         });
 
-        arrData.deanId = selectedDeanId;
+        arrData.instructorId = selectedInstructorId;
 
         let emptyEl = new Boolean(false);
         //alternative of bool
@@ -295,42 +271,20 @@
         //if all elements are not empty
         if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
         {
-            let isDeanRegistered = new Boolean(false);
-            //checking if the department has already a dean
+            //Call API to add Instructor
             $.ajax({
-                url: "../api/adminapi/checkDeanDep",
+                url: "../api/adminapi/updateInstructor",
                 type: "POST",
                 data:
                 {
-                    depID : formInputs[3].value,
+                    i : arrData,
                 },
             })
-            .done(function(result){
-                isDeanRegistered = Boolean(result);
-
-                //if the department has no dean
-                if(isDeanRegistered === Boolean(false))
-                {   
-                    //Call API to add Dean
-                    $.ajax({
-                        url: "../api/adminapi/updateDean",
-                        type: "POST",
-                        data:
-                        {
-                            den : arrData,
-                        },
-                    })
-                    .done(function(){
-                        $("#updateDeanForm")[0].reset();
-                        $("#modalDeanUpdate").modal("toggle");
-                        alertSuccess();
-                        populateDeanTable();
-                    });
-                }
-                else
-                {
-                    alertError("There is already a designated dean in this department.");
-                }
+            .done(function(){
+                $("#updateInstructorForm")[0].reset();
+                $("#modalInstructorUpdate").modal("toggle");
+                alertSuccess();
+                populateInstructorTable();
             });
         }
         else   
@@ -339,11 +293,8 @@
         }
     }
 
-    //after clicking update
-    $("#updateDean").click(function(){
-        alertSaveChanges();
-    });
 
+    //sweet alert
     //display error alert
     function alertError(message)
     {
@@ -366,7 +317,7 @@
     }
 
     //display delete confirmation
-    function alertDeleteConfirmation(selectedDeanId)
+    function alertDeleteConfirmation(selectedInstructorId)
     {
         Swal.fire({
             title: 'Are you sure?',
@@ -378,7 +329,7 @@
             confirmButtonText: 'Yes!'
         }).then((result) => {
             if(result.isConfirmed){
-                deleteDean(selectedDeanId);
+                deleteInstructor(selectedInstructorId);
             }
         })
     }
@@ -397,6 +348,5 @@
         })
     }
 
-    //don't touch this
-    });
+    });//document.ready
 </script>

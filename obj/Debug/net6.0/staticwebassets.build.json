@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "UK4a7hRFfnVw+o38Jli3t0lfDPCBEeR+sL+Pq1XE3eY=",
+  "Hash": "776xgkHLtq77O38i0FTtRTftIsAlDJruhkB+Huoouqs=",
   "Source": "matikApp",
   "BasePath": "_content/matikApp",
   "Mode": "Default",
@@ -51,6 +51,23 @@
       "OriginalItemSpec": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\obj\\Debug\\net6.0\\scopedcss\\projectbundle\\matikApp.bundle.scp.css"
     },
     {
+      "Identity": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\wwwroot\\css\\sidebar.css",
+      "SourceId": "matikApp",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\wwwroot\\",
+      "BasePath": "_content/matikApp",
+      "RelativePath": "css/sidebar.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\sidebar.css"
+    },
+    {
       "Identity": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\wwwroot\\css\\site.css",
       "SourceId": "matikApp",
       "SourceType": "Discovered",
@@ -83,6 +100,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.ico"
+    },
+    {
+      "Identity": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\wwwroot\\js\\sidebar.js",
+      "SourceId": "matikApp",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\wwwroot\\",
+      "BasePath": "_content/matikApp",
+      "RelativePath": "js/sidebar.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\sidebar.js"
     },
     {
       "Identity": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\wwwroot\\js\\site.js",
