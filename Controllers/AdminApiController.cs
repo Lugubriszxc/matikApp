@@ -269,7 +269,7 @@ namespace matikApp.Controllers
             return Ok();
         }
 
-        //query to update the dean
+        //query to update the instructor
         public IActionResult updateInstructor(Instructor i)
         {
             if(i.InstructorMname == null)
@@ -277,6 +277,45 @@ namespace matikApp.Controllers
                 i.InstructorMname = "";
             }
             _context.Instructors.Update(i);
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        //Building Section API
+        //query to fetch the building list
+        public ActionResult<List<Building>> getBuildings(){
+            return  _context.Buildings.ToList();
+        }
+
+        //query to create a building
+        public IActionResult createBuilding(Building bld)
+        {
+            if(bld.BuildingName == null)
+            {
+                return Ok("Error Occured");
+            }
+            _context.Buildings.Add(bld);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        //query to delete the selected building
+        public IActionResult deleteBuilding(int buildingId)
+        {
+            _context.Buildings.Remove(_context.Buildings.Find(buildingId));
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        //query to update the building
+        public IActionResult updateBuilding(Building bld)
+        {
+            if(bld.BuildingName == null)
+            {
+                return Ok("Error Occured");
+            }
+            _context.Buildings.Update(bld);
             _context.SaveChanges();
             return Ok();
         }

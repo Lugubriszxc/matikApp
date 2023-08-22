@@ -23824,6 +23824,26 @@
       "FilePath": "c:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\Views\\Shared\\_Layout.cshtml",
       "TargetPath": "Views\\Shared\\_Layout.cshtml",
       "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\Views\\Admin\\RoomAndBuilding\\PartialBuilding\\BuildingIndex.cshtml",
+      "TargetPath": "Views\\Admin\\RoomAndBuilding\\PartialBuilding\\BuildingIndex.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\Views\\Admin\\RoomAndBuilding\\PartialBuilding\\BuildingTable.cshtml",
+      "TargetPath": "Views\\Admin\\RoomAndBuilding\\PartialBuilding\\BuildingTable.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\Views\\Admin\\RoomAndBuilding\\PartialBuilding\\BuildingCreate.cshtml",
+      "TargetPath": "Views\\Admin\\RoomAndBuilding\\PartialBuilding\\BuildingCreate.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\Views\\Admin\\RoomAndBuilding\\PartialBuilding\\BuildingUpdate.cshtml",
+      "TargetPath": "Views\\Admin\\RoomAndBuilding\\PartialBuilding\\BuildingUpdate.cshtml",
+      "FileKind": "mvc"
     }
   ]
 }

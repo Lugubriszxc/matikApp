@@ -16,8 +16,8 @@
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">M A T I K</a>
+            <div class="container-fluid bg-dark">
+                <a class="navbar-brand text-light" asp-area="" asp-controller="Home" asp-action="Index">M A T I K</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -32,7 +32,7 @@
                         </li> *@
 
                         <div class="btn-group">
-                            <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                            <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                                 Department
                             </button>
                             <div class="position-relative">
@@ -52,9 +52,21 @@
                                 </li>
                             </ul>
                         </div>
+                        <div class="btn-group col-md-1">
+                            <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                                Building
+                            </button>
+                            <div class="position-relative">
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+                                <li class="dropdown-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="BuildingIndex">Building Index</a>
+                                </li>
+                            </ul>
+                        </div>
                     </ul>
                     <div class="col-md-8 offset-md-8">
-                        <span class="btn btn-warning" id="span"></span>
+                        <span class="btn btn-dark" id="span"></span>
                         <script>
                             var span = document.getElementById('span');
                             window.onload = displayClock();

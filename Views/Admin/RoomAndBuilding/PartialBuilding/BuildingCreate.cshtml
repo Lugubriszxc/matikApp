@@ -1,0 +1,31 @@
+<div class="modal fade" id="modalBuildingCreate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-warning text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Assign Building</h5>
+        <button type="button" id="modalBuildingCreateClose" class="btn-close btn-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body buildingCreate d-flex justify-content-center">
+       <div>
+            <div class="cardInfo" style="width: 25rem;">
+            <h4><div class="info-title" id="info-title">
+            </div></h4>
+            <strong><div class="info-Stocks"></div></strong>
+            <hr/>
+            <form id="createBuildingForm">
+            <div class="form-group">
+                <label name="" class="control-label">Building Name</label>
+                <input type="text" name="BuildingName" id="inputBuildingName" class="form-control" placeholder="Building Name" required/>
+            </div>
+            </form>
+            <hr/>
+      </div>
+       </div>
+      </div>
+      <div class="modal-footer">
+        <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>!-->
+        <button type="button" class="btn btn-primary" id="createBuilding">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>

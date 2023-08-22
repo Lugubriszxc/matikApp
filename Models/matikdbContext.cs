@@ -147,7 +147,6 @@ namespace matikApp.Models
                     .HasColumnName("dean_lname");
 
                 entity.Property(e => e.DeanMname)
-                    .IsRequired()
                     .HasMaxLength(250)
                     .HasColumnName("dean_mname");
 
@@ -210,10 +209,19 @@ namespace matikApp.Models
                     .HasColumnType("int(11)")
                     .HasColumnName("buildingID");
 
+                entity.Property(e => e.RoomCapacity)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("roomCapacity");
+
                 entity.Property(e => e.RoomName)
                     .IsRequired()
                     .HasMaxLength(250)
                     .HasColumnName("roomName");
+
+                entity.Property(e => e.RoomType)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("roomType");
             });
 
             modelBuilder.Entity<Section>(entity =>
