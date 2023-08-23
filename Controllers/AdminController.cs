@@ -52,6 +52,10 @@ namespace matikApp.Controllers
             return View("RoomAndBuilding/PartialBuilding/BuildingIndex");
         }
 
+        public IActionResult RoomIndex(){
+            return View("RoomAndBuilding/PartialRoom/RoomIndex");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

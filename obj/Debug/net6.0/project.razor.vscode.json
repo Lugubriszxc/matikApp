@@ -23844,6 +23844,11 @@
       "FilePath": "c:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\Views\\Admin\\miscMatik\\PartialAlert\\DisplayAlert.cshtml",
       "TargetPath": "Views\\Admin\\miscMatik\\PartialAlert\\DisplayAlert.cshtml",
       "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\Views\\Admin\\RoomAndBuilding\\PartialRoom\\RoomIndex.cshtml",
+      "TargetPath": "Views\\Admin\\RoomAndBuilding\\PartialRoom\\RoomIndex.cshtml",
+      "FileKind": "mvc"
     }
   ]
 }
