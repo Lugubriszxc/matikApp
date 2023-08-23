@@ -67,12 +67,17 @@
                     </ul>
                     <div class="col-md-8 offset-md-8">
                         <span class="btn btn-dark" id="span"></span>
+                        <br>
+                        <span class="btn btn-dark" id="spanDate"></span>
                         <script>
                             var span = document.getElementById('span');
+                            var spanDate = document.getElementById('spanDate');
                             window.onload = displayClock();
                             function displayClock(){
                                 var display = new Date().toLocaleTimeString();
+                                var displayDate = new Date().toLocaleDateString();
                                 span.textContent = display;
+                                spanDate.textContent = displayDate;
                                 setTimeout(displayClock, 1000); 
                             }
                         </script>

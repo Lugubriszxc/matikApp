@@ -1,0 +1,17 @@
+
+    /* Custom styles for DataTables controls */
+.dataTables_wrapper .dataTables_filter input {
+    background-color: #333; /* Change the background color of the search input */
+    color: #fff; /* Change the text color of the search input */
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    background-color: #333; /* Change the background color of pagination buttons */
+    color: #fff; /* Change the text color of pagination buttons */
+}
+
+/* Apply styles to DataTables rows */
+table.dataTable tbody tr:hover {
+    background-color: #333; /* Change the background color of rows on hover */
+    color: #fff; /* Change the text color of rows on hover */
+}

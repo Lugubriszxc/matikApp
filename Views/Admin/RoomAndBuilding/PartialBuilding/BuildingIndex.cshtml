@@ -12,7 +12,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <!--Import the partials here-->
+    <link rel="stylesheet" href="~/css/tableCss/tableStyle.css" asp-append-version="true"/>
 </head>
 <body class="bg-warning text-dark">
     @Html.Partial("RoomAndBuilding/PartialBuilding/BuildingTable")
@@ -311,22 +311,3 @@
 
     }); //document.ready
 </script>
-
-<style>
-    /* Custom styles for DataTables controls */
-.dataTables_wrapper .dataTables_filter input {
-    background-color: #333; /* Change the background color of the search input */
-    color: #fff; /* Change the text color of the search input */
-}
-
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-    background-color: #333; /* Change the background color of pagination buttons */
-    color: #fff; /* Change the text color of pagination buttons */
-}
-
-/* Apply styles to DataTables rows */
-table.dataTable tbody tr:hover {
-    background-color: #333; /* Change the background color of rows on hover */
-    color: #fff; /* Change the text color of rows on hover */
-}
-</style>
