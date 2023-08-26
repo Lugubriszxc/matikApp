@@ -111,8 +111,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUm9vbUFuZEJ1aWxkaW5nXFBhcnRpYWxCdWlsZGluZ1xCdWlsZGluZ1VwZGF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/RoomAndBuilding/PartialRoom/RoomCreate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUm9vbUFuZEJ1aWxkaW5nXFBhcnRpYWxSb29tXFJvb21DcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/RoomAndBuilding/PartialRoom/RoomIndex.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUm9vbUFuZEJ1aWxkaW5nXFBhcnRpYWxSb29tXFJvb21JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/RoomAndBuilding/PartialRoom/RoomTable.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUm9vbUFuZEJ1aWxkaW5nXFBhcnRpYWxSb29tXFJvb21UYWJsZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/RoomAndBuilding/PartialRoom/RoomUpdate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUm9vbUFuZEJ1aWxkaW5nXFBhcnRpYWxSb29tXFJvb21VcGRhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/Widget/Menu.cshtml]

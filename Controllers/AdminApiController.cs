@@ -319,5 +319,92 @@ namespace matikApp.Controllers
             _context.SaveChanges();
             return Ok();
         }
+
+
+        //Room Section API
+        
+        //joins the room and building
+        public IActionResult getRoomAndBuilding()
+        {
+            var res = new object();
+
+            //applying a try catch to return an empty string instead of null
+            try{
+                res = 
+                (
+                from r in _context.Rooms
+                join b in _context.Buildings
+                on r.BuildingId equals b.BuildingId
+                
+                select new RoomBuild
+                {
+                    RoomId = r.RoomId,
+                    RoomName = r.RoomName,
+                    RoomType = r.RoomType,
+                    RoomCapacity = r.RoomCapacity,
+                    BuildingId = b.BuildingId,
+                    BuildingName = b.BuildingName,
+                }
+                ).ToList();
+            }catch{
+                res = 
+                (
+                from r in _context.Rooms
+                join b in _context.Buildings
+                on r.BuildingId equals b.BuildingId
+
+                select new RoomBuild
+                {
+                    RoomId = r.RoomId,
+                    RoomName = r.RoomName,
+                    RoomType = r.RoomType,
+                    RoomCapacity = r.RoomCapacity,
+                    BuildingId = 0,
+                    BuildingName = " ",
+                }
+                ).ToList();
+            }
+
+            return Ok(res);
+        }
+
+        //query to fetch the room list
+        public ActionResult<List<Room>> getRooms(){
+            return  _context.Rooms.ToList();
+        }
+        
+        //query to create a room
+        public IActionResult createRoom(Room rm)
+        {
+            if(rm == null)
+            {
+                return Ok("Error Occurred");
+            }
+            _context.Rooms.Add(rm);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        //query to delete the selected room
+        public IActionResult deleteRoom(int roomId)
+        {
+            _context.Rooms.Remove(_context.Rooms.Find(roomId));
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        //query to update the room
+        public IActionResult updateRoom(Room rm)
+        {
+            if(rm == null)
+            {
+                return Ok("Error Occured");
+            }
+            
+            _context.Rooms.Update(rm);
+            _context.SaveChanges();
+            return Ok();
+        }
     }
 }

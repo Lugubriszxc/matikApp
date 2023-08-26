@@ -1,0 +1,57 @@
+<template id="buildingOptionTemplate">
+  <option value=""></option>
+</template>
+
+<div class="modal fade" id="modalRoomCreate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-warning text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Assign Room</h5>
+        <button type="button" id="modalRoomCreateClose" class="btn-close btn-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body roomCreate d-flex justify-content-center">
+       <div>
+            <div class="cardInfo" style="width: 25rem;">
+            <h4><div class="info-title" id="info-title">
+            </div></h4>
+            <strong><div class="info-Stocks"></div></strong>
+            <hr/>
+            <form id="createRoomForm">
+            <div class="form-group">
+                <label name="" class="control-label">Building</label>
+                <select id="buildingSelect" name="BuildingId" class="form-select"></select>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Room Name</label>
+                <input type="text" name="RoomName" id="inputRoomName" class="form-control" placeholder="Room name" required/>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Capacity</label>
+                <input type="number" name="RoomCapacity" id="inputRoomCapacity" class="form-control" placeholder="Capacity" required/>
+            </div>
+            <div class="form-group">
+                <label name="Type" class="control-label">Type</label>
+                <br>
+                <div class="row text-center">
+                    <div class="col">
+                        <input name="RoomType" class="form-check-input comLab" type="radio" value="Computer Laboratory" id="comLab"/>
+                        <label class="form-check-label" for="flexCheckChecked">Computer Laboratory</label>
+                    </div>
+                    <div class="col">
+                        <input name="RoomType" class="form-check-input lecRoom" type="radio" value="Lecture Room" id="lecRoom"/>
+                        <label class="form-check-label" for="flexCheckChecked">Lecture Room</label>
+                    </div>
+                </div>
+            </div>
+            </form>
+            <hr/>
+      </div>
+       </div>
+      </div>
+      <div class="modal-footer">
+        <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>!-->
+        <button type="button" class="btn btn-primary" id="createRoom">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
