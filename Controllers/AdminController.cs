@@ -58,6 +58,9 @@ namespace matikApp.Controllers
         public IActionResult SubjectIndex(){
             return View("PartialSubjects/SubjectIndex");
         }
+        public IActionResult TimeIndex(){
+            return View("PartialTime/TimeIndex");
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

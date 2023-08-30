@@ -26,6 +26,7 @@ namespace matikApp.Models
         public virtual DbSet<Room> Rooms { get; set; }
         public virtual DbSet<Section> Sections { get; set; }
         public virtual DbSet<Subject> Subjects { get; set; }
+        public virtual DbSet<Timeslot> Timeslots { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -281,6 +282,33 @@ namespace matikApp.Models
                 entity.Property(e => e.SubjectUnit)
                     .HasColumnType("int(11)")
                     .HasColumnName("subjectUnit");
+            });
+
+            modelBuilder.Entity<Timeslot>(entity =>
+            {
+                entity.HasKey(e => e.TimeId)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("timeslots");
+
+                entity.Property(e => e.TimeId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("timeID");
+
+                entity.Property(e => e.Day)
+                    .IsRequired()
+                    .HasMaxLength(250)
+                    .HasColumnName("day");
+
+                entity.Property(e => e.EndTime)
+                    .IsRequired()
+                    .HasMaxLength(250)
+                    .HasColumnName("endTime");
+
+                entity.Property(e => e.StartTime)
+                    .IsRequired()
+                    .HasMaxLength(250)
+                    .HasColumnName("startTime");
             });
 
             OnModelCreatingPartial(modelBuilder);

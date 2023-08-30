@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="~/css/tableCss/tableStyle.css" asp-append-version="true"/>
+</head>
+<body>
+    <center><h1>Time Index</h1></center>
+    <button type="button" title="Add Time" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalTimeCreate">
+    <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Add Time Slot
+    </button>
+
+    <br><br>
+    @Html.Partial("PartialTime/TimeTable")
+    @Html.Partial("PartialTime/TimeCreate")
+</body>
+</html>
+
+<script>
+    //initialize the variables here as global
+    var selectedTimeId;
+    var selectedTime;
+    var timeList = {};
+
+    $(document).ready(function(){
+    //call the functions by default
+    populateTimeTable();
+    clearForm();
+
+    function clearForm()
+    {
+        $("#createTimeForm")[0].reset();
+        $("select").val([]);
+    }
+
+    function populateTimeTable()
+    {
+        $('#timeData').DataTable().destroy();
+        $('#timeData').DataTable({
+            responsive: true,
+            ajax:
+            {
+                url: '../api/adminapi/getTimeSlots',
+                dataSrc: ''
+            },
+            columns:
+            [
+                {data: 'timeId'},
+                {data: 'day'},
+                {data: 'startTime'},
+                {data: 'endTime'},
+                {
+                    //this is for the time duration
+                    //converting the time to get the time elapsed
+                    data: 'timeId',
+                    render : function (data, type, row)
+                    {
+                        var timeFrom = new Date();
+                        var valHolder = row['startTime'].toString();
+                        var temp = valHolder.split(":");
+                        timeFrom.setHours((parseInt(temp[0]) - 1 + 24) % 24);
+                        timeFrom.setMinutes(parseInt(temp[1]));
+
+                        var timeTo = new Date();
+                        var valHolder = row['endTime'].toString();
+                        var temp = valHolder.split(":");
+                        timeTo.setHours((parseInt(temp[0]) - 1 + 24) % 24);
+                        timeTo.setMinutes(parseInt(temp[1]));
+
+                        var timeMilli = timeTo - timeFrom;
+                        var minutes = Math.floor((timeMilli / (1000*60)) % 60);
+                        var hours = Math.floor((timeMilli / (1000 * 60 * 60)) % 24);
+
+                        //grahams
+                            if(hours == 0 && minutes > 1)
+                            {
+                                var combined = minutes + ' Minutes ';
+                            }
+                            else if(hours == 0 && minutes <= 1)
+                            {
+                                var combined = minutes + ' Minute ';
+                            }
+                            else if(hours > 1 && minutes == 0)
+                            {
+                                var combined = hours + ' Hours';
+                            }
+                            else if(hours <= 1 && minutes == 0)
+                            {
+                                var combined = hours + ' Hour';
+                            }
+                            else if(hours > 1 && minutes <= 1)
+                            {
+                                var combined = hours + ' Hours & ' + minutes + ' Minute';
+                            }
+                            else if(hours > 1 && minutes > 1)
+                            {
+                                var combined = hours + ' Hours & ' + minutes + ' Minutes';
+                            }
+                            else if(hours <= 1 && minutes <= 1){
+                                var combined = hours + ' Hour & ' + minutes + ' Minute';
+                            }
+                            else if(hours <= 1 && minutes > 1){
+                                var combined = hours + ' Hour & ' + minutes + ' Minutes';
+                            }
+
+                        return combined;
+                    }
+                },
+                {   
+                    //actions
+                    data: 'timeId',
+                    render : function (data, type, row)
+                    {
+                        return btnTime(data);
+                    }
+                },
+            ]
+        });
+    }
+
+    //to render buttons in action index
+    function btnTime(timeId)
+    {
+        return "<center><a class='btn btn-success timeUpdate' data-timeId=" + timeId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger timeDelete' data-timeId=" + timeId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+    }
+
+    //this is to create a subject and save it to the database
+    $("#createTime").click((e) => {
+        try{
+            var arrData = {};
+
+            //count the number of element inside the form
+            var formelements = $("#createTimeForm .form-group");
+
+            //getting the data from the form
+            var formInputs = $("#createTimeForm").serializeArray();
+            formInputs.forEach(function(item){
+                arrData[item.name] = item.value;
+            });
+
+
+            let emptyEl = new Boolean(false);
+            if(formInputs[1].value === '' || formInputs[2].value === '')
+            {
+                emptyEl = Boolean(true);
+            }
+            else
+            {
+                emptyEl = Boolean(false);
+            }
+
+
+            //converting the time to compare
+            var timeFrom = new Date();
+            var temp = $('#inputStartTime').val().split(":");
+            timeFrom.setHours((parseInt(temp[0]) - 1 + 24) % 24);
+            timeFrom.setMinutes(parseInt(temp[1]));
+
+            var timeTo = new Date();
+            var temp = $('#inputEndTime').val().split(":");
+            timeTo.setHours((parseInt(temp[0]) - 1 + 24) % 24);
+            timeTo.setMinutes(parseInt(temp[1]));
+            
+            if(formInputs.length === formelements.length && emptyEl === Boolean(false))
+            {
+                if(timeFrom < timeTo)
+                {
+                    //Call API to add time slot
+                    $.ajax({
+                    url: "../api/adminapi/createTimeSlot",
+                    type: "POST",
+                    data:
+                    {
+                        ts : arrData,
+                    },
+                    })
+                    .done(function(){
+                        clearForm();
+                        $("#modalTimeCreate").modal("toggle");
+                        alertSuccess();
+                        populateTimeTable();
+                    });
+                }
+                else
+                {
+                    alertError("Start time should be smaller than end time!");
+                }
+            }
+            else
+            {
+                alertError("Input the necessary elements!");
+            }
+        }
+        catch(err){
+            alertError("Input the necessary elements");
+        }
+    });
+
+
+    //sweet alert
+    //display error alert
+    function alertError(message)
+    {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error occured',
+            text: message,
+        })
+    }
+
+    //display success action
+    function alertSuccess()
+    {
+        Swal.fire({
+            icon: 'success',
+            title: 'Your work has been saved', 
+            showConfirmButton: false,
+            timer: 1500
+        })
+    }
+
+    }); //end of document.ready
+</script>

@@ -446,5 +446,24 @@ namespace matikApp.Controllers
             _context.SaveChanges();
             return Ok();
         }
+
+        //Time Slot Section API
+        //query to fetch the time list
+        public ActionResult<List<Timeslot>> getTimeSlots(){
+            return  _context.Timeslots.ToList();
+        }
+
+        //query to create a Time slot
+        public IActionResult createTimeSlot(Timeslot ts)
+        {
+            if(ts == null)
+            {
+                return Ok("Error Occurred");
+            }
+            _context.Timeslots.Add(ts);
+            _context.SaveChanges();
+
+            return Ok();
+        }
     }
 }
