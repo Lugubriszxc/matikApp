@@ -406,5 +406,45 @@ namespace matikApp.Controllers
             _context.SaveChanges();
             return Ok();
         }
+
+        //Subject Section API
+        //query to fetch the subject list
+        public ActionResult<List<Subject>> getSubjects(){
+            return  _context.Subjects.ToList();
+        }
+
+        //query to create a room
+        public IActionResult createSubject(Subject sub)
+        {
+            if(sub == null)
+            {
+                return Ok("Error Occurred");
+            }
+            _context.Subjects.Add(sub);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        //query to delete the selected subject
+        public IActionResult deleteSubject(int subjectId)
+        {
+            _context.Subjects.Remove(_context.Subjects.Find(subjectId));
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        //query to update the room
+        public IActionResult updateSubject(Subject sub)
+        {
+            if(sub == null)
+            {
+                return Ok("Error Occured");
+            }
+            
+            _context.Subjects.Update(sub);
+            _context.SaveChanges();
+            return Ok();
+        }
     }
 }

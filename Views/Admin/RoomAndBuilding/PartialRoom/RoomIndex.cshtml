@@ -226,7 +226,7 @@
         $('.inputRoomCapacity').val(data.roomCapacity);
 
         //for the radio button
-        if(data.roomType == "Computer Lab")
+        if(data.roomType == "Computer Laboratory")
         {
             $('.comLab').prop('checked', true);
             console.log("Computer Laboratory");
@@ -349,6 +349,10 @@
 
     //CLEAR UPON CLOSING
     $("#modalRoomCreateClose").click(function(){
+        clearForm();
+    });
+
+    $("#modalRoomUpdateClose").click(function(){
         clearForm();
     });
 

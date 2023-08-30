@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">-->
+    @* <link rel="stylesheet" href="~/lib/bootstrapdatepicker/css/bootstrap-datepicker.min.css" /> *@
 </head>
 <body class="bg-warning text-dark">
     <header>
@@ -69,8 +71,20 @@
                                 </li>
                             </ul>
                         </div>
+                        <div class="btn-group col-md-1 offset-md-3">
+                            <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                                Subject
+                            </button>
+                            <div class="position-relative">
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+                                <li class="dropdown-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="SubjectIndex">Subject Index</a>
+                                </li>
+                            </ul>
+                        </div>
                     </ul>
-                    <div class="col-md-8 offset-md-8">
+                    <div class="col-md-8 offset-md-7">
                         <span class="btn btn-dark" id="span"></span>
                         <br>
                         <span class="btn btn-dark" id="spanDate"></span>
@@ -207,6 +221,8 @@
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.print/1.6.0/jQuery.print.js"></script>
     <script src="~lib/sweetalert/dist/sweetalert.min.js"></script>
+    <!--<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>-->
+    @* <script src="~/lib/bootstrapdatepicker/js/bootstrap-datepicker.min.js"></script> *@
 
     @* <script>
         $("#menu-toggle").click(function(e) {

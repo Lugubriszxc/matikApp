@@ -1,0 +1,57 @@
+<div class="modal fade" id="modalSubjectUpdate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-warning text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Update Subject</h5>
+        <button type="button" id="modalSubjectUpdateClose" class="btn-close btn-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body subjectUpdate d-flex justify-content-center">
+       <div>
+            <div class="cardInfo" style="width: 25rem;">
+            <h4><div class="info-title" id="info-title">
+            </div></h4>
+            <strong><div class="info-Stocks"></div></strong>
+            <hr/>
+            <form id="updateSubjectForm">
+                <div class="form-group">
+                <label name="" class="control-label">Subject Code</label>
+                <input type="text" name="SubjectCode" id="inputSubjectCode" class="form-control inputSubjectCode" placeholder="Subject code" required/>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Subject Name</label>
+                <input type="text" name="SubjectName" id="inputSubjectName" class="form-control inputSubjectName" placeholder="Subject name" required/>
+            </div>
+            <div class="form-group">
+                <label name="Type" class="control-label">Type</label>
+                <br>
+                <div class="row text-center">
+                    <div class="col">
+                        <input name="RoomType" class="form-check-input comLab" type="radio" value="Computer Laboratory" id="comLab"/>
+                        <label class="form-check-label" for="flexCheckChecked">Computer Laboratory</label>
+                    </div>
+                    <div class="col">
+                        <input name="RoomType" class="form-check-input lecSubject" type="radio" value="Lecture Room" id="lecSubject"/>
+                        <label class="form-check-label" for="flexCheckChecked">Lecture Room</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Subject Units</label>
+                <input type="number" name="SubjectUnit" id="inputSubjectUnit" class="form-control col-md-5 inputSubjectUnit" placeholder="Units" required/>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Minutes Duration</label>
+                <input type="number" name="SubjectMinutes" id="inputSubjectMinutes" class="form-control col-md-5 inputSubjectMinutes" placeholder="Minutes" required/>
+            </div>
+            </form>
+            <hr/>
+      </div>
+       </div>
+      </div>
+      <div class="modal-footer">
+        <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>!-->
+        <button type="button" class="btn btn-primary" id="updateSubject">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>

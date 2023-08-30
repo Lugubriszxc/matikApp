@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="~/css/tableCss/tableStyle.css" asp-append-version="true"/>
+</head>
+<body>
+    <center><h1>Subject Index</h1></center>
+    <button type="button" title="Add Subject" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalSubjectCreate">
+    <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Add Subject
+    </button>
+
+    <br><br>
+    @Html.Partial("PartialSubjects/SubjectTable")
+    @Html.Partial("PartialSubjects/SubjectCreate")
+    @Html.Partial("PartialSubjects/SubjectUpdate")
+</body>
+</html>
+
+<script>
+    //initialize the variables here as global
+    var selectedSubjectId;
+    var selectedSubject;
+    var subjectList = {};
+
+    $(document).ready(function(){
+        //call for the functions by default
+    populateSubjectTable();
+
+    function populateSubjectTable()
+    {
+        $('#subjectData').DataTable().destroy();
+        if(!$.fn.DataTable.isDataTable('#subjectData'))
+        {
+            $('#subjectData').DataTable({
+                responsive: true,
+                ajax:
+                {
+                    url: '../api/adminapi/getSubjects',
+                    dataSrc: ''
+                },
+                columns:
+                [
+                    {data: 'subjectId'},
+                    {data: 'subjectCode'},
+                    {data: 'subjectName'},
+                    {data: 'roomType'},
+                    {
+                        data: 'subjectMinutes',
+                        render: function(data, type, row)
+                        {
+                            let subjectMinutes = row['subjectMinutes'];
+
+                            var hours = Math.floor(subjectMinutes / 60);
+                            var minutes = subjectMinutes % 60;
+
+                            //grahams
+                            if(hours == 0 && minutes > 1)
+                            {
+                                var combined = minutes + ' Minutes ';
+                            }
+                            else if(hours == 0 && minutes <= 1)
+                            {
+                                var combined = minutes + ' Minute ';
+                            }
+                            else if(hours > 1 && minutes == 0)
+                            {
+                                var combined = hours + ' Hours';
+                            }
+                            else if(hours <= 1 && minutes == 0)
+                            {
+                                var combined = hours + ' Hour';
+                            }
+                            else if(hours > 1 && minutes <= 1)
+                            {
+                                var combined = hours + ' Hours & ' + minutes + ' Minute';
+                            }
+                            else if(hours > 1 && minutes > 1)
+                            {
+                                var combined = hours + ' Hours & ' + minutes + ' Minutes';
+                            }
+                            else if(hours <= 1 && minutes <= 1){
+                                var combined = hours + ' Hour & ' + minutes + ' Minute';
+                            }
+                            else if(hours <= 1 && minutes > 1){
+                                var combined = hours + ' Hour & ' + minutes + ' Minutes';
+                            }
+
+                            return combined;
+                        }
+                    },
+                    {data: 'subjectUnit'},
+                    {   //actions
+                        data: 'subjectId',
+                        render : function (data, type, row)
+                        {
+                            return btnSubject(data);
+                        }
+                    },
+                ]
+            });
+        }
+        //get the subjects list 
+        getSubject();
+    }
+
+    //to render buttons in action index
+    function btnSubject(subjectId)
+    {
+        return "<center><a class='btn btn-success subjectUpdate' data-subjectId=" + subjectId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger subjectDelete' data-subjectId=" + subjectId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+    }
+
+    //get the data of the subject and store it to array
+    function getSubject()
+    {
+        $.ajax("../api/adminapi/getSubjects")
+        .done(function(result){
+            subjectList = result;
+        });
+    }
+
+    //this is to create a subject and save it to the database
+    $("#createSubject").click((e) => {
+        var arrData = {};
+
+        //count the number of element inside the form
+        var formelements = $("#createSubjectForm .form-group");
+
+        //getting the data from the form
+        var formInputs = $("#createSubjectForm").serializeArray();
+        formInputs.forEach(function(item){
+            arrData[item.name] = item.value;
+        });
+
+        if(formInputs.length === formelements.length)
+        {
+            //Call API to add Subject
+            $.ajax({
+                url: "../api/adminapi/createSubject",
+                type: "POST",
+                data:
+                {
+                    sub : arrData,
+                },
+            })
+            .done(function(){
+                clearForm();
+                $("#modalSubjectCreate").modal("toggle");
+                alertSuccess();
+                populateSubjectTable();
+            });
+        }else{
+            alertError("Input the necessary elements!");
+        }
+    });
+
+    //when clicking the delete button
+    $("tbody").delegate(".subjectDelete", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-subjectId");
+        if(i != null)
+        {
+            //Insert code here for delete
+            selectedSubjectId = i;
+            alertDeleteConfirmation(selectedSubjectId);
+        }
+    });
+
+    //after confirming delete, call this function
+    function deleteSubject(selectedSubjectId)
+    {
+        //AJAX delete subject
+        $.ajax({
+            url: "../api/adminapi/deleteSubject",
+            type: "POST",
+            data:
+            {
+                subjectId : selectedSubjectId,
+            },
+        }).done(function(){
+            alertSuccess();
+            populateSubjectTable();
+        })
+    }
+
+    //when clicking the update button
+    $("tbody").delegate(".subjectUpdate", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-subjectId");
+        if(i != null)
+        {
+            $("#createSubjectForm")[0].reset();
+            $("#modalSubjectUpdate").modal("toggle");
+
+            selectedSubjectId = i;
+            selectedSubject = subjectList.find(element => element.subjectId == i);
+
+            oFormObject = document.forms["updateSubjectForm"];
+            initForm(oFormObject, selectedSubject);
+        }
+    });
+
+    //to populate the selected element to the form
+    function initForm(form, data){
+        //for the subject code
+        $('.inputSubjectCode').val(data.subjectCode);
+        //for the subject name
+        $('.inputSubjectName').val(data.subjectName);
+
+        //for the radio button
+        if(data.roomType == "Computer Laboratory")
+        {
+            $('.comLab').prop('checked', true);
+            console.log("Computer Laboratory");
+        }
+        else if(data.roomType == "Lecture Room")
+        {
+            $('.lecRoom').prop('checked', true);
+            console.log("Lecture Room");
+        }
+
+        //for the subject units
+        $('.inputSubjectUnit').val(data.subjectUnit);
+        //for the subject duration
+        $('.inputSubjectMinutes').val(data.subjectMinutes);
+    }
+
+    //when clicking update
+    $("#updateSubject").click(function(){
+        alertSaveChanges();
+    });
+
+    //after comfirming the update
+    function proceedUpdate(){
+        var arrData = {};
+
+        //count the number of element inside the form
+        var formelements = $("#updateSubjectForm .form-group");
+
+        //getting the data from the form
+        var formInputs = $("#updateSubjectForm").serializeArray();
+        formInputs.forEach(function(item){
+            arrData[item.name] = item.value;
+        });
+
+        arrData.subjectId = selectedSubjectId;
+
+        if(formInputs.length === formelements.length)
+        {
+            //Call API to update Subject
+            $.ajax({
+                url: "../api/adminapi/updateSubject",
+                type: "POST",
+                data:
+                {
+                    sub : arrData,
+                },
+            })
+            .done(function(){
+                clearForm();
+                $("#modalSubjectUpdate").modal("toggle");
+                alertSuccess();
+                populateSubjectTable();
+            });
+        }else{
+            alertError("Input the necessary elements!");
+        }
+    }
+
+
+    //sweet alert
+    //display error alert
+    function alertError(message)
+    {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error occured',
+            text: message,
+        })
+    }
+
+    //display success action
+    function alertSuccess()
+    {
+        Swal.fire({
+            icon: 'success',
+            title: 'Your work has been saved', 
+            showConfirmButton: false,
+            timer: 1500
+        })
+    }
+
+    //display delete confirmation
+    function alertDeleteConfirmation(selectedSubjectId)
+    {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if(result.isConfirmed){
+                deleteSubject(selectedSubjectId);
+            }
+        })
+    }
+
+    //display update confirmation
+    function alertSaveChanges()
+    {
+        Swal.fire({
+            title: 'Do you want to save the changes?',
+            showCancelButton: true,
+            confirmButtonText: 'Save',
+        }).then((result) => {
+            if(result.isConfirmed){
+                proceedUpdate();
+            }
+        })
+    }
+
+
+    //CLEAR UPON CLOSING
+    $("#modalSubjectCreateClose").click(function(){
+        clearForm();
+    });
+
+    @* $("#modalSubjectUpdateClose").click(function(){
+        clearForm();
+    }); *@
+
+    function clearForm(){
+        $("#createSubjectForm")[0].reset();
+    }
+    
+    }); //end of document.ready
+</script>

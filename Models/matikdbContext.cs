@@ -259,10 +259,19 @@ namespace matikApp.Models
                     .HasColumnType("int(11)")
                     .HasColumnName("subjectID");
 
+                entity.Property(e => e.RoomType)
+                    .IsRequired()
+                    .HasMaxLength(250)
+                    .HasColumnName("roomType");
+
                 entity.Property(e => e.SubjectCode)
                     .IsRequired()
                     .HasMaxLength(250)
                     .HasColumnName("subjectCode");
+
+                entity.Property(e => e.SubjectMinutes)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("subjectMinutes");
 
                 entity.Property(e => e.SubjectName)
                     .IsRequired()

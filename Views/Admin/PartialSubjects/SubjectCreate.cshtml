@@ -1,0 +1,122 @@
+<div class="modal fade" id="modalSubjectCreate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-warning text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Subject</h5>
+        <button type="button" id="modalSubjectCreateClose" class="btn-close btn-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body subjectCreate d-flex justify-content-center">
+       <div>
+            <div class="cardInfo" style="width: 25rem;">
+            <h4><div class="info-title" id="info-title">
+            </div></h4>
+            <strong><div class="info-Stocks"></div></strong>
+            <hr/>
+            <form id="createSubjectForm">
+                <div class="form-group">
+                <label name="" class="control-label">Subject Code</label>
+                <input type="text" name="SubjectCode" id="inputSubjectCode" class="form-control" placeholder="Subject code" required/>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Subject Name</label>
+                <input type="text" name="SubjectName" id="inputSubjectName" class="form-control" placeholder="Subject name" required/>
+            </div>
+            <div class="form-group">
+                <label name="Type" class="control-label">Type</label>
+                <br>
+                <div class="row text-center">
+                    <div class="col">
+                        <input name="RoomType" class="form-check-input comLab" type="radio" value="Computer Laboratory" id="comLab"/>
+                        <label class="form-check-label" for="flexCheckChecked">Computer Laboratory</label>
+                    </div>
+                    <div class="col">
+                        <input name="RoomType" class="form-check-input lecSubject" type="radio" value="Lecture Room" id="lecSubject"/>
+                        <label class="form-check-label" for="flexCheckChecked">Lecture Room</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Subject Units</label>
+                <input type="number" name="SubjectUnit" id="inputSubjectUnit" class="form-control col-md-5" placeholder="Units" required/>
+            </div>
+            @* <div class="form-group">
+                <label name="" class="control-label">Date Time Picker</label>
+                <input type="time" id="time" class="form-control datetime-local" placeholder="Select DateTime"/>
+            </div>
+            <div class="form-group">
+              <select id="dayOfWeekPicker">
+              <option value="0">Sunday</option>
+              <option value="1">Monday</option>
+              <option value="2">Tuesday</option>
+              <option value="3">Wednesday</option>
+              <option value="4">Thursday</option>
+              <option value="5">Friday</option>
+              <option value="6">Saturday</option>
+              </select>
+            </div> *@
+            <div class="form-group">
+                <label name="" class="control-label">Minutes Duration</label>
+                <input type="number" name="SubjectMinutes" id="inputSubjectMinutes" class="form-control col-md-5" placeholder="Minutes" required/>
+            </div>
+            </form>
+            <hr/>
+      </div>
+       </div>
+      </div>
+      <div class="modal-footer">
+        <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>!-->
+        <button type="button" class="btn btn-primary" id="createSubject">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+   document.addEventListener('DOMContentLoaded', function () {
+    @* $('.datetime-local').datepicker({
+            format: 'dd/mm/yyyy hh:ii:ss', // Set your desired date-time format
+            autoclose: false,
+            todayBtn: true,
+            todayHighlight: true,
+        }); *@
+
+@* const customPicker = document.getElementsByClassName('datetime-local'); 
+
+ // Add an event listener to handle changes
+        customPicker.addEventListener('change', function () {
+            const selectedDateTime = customPicker.value;
+            const dateTimeParts = selectedDateTime.split('T');
+            const selectedTime = dateTimeParts[1];
+            const selectedDay = new Date(selectedDateTime).toLocaleDateString('en-US', { weekday: 'long' });
+            alert(`Selected day: ${selectedDay}\nSelected time: ${selectedTime}`);
+        }); *@
+@* 
+  const customPicker = document.getElementById('time'); // this for the time
+  const customPicker2 = document.getElementById('dayOfWeekPicker'); //this is for the day
+
+  customPicker.addEventListener('change', function (){
+    const selectedDay = parseInt(dayOfWeekPicker.value);
+    const selectedDateTime = customPicker.value;
+    const dateTimeParts = selectedDateTime.split('T');
+    const today = new Date();
+    const selectedTime = dateTimeParts[1];
+    //const selectedDay = new Date(selectedDateTime).toLocaleDateString('en-US', { weekday: 'long' });
+    //alert(`Selected day: ${selectedDay}\nSelected time: ${selectedTime}`);
+  });
+
+  customPicker2.addEventListener('change', function (){
+    const selectedDay = parseInt(dayOfWeekPicker.value);
+    const today = new Date();
+    const daysUntilSelectedDay = (selectedDay + 7 - today.getDay()) % 7;
+    alert(daysUntilSelectedDay);
+    const selectedDate = new Date(today);
+    alert(today.getDate() + daysUntilSelectedDay);
+    selectedDate.setDate(today.getDate() + daysUntilSelectedDay);
+
+    const selectedDateString = selectedDate.toDateString();
+
+    alert(selectedDateString);
+  }); *@
+
+}); 
+</script>

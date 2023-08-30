@@ -95,6 +95,26 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEluc3RydWN0b3JcSW5zdHJ1Y3RvclVwZGF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialSubjects/SubjectCreate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbFN1YmplY3RzXFN1YmplY3RDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialSubjects/SubjectIndex.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbFN1YmplY3RzXFN1YmplY3RJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialSubjects/SubjectTable.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbFN1YmplY3RzXFN1YmplY3RUYWJsZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialSubjects/SubjectTest.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbFN1YmplY3RzXFN1YmplY3RUZXN0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialSubjects/SubjectUpdate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbFN1YmplY3RzXFN1YmplY3RVcGRhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/RoomAndBuilding/PartialBuilding/BuildingCreate.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUm9vbUFuZEJ1aWxkaW5nXFBhcnRpYWxCdWlsZGluZ1xCdWlsZGluZ0NyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
