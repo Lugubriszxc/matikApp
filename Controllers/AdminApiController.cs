@@ -465,5 +465,26 @@ namespace matikApp.Controllers
 
             return Ok();
         }
+
+        //query to delete the selected time slot
+        public IActionResult deleteTimeSlot(int timeId)
+        {
+            _context.Timeslots.Remove(_context.Timeslots.Find(timeId));
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        //query to update the time slot
+        public IActionResult updateTimeSlot(Timeslot ts)
+        {
+            if(ts == null)
+            {
+                return Ok("Error Occured");
+            }
+            
+            _context.Timeslots.Update(ts);
+            _context.SaveChanges();
+            return Ok();
+        }
     }
 }

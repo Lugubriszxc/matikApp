@@ -15,6 +15,7 @@
     <br><br>
     @Html.Partial("PartialTime/TimeTable")
     @Html.Partial("PartialTime/TimeCreate")
+    @Html.Partial("PartialTime/TimeUpdate")
 </body>
 </html>
 
@@ -49,8 +50,43 @@
             [
                 {data: 'timeId'},
                 {data: 'day'},
-                {data: 'startTime'},
-                {data: 'endTime'},
+                {
+                    data: 'timeId',
+                    render : function (data, type, row)
+                    {
+                        var valHolder = row['startTime'].toString();
+                        var temp = valHolder.split(":");
+
+                        //convert 24 hour format to 12 hour format
+                        var ap = temp[0] >= 12 ? 'PM' : 'AM';
+
+                        var hours = temp[0] % 12;
+                        hours = hours ? hours : 12;
+
+                        var minutes = temp[1].toString().padStart(2, '0');
+                        var mergeTime = hours + ':' + minutes + ' ' + ap;
+                        return mergeTime;
+                    }
+                
+                },
+                {
+                    data: 'timeId',
+                    render : function(data, type, row)
+                    {
+                        var valHolder = row['endTime'].toString();
+                        var temp = valHolder.split(":");
+
+                        //convert 24 hour format to 12 hour format
+                        var ap = temp[0] >= 12 ? 'PM' : 'AM';
+
+                        var hours = temp[0] % 12;
+                        hours = hours ? hours : 12;
+
+                        var minutes = temp[1].toString().padStart(2, '0');
+                        var mergeTime = hours + ':' + minutes + ' ' + ap;
+                        return mergeTime;
+                    }
+                },
                 {
                     //this is for the time duration
                     //converting the time to get the time elapsed
@@ -118,6 +154,9 @@
                 },
             ]
         });
+
+        //get the time slots
+        getTimeSlots();
     }
 
     //to render buttons in action index
@@ -126,7 +165,16 @@
         return "<center><a class='btn btn-success timeUpdate' data-timeId=" + timeId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger timeDelete' data-timeId=" + timeId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
     }
 
-    //this is to create a subject and save it to the database
+    //get the data of the time slot and store it to array
+    function getTimeSlots()
+    {
+        $.ajax("../api/adminapi/getTimeSlots")
+        .done(function(result){
+            timeList = result;
+        });
+    }
+
+    //this is to create a time and save it to the database
     $("#createTime").click((e) => {
         try{
             var arrData = {};
@@ -165,6 +213,8 @@
             
             if(formInputs.length === formelements.length && emptyEl === Boolean(false))
             {
+                console.log('Start time : ' + timeFrom);
+            console.log('End time : ' + timeTo);
                 if(timeFrom < timeTo)
                 {
                     //Call API to add time slot
@@ -198,6 +248,135 @@
         }
     });
 
+    //when clicking the delete button
+    $("tbody").delegate(".timeDelete", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-timeId");
+        if(i != null)
+        {
+            //Insert code here for delete
+            selectedTimeId = i;
+            alertDeleteConfirmation(selectedTimeId);
+        }
+    });
+
+    //after confirming delete, call this function
+    function deleteTime(selectedTimeId)
+    {
+        //AJAX delete time
+        $.ajax({
+            url: "../api/adminapi/deleteTimeSlot",
+            type: "POST",
+            data:
+            {
+                timeId : selectedTimeId,
+            },
+        }).done(function(){
+            alertSuccess();
+            populateTimeTable();
+        })
+    }
+
+    //when clicking the update button
+    $("tbody").delegate(".timeUpdate", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-timeId");
+        if(i != null)
+        {
+            $("#createTimeForm")[0].reset();
+            $("#modalTimeUpdate").modal("toggle");
+
+            selectedTimeId = i;
+            selectedTime = timeList.find(element => element.timeId == i);
+
+            oFormObject = document.forms["updateTimeForm"];
+            initForm(oFormObject, selectedTime);
+        }
+    });
+
+    function initForm(form, data)
+    {
+        //for day selection
+        $("select").val(data.day);
+
+        //for the start time 
+        $('.inputStartTime').val(data.startTime);
+
+        //for the end time
+        $('.inputEndTime').val(data.endTime);
+    }
+
+    //when clicking update
+    $("#updateTime").click(function(){
+        alertSaveChanges();
+    });
+
+    //after confirming the update
+    function proceedUpdate()
+    {
+        var arrData = {};
+
+        //count the number of element inside the form
+        var formelements = $("#updateTimeForm .form-group");
+
+        //getting the data from the form
+        var formInputs = $("#updateTimeForm").serializeArray();
+        formInputs.forEach(function(item){
+            arrData[item.name] = item.value;
+        });
+
+        arrData.timeId = selectedTimeId;
+
+        let emptyEl = new Boolean(false);
+        if(formInputs[1].value === '' || formInputs[2].value === '')
+        {
+            emptyEl = Boolean(true);
+        }
+        else
+        {
+            emptyEl = Boolean(false);
+        }
+
+        //converting the time to compare
+        var timeFrom = new Date();
+        var temp = $('.inputStartTime').val().split(":");
+        timeFrom.setHours((parseInt(temp[0]) - 1 + 24) % 24);
+        timeFrom.setMinutes(parseInt(temp[1]));
+
+        var timeTo = new Date();
+        var temp = $('.inputEndTime').val().split(":");
+        timeTo.setHours((parseInt(temp[0]) - 1 + 24) % 24);
+        timeTo.setMinutes(parseInt(temp[1]));
+
+        if(formInputs.length === formelements.length && emptyEl === Boolean(false))
+        {
+            if(timeFrom < timeTo)
+            {
+                //Call API to update time slot
+                $.ajax({
+                url: "../api/adminapi/updateTimeSlot",
+                type: "POST",
+                data:
+                {
+                    ts : arrData,
+                },
+                })
+                .done(function(){
+                    clearForm();
+                    $("#modalTimeUpdate").modal("toggle");
+                    alertSuccess();
+                    populateTimeTable();
+                });
+            }
+            else
+            {
+                alertError("Start time should be smaller than end time!");
+            }
+        }
+        else
+        {
+            alertError("Input the necessary elements!");
+        }
+    }
+
 
     //sweet alert
     //display error alert
@@ -220,6 +399,50 @@
             timer: 1500
         })
     }
+
+    //display update confirmation
+    function alertSaveChanges()
+    {
+        Swal.fire({
+            title: 'Do you want to save the changes?',
+            showCancelButton: true,
+            confirmButtonText: 'Save',
+        }).then((result) => {
+            if(result.isConfirmed){
+                proceedUpdate();
+            }
+        })
+    }
+
+    //display delete confirmation
+    function alertDeleteConfirmation(selectedTimeId)
+    {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if(result.isConfirmed){
+                deleteTime(selectedTimeId);
+            }
+        })
+    }
+
+
+    //CLEAR UPON CLOSING
+    function clearForm(){
+        $("#createTimeForm")[0].reset();
+        //to deselect a selected option
+        $("select").val([]);
+    }
+
+    $("#modalTimeCreateClose").click(function(){
+        clearForm();
+    });
 
     }); //end of document.ready
 </script>

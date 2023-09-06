@@ -1,0 +1,47 @@
+<div class="modal fade" id="modalTimeUpdate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-warning text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Update Timeslot</h5>
+        <button type="button" id="modalTimeUpdateClose" class="btn-close btn-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body timeUpdate d-flex justify-content-center">
+       <div>
+            <div class="cardInfo" style="width: 25rem;">
+            <h4><div class="info-title" id="info-title">
+            </div></h4>
+            <strong><div class="info-Stocks"></div></strong>
+            <hr/>
+            <form id="updateTimeForm">
+            <div class="form-group">
+              <label name="" class="control-label">Select Day</label>
+              <select id="daySelect" name="Day" class="form-select">
+              <option value="Sunday">Sunday</option>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+              </select>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Start Time</label>
+                <input type="time" name="StartTime" id="inputStartTime" class="form-control inputStartTime" placeholder="Time code" required/>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">End Time</label>
+                <input type="time" name="EndTime" id="inputEndTime" class="form-control inputEndTime" placeholder="Time name" required/>
+            </div>
+            </form>
+            <hr/>
+      </div>
+       </div>
+      </div>
+      <div class="modal-footer">
+        <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>!-->
+        <button type="button" class="btn btn-primary" id="updateTime">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
