@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using matikApp.Models;
 using matikApp.ViewModel;
+using Microsoft.AspNetCore.Identity;
 
 namespace matikApp.Controllers
 {
@@ -205,8 +206,9 @@ namespace matikApp.Controllers
                 res = 
                 (
                 from d in _context.Departments
-                join i in _context.Instructors
-                on d.DepartmentId equals i.DepartmentId
+                join i in _context.Instructors on d.DepartmentId equals i.DepartmentId
+                // join up in _context.Unavailableperiods on i.InstructorId equals up.InstructorId
+                // join ts in _context.Timeslots on up.TimeId equals ts.TimeId
                 
                 select new InstructorDep
                 {
@@ -222,8 +224,9 @@ namespace matikApp.Controllers
                 res = 
                 (
                 from d in _context.Departments
-                join i in _context.Instructors
-                on d.DepartmentId equals i.DepartmentId
+                join i in _context.Instructors on d.DepartmentId equals i.DepartmentId
+                // join up in _context.Unavailableperiods on i.InstructorId equals up.InstructorId
+                // join ts in _context.Timeslots on up.TimeId equals ts.TimeId
 
                 select new InstructorDep
                 {
@@ -236,6 +239,29 @@ namespace matikApp.Controllers
                 }
                 ).ToList();
             }
+
+            return Ok(res);
+        }
+
+        public IActionResult getUnavailableTimePeriod(int instructorId)
+        {
+            var res = 
+                (
+                from i in _context.Instructors
+                join up in _context.Unavailableperiods on i.InstructorId equals up.InstructorId
+                join ts in _context.Timeslots on up.TimeId equals ts.TimeId
+                where i.InstructorId == instructorId
+                
+                select new InstructorTime
+                {
+                    UaId = up.UaId,
+                    InstructorId = i.InstructorId,
+                    TimeId = ts.TimeId,
+                    Day = ts.Day,
+                    StartTime = ts.StartTime,
+                    EndTime = ts.EndTime
+                }
+                ).ToList();
 
             return Ok(res);
         }

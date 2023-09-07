@@ -23914,6 +23914,11 @@
       "FilePath": "c:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\Views\\Shared\\_Layout.cshtml",
       "TargetPath": "Views\\Shared\\_Layout.cshtml",
       "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\Views\\Admin\\PartialInstructor\\InstructorTableUAPeriod.cshtml",
+      "TargetPath": "Views\\Admin\\PartialInstructor\\InstructorTableUAPeriod.cshtml",
+      "FileKind": "mvc"
     }
   ]
 }

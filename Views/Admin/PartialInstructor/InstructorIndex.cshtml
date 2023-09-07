@@ -22,6 +22,7 @@
     @Html.Partial("PartialInstructor/InstructorCreate")
     @Html.Partial("PartialInstructor/InstructorUpdate")
     @Html.Partial("PartialInstructor/InstructorTimePeriod")
+    @Html.Partial("PartialInstructor/InstructorTableUAPeriod")
 </body>
 </html>
 
@@ -32,13 +33,13 @@
     var selectedInstructorId;
     var selectedInstructor;
     var instructorList = {};
+    //var timeSlotList = {};
 
     $(document).ready(function(){
     //call for the functions by default
     populateDepartment();
     populateInstructorTable();
     populateTimePeriod();
-
 
     //to populate the department option 
     function populateDepartment()
@@ -98,7 +99,7 @@
                 ajax:
                 {
                     url: '../api/adminapi/getInstructorDep',
-                    dataSrc: ''
+                    dataSrc: '',
                 },
                 columns:
                 [
@@ -126,6 +127,35 @@
                         }
                     },
                     {data: 'departmentName'},
+                    @* {
+                        data: 'day',
+                        render : function(data, type, row)
+                        {
+                            var days = row['day'];
+
+                            if(Array.isArray(days))
+                            {
+                                return days.join(', ');
+                            }
+                            else
+                            {
+                                return days;
+                            }
+                        } 
+
+                         data: 'instructorId',
+                        render : function(data, type, row)
+                        {
+                            //var test = timeSlotList;
+                            //console.log(test);
+                            var test = timeSlotList;
+                            console.log(test);
+                            timeSlotList.forEach(function(hello){
+                                return hello.timeId;
+                            });
+                        } 
+                        data: 'instructorId',
+                    }, *@
                     {
                         data: 'instructorId',
                         render : function (data, type, row)
@@ -154,6 +184,15 @@
             instructorList = result;
         });
     }
+
+    @* //get the data of the unavailable time slots and store it to array
+    function getTimeSlots()
+    {
+        $.ajax("../api/adminapi/getUnavailableTimePeriod")
+        .done(function(result){
+            timeSlotList = result;
+        });
+    } *@
 
     //this is to create a instructor and save it to the database
     $("#createInstructor").click((e) => {
@@ -237,21 +276,94 @@
         })
     }
 
-    //when clicking the time period button
+    //when clicking the time period button it will open the table
     $("tbody").delegate(".unavailablePeriod", "click", function(e){
         var i = e.target.closest("a").getAttribute("data-instructorId");
         if(i != null)
         {
-            $("#createTimePeriodForm")[0].reset();
-            $("#modalTimePeriodCreate").modal("toggle");
+            // $("#createTimePeriodForm")[0].reset();
+            //$("#modalTimePeriodCreate").modal("toggle");
+
+            $("#modalUnavailablePeriodTable").modal("toggle");
 
             //to deselect a selected option
-            $("select").val([]);
+            //$("select").val([]);
 
             selectedInstructorId = i;
-            selectedInstructor = instructorList.find(element => element.instructorId == i);
+            //selectedInstructor = instructorList.find(element => element.instructorId == i);
+
+            populateUnavailableTimePeriod(selectedInstructorId);
         }
     });
+
+    function populateUnavailableTimePeriod(selectedInstructorId)
+    {
+        $('#unavailablePeriodTable').DataTable().destroy();
+        if(!$.fn.DataTable.isDataTable('#unavailablePeriodTable'))
+        {
+            $('#unavailablePeriodTable').DataTable({
+                responsive: true,
+                ajax:
+                {
+                    url: '../api/adminapi/getUnavailableTimePeriod',
+                    data:
+                    {
+                        instructorId : selectedInstructorId,
+                    },
+                    dataSrc: '',
+                },
+                columns:
+                [
+                    {data: 'uaId'},
+                    {
+                        data: 'uaId',
+                        render : function (data, type, row)
+                        {
+                            //this is for the start time
+                            var valHolder = row['startTime'].toString();
+                            var temp = valHolder.split(":");
+
+                            //convert 24 hour format to 12 hour format
+                            var ap = temp[0] >= 12 ? 'PM' : 'AM';
+
+                            var hours = temp[0] % 12;
+                            hours = hours ? hours : 12;
+
+                            var minutes = temp[1].toString().padStart(2, '0');
+                            var mergeTimeStartTime = hours + ':' + minutes + ' ' + ap;
+                            
+                            //this is for the end time
+                            var valHolder = row['endTime'].toString();
+                            var temp = valHolder.split(":");
+
+                            //convert 24 hour format to 12 hour format
+                            var ap = temp[0] >= 12 ? 'PM' : 'AM';
+
+                            var hours = temp[0] % 12;
+                            hours = hours ? hours : 12;
+
+                            var minutes = temp[1].toString().padStart(2, '0');
+                            var mergeTimeEndTime = hours + ':' + minutes + ' ' + ap;
+
+                            return row['day'] + ", " + mergeTimeStartTime + " : " + mergeTimeEndTime; 
+                        }
+                    },
+                    {
+                        data: 'uaId',
+                        render : function (data, type, row)
+                        {
+                            return btnUAPeriod(data);
+                        }
+                    },
+                ]
+            });
+        }
+    }
+
+    function btnUAPeriod(uaId)
+    {
+        return "<center><a class='btn btn-success uaPeriodUpdate' data-uaId=" + uaId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger uaPeriodDelete' data-uaId=" + uaId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+    }
 
     //after clicking update
     $("#createTimePeriod").click(function(){
