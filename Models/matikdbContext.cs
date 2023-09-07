@@ -27,6 +27,7 @@ namespace matikApp.Models
         public virtual DbSet<Section> Sections { get; set; }
         public virtual DbSet<Subject> Subjects { get; set; }
         public virtual DbSet<Timeslot> Timeslots { get; set; }
+        public virtual DbSet<Unavailableperiod> Unavailableperiods { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -309,6 +310,26 @@ namespace matikApp.Models
                     .IsRequired()
                     .HasMaxLength(250)
                     .HasColumnName("startTime");
+            });
+
+            modelBuilder.Entity<Unavailableperiod>(entity =>
+            {
+                entity.HasKey(e => e.UaId)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("unavailableperiod");
+
+                entity.Property(e => e.UaId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("uaID");
+
+                entity.Property(e => e.InstructorId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("instructorID");
+
+                entity.Property(e => e.TimeId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("timeID");
             });
 
             OnModelCreatingPartial(modelBuilder);

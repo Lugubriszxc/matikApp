@@ -486,5 +486,18 @@ namespace matikApp.Controllers
             _context.SaveChanges();
             return Ok();
         }
+
+        //query to create an unavailable time slot
+        public IActionResult createUnavailablePeriod(Unavailableperiod up)
+        {
+            if(up.InstructorId == 0 || up.InstructorId == null)
+            {
+                return Ok("Error Occurred");
+            }
+            _context.Unavailableperiods.Add(up);
+            _context.SaveChanges();
+
+            return Ok();
+        }
     }
 }

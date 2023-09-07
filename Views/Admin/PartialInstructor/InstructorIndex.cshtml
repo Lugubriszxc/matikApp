@@ -21,6 +21,7 @@
     @Html.Partial("PartialInstructor/InstructorTable")
     @Html.Partial("PartialInstructor/InstructorCreate")
     @Html.Partial("PartialInstructor/InstructorUpdate")
+    @Html.Partial("PartialInstructor/InstructorTimePeriod")
 </body>
 </html>
 
@@ -36,6 +37,7 @@
     //call for the functions by default
     populateDepartment();
     populateInstructorTable();
+    populateTimePeriod();
 
 
     //to populate the department option 
@@ -56,6 +58,30 @@
             parent[i].prepend(cloned);
           });
         }
+
+        //to deselect a selected option
+        $("select").val([]);
+        });
+    }
+
+    //to populate the time period
+    function populateTimePeriod()
+    {
+        $.ajax("../api/adminapi/getTimeSlots")
+        .done(function(result){
+        var template = document.querySelector("template#timeOptionTemplate");
+        var parent = document.querySelectorAll("#periodSelect");
+        
+        for(i = 0; i < parent.length; i++){
+          result.forEach(function (item){
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.timeId;
+            cloned.querySelector("option").innerText = item.day + ", " + item.startTime + " : " + item.endTime;
+
+            parent[i].prepend(cloned);
+          });
+        }
+
         //to deselect a selected option
         $("select").val([]);
         });
@@ -117,7 +143,7 @@
     //to render buttons in action index
     function btnInstructor(instructorId)
     {
-        return "<center><a class='btn btn-success instructorUpdate' data-instructorId=" + instructorId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger instructorDelete' data-instructorId=" + instructorId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+        return "<center> <a class='btn btn-warning unavailablePeriod' data-instructorId=" + instructorId + "><i class='fa-solid fa-business-time' style='color : #213454;'></i></a> | <a class='btn btn-success instructorUpdate' data-instructorId=" + instructorId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger instructorDelete' data-instructorId=" + instructorId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
     }
 
     //get the data of the instructor and store it to array
@@ -209,6 +235,72 @@
             alertSuccess();
             populateInstructorTable();
         })
+    }
+
+    //when clicking the time period button
+    $("tbody").delegate(".unavailablePeriod", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-instructorId");
+        if(i != null)
+        {
+            $("#createTimePeriodForm")[0].reset();
+            $("#modalTimePeriodCreate").modal("toggle");
+
+            //to deselect a selected option
+            $("select").val([]);
+
+            selectedInstructorId = i;
+            selectedInstructor = instructorList.find(element => element.instructorId == i);
+        }
+    });
+
+    //after clicking update
+    $("#createTimePeriod").click(function(){
+        addTimePeriod();
+    });
+
+    function addTimePeriod()
+    {
+        //count the number of elements inside  the form
+        var formelements = $("#createTimePeriodForm .form-group");
+
+        var arrData = {};
+        //getting the data from the form
+        var formInputs = $("#createTimePeriodForm").serializeArray();
+        formInputs.forEach(function(item){
+            arrData[item.name] = item.value;
+        });
+
+        arrData.InstructorId = selectedInstructorId;
+
+        if(formInputs.length === formelements.length)
+        {
+            console.log(arrData);
+            //Call API to add unavailable time period
+            $.ajax({
+                url: "../api/adminapi/createUnavailablePeriod",
+                type: "POST",
+                data:
+                {
+                    up : arrData,
+                },
+            })
+            .done(function(){
+                $("#createTimePeriodForm")[0].reset();
+                $("#modalTimePeriodCreate").modal("toggle");
+                alertSuccess();
+                populateInstructorTable();
+            });
+        }
+        else
+        {
+            alertError("Select a time period!");
+        }
+    }
+
+    //check the time period if it's existing then return the value with a boolean true or false
+    function checkTimePeriod()
+    {
+
     }
 
     //when clicking the update button

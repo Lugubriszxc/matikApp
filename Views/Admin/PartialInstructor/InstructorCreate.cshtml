@@ -2,6 +2,10 @@
   <option value=""></option>
 </template>
 
+<template id="timeOptionTemplate">
+  <option value=""></option>
+</template>
+
 <div class="modal fade" id="modalInstructorCreate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content bg-warning text-dark">
@@ -32,6 +36,11 @@
             <div class="form-group">
                 <label name="" class="control-label">Department</label>
                 <select id="departmentSelect" name="DepartmentId" class="form-select"></select>
+            </div>
+            <hr/>
+            <div class="form-group">
+              <label name="" class="control-label">Unavailable Period</label>
+              <select id="periodSelect" name="TimeId" class="form-select"></select>
             </div>
             </form>
             <hr/>
