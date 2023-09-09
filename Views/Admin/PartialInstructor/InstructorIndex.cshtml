@@ -33,6 +33,8 @@
     var selectedInstructorId;
     var selectedInstructor;
     var instructorList = {};
+
+    var selectedUAId;
     //var timeSlotList = {};
 
     $(document).ready(function(){
@@ -362,14 +364,51 @@
 
     function btnUAPeriod(uaId)
     {
-        return "<center><a class='btn btn-success uaPeriodUpdate' data-uaId=" + uaId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger uaPeriodDelete' data-uaId=" + uaId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+        return "<center><a class='btn btn-danger uaPeriodDelete' data-uaId=" + uaId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
     }
 
-    //after clicking update
+    //this for deleting the unavailable timeslot
+    $("tbody").delegate(".uaPeriodDelete", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-uaId");
+        if(i != null)
+        {
+            //Code here for deleting the time slot
+            selectedUAId = i;
+            alertDeleteUATime(selectedUAId);
+        }
+    });
+
+    //after confirming delete time slot, call this function
+    function deleteUATime(selectedUAId)
+    {
+        console.log(selectedUAId);
+        //AJAX delete unavailable time slot
+        $.ajax({
+            url: "../api/adminapi/deleteUATime",
+            type: "POST",
+            data:
+            {
+                uaId : selectedUAId,
+            },
+        }).done(function(){
+            alertSuccess();
+            populateInstructorTable();
+            $("#modalUnavailablePeriodTable").modal("toggle");
+            populateUnavailableTimePeriod(selectedInstructorId);
+        })
+    }
+
+    //when clicking add unavailable time period
+    $("#uPAdd").click(function(){
+        $("#modalUnavailablePeriodTable").modal("toggle");
+    });
+
+    //after clicking create time period
     $("#createTimePeriod").click(function(){
         addTimePeriod();
     });
 
+    //adding a time period to the unavailableperiod table with the instructor id
     function addTimePeriod()
     {
         //count the number of elements inside  the form
@@ -407,12 +446,6 @@
         {
             alertError("Select a time period!");
         }
-    }
-
-    //check the time period if it's existing then return the value with a boolean true or false
-    function checkTimePeriod()
-    {
-
     }
 
     //when clicking the update button
@@ -546,6 +579,24 @@
         }).then((result) => {
             if(result.isConfirmed){
                 deleteInstructor(selectedInstructorId);
+            }
+        })
+    }
+
+    //display delete confirmation of unavailable time slot
+    function alertDeleteUATime(selectedUAId)
+    {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if(result.isConfirmed){
+                deleteUATime(selectedUAId);
             }
         })
     }

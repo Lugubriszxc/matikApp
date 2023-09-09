@@ -525,5 +525,14 @@ namespace matikApp.Controllers
 
             return Ok();
         }
+
+        //query to delete an unavailable time slot
+
+        public IActionResult deleteUATime(int uaId)
+        {
+            _context.Unavailableperiods.Remove(_context.Unavailableperiods.Find(uaId));
+            _context.SaveChanges();
+            return Ok();
+        }
     }
 }
