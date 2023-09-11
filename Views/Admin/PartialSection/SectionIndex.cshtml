@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="~/css/tableCss/tableStyle.css" asp-append-version="true"/>
+</head>
+<body>
+    <center><h1>Section Index</h1></center>
+    <button type="button" title="Add Section" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalSectionCreate">
+    <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Add Section
+    </button>
+    <br><br>
+    @Html.Partial("PartialSection/SectionTable")
+    @Html.Partial("PartialSection/SectionCreate")
+    @Html.Partial("PartialSection/SectionUpdate")
+</body>
+</html>
+
+<script>
+    //initialize the variables here as global
+    var selectedSectionId;
+    var selectedSection;
+    var sectionList = {};
+    var mergedSecDepCor = {};
+
+    //to populate the table
+    var departmentList = {};
+    var courseList = {};
+
+    var seletedCourse = {};
+
+    var updateCourseLength;
+    var updateCourseId;
+
+    $(document).ready(function(){
+
+    //call for the functions by default
+    populateSectionTable();
+    populateDepartment();
+
+    function populateSectionTable()
+    {
+        $('#sectionData').DataTable().destroy();
+        if(!$.fn.DataTable.isDataTable('#sectionData'))
+        {
+            $('#sectionData').DataTable({
+                responsive: true,
+                ajax:
+                {
+                    //must be inner join
+                    url: '../api/adminapi/getSecDepCor',
+                    dataSrc: ''
+                },
+                columns:
+                [
+                    {data: 'sectionId'},
+                    {data: 'sectionName'},
+                    {data: 'yearLevel'},
+                    {data: 'departmentName'},
+                    {data: 'courseName'},
+                    {   //actions
+                        data: 'sectionId',
+                        render : function (data, type, row)
+                        {
+                            return btnSection(data);
+                        }
+                    },
+                ]
+            });
+        }
+        //get the sections list 
+        getSection();
+    }
+
+    //to render buttons in action index
+    function btnSection(sectionId)
+    {
+        return "<center><a class='btn btn-success sectionUpdate' data-sectionId=" + sectionId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger sectionDelete' data-sectionId=" + sectionId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+    }
+
+    //get the data of the section and store it to array
+    function getSection()
+    {
+        $.ajax("../api/adminapi/getSections")
+        .done(function(result){
+            sectionList = result;
+            getSecDepCor();
+        });
+    }
+
+    //get the data of the inner joined section list
+    function getSecDepCor()
+    {
+        $.ajax("../api/adminapi/getSecDepCor")
+        .done(function(result){
+            mergedSecDepCor = result;
+            getCourse();
+        });
+    }
+
+    //get the data of the course and store it to array
+    function getCourse()
+    {
+        $.ajax("../api/adminapi/getCourse")
+        .done(function(result){
+            courseList = result;
+        });
+    }
+
+    //This is used to populate the department select
+    function populateDepartment()
+    {
+        $.ajax("../api/adminapi/getDepartment")
+        .done(function(result){
+        //console.log(result);
+        var template = document.querySelector("template#departmentOptionTemplate");
+        var parent = document.querySelectorAll("#departmentSelect");
+        var parentUpdate = document.querySelectorAll("#departmentSelectUpdate");
+        
+        //for create modal
+        for(i = 0; i < parent.length; i++){
+          result.forEach(function (item){
+            //console.log(item.departmentName);
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.departmentId;
+            cloned.querySelector("option").innerText= item.departmentName;
+
+            parent[i].prepend(cloned);
+          });
+        }
+
+        //for update modal
+        for(i = 0; i < parentUpdate.length; i++){
+          result.forEach(function (item){
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.departmentId;
+            cloned.querySelector("option").innerText= item.departmentName;
+
+            parentUpdate[i].prepend(cloned);
+          });
+        }
+
+        departmentList = result;
+
+        //to deselect a selected option
+        $("select").val([]);
+        });
+    }
+
+    //get the select action when selecting an option
+    $("#departmentSelect").change(function(){
+        //after selection, get the department ID and compare it to existing course list
+
+        // Get the selected index
+        const actionSelect = document.getElementById("departmentSelect");
+        const selectedIndex = actionSelect.selectedIndex;
+        const selectedValue = actionSelect.options[selectedIndex].value;
+
+        populateCourseSelect(selectedValue, "create");
+    });
+
+    //get the select action when selecting an option (UPDATE)
+    $("#departmentSelectUpdate").change(function(){
+        //after selection, get the department ID and compare it to existing course list
+
+        // Get the selected index
+        const actionSelect = document.getElementById("departmentSelectUpdate");
+        const selectedIndex = actionSelect.selectedIndex;
+        const selectedValue = actionSelect.options[selectedIndex].value;
+
+        populateCourseSelect(selectedValue, "update");
+    });
+
+    function populateCourseSelect(selectedDepartmentId, status)
+    {
+        //using filter, it will find multiple entities with matching id
+        @* selectedCourse = courseList.filter(element => element.departmentId == selectedDepartmentId);
+        populateCourseSelect(selectedCourse); *@
+
+        if(status == "create")
+        {
+            const actionSelect = document.getElementById("courseSelect");
+            // Remove all options from the select element
+            while (actionSelect.options.length > 0) {
+                actionSelect.remove(0);
+            }
+
+            //AJAX get course select dep by department ID
+            $.ajax({
+                url: "../api/adminapi/getCourseSelectDep",
+                type: "POST",
+                data:
+                {
+                    departmentId : selectedDepartmentId,
+                },
+            }).done(function(result){
+                //template courses
+                var template = document.querySelector("template#courseOptionTemplate");
+                var parent = document.querySelectorAll("#courseSelect");
+                
+                for(i = 0; i < parent.length; i++){
+                    result.forEach(function (item){
+                    var cloned = template.content.cloneNode(true);
+                    cloned.querySelector("option").value = item.courseId;
+                    cloned.querySelector("option").innerText= item.courseName;
+
+                    parent[i].prepend(cloned);
+                    });
+                }
+
+                seletedCourse = result;
+                //to deselect a selected option of course
+                $("#courseSelect").val([]);
+            })
+        }
+        else if(status == "update")
+        {
+            const actionSelect = document.getElementById("courseSelectUpdate");
+            // Remove all options from the select element
+            while (actionSelect.options.length > 0) {
+                actionSelect.remove(0);
+            }
+
+            //AJAX get course select dep by department ID
+            $.ajax({
+                url: "../api/adminapi/getCourseSelectDep",
+                type: "POST",
+                data:
+                {
+                    departmentId : selectedDepartmentId,
+                },
+            }).done(function(result){
+                //template courses
+                var template = document.querySelector("template#courseOptionTemplate");
+                var parent = document.querySelectorAll("#courseSelectUpdate");
+                
+                for(i = 0; i < parent.length; i++){
+                    result.forEach(function (item){
+                    var cloned = template.content.cloneNode(true);
+                    cloned.querySelector("option").value = item.courseId;
+                    cloned.querySelector("option").innerText= item.courseName;
+
+                    parent[i].prepend(cloned);
+                    });
+                }
+
+                seletedCourse = result;
+                // Get the select course update
+                const selectCourse = document.getElementById("courseSelectUpdate");
+                updateCourseLength = selectCourse.options.length;
+                $("#courseSelect").val([]);
+
+                console.log(updateCourseLength);
+            })
+        }
+        else
+        {
+            //When updating for the purpose of populating the data from the database of course
+            const actionSelect = document.getElementById("courseSelectUpdate");
+            // Remove all options from the select element
+            while (actionSelect.options.length > 0) {
+                actionSelect.remove(0);
+            }
+
+            //AJAX get course select dep by department ID
+            $.ajax({
+                url: "../api/adminapi/getCourseSelectDep",
+                type: "POST",
+                data:
+                {
+                    departmentId : selectedDepartmentId,
+                },
+            }).done(function(result){
+                //template courses
+                var template = document.querySelector("template#courseOptionTemplate");
+                var parent = document.querySelectorAll("#courseSelectUpdate");
+                
+                for(i = 0; i < parent.length; i++){
+                    result.forEach(function (item){
+                    var cloned = template.content.cloneNode(true);
+                    cloned.querySelector("option").value = item.courseId;
+                    cloned.querySelector("option").innerText= item.courseName;
+
+                    parent[i].prepend(cloned);
+                    });
+                }
+
+                seletedCourse = result;
+                // Get the select course update
+                const selectCourse = document.getElementById("courseSelectUpdate");
+                updateCourseLength = selectCourse.options.length;
+
+                for(var i = 0; i < selectCourse.options.length; i++)
+                {
+                    if(selectCourse.options[i].value == updateCourseId)
+                    {
+                        selectCourse.options[i].selected = true;
+                        break;
+                    }
+                }
+            })
+        }
+
+    }
+
+    $("#modalSectionCreateClose").click(function(){
+        defaultClearForm();
+    });
+
+    $("#modalSectionUpdateClose").click(function(){
+        defaultClearForm();
+    });
+
+    function defaultClearForm()
+    {
+
+        $("#createSectionForm")[0].reset();
+        $("#updateSectionForm")[0].reset();
+        //to deselect a selected option
+        $("select").val([]);
+
+        const actionSelect = document.getElementById("courseSelect");
+        // Remove all options from the select element
+        while (actionSelect.options.length > 0) {
+            actionSelect.remove(0);
+        }
+
+        const actionSelectUpdate = document.getElementById("courseSelectUpdate");
+        while(actionSelectUpdate.options.length > 0)
+        {
+            actionSelectUpdate.remove(0);
+        }
+    }
+
+    //this is to create a section and save it to the database
+    $("#createSection").click((e) => {
+        
+        var arrData = {};
+
+        //count the number of element inside the form
+        var formelements = $("#createSectionForm .form-group");
+
+        //getting the data from the form
+        var formInputs = $("#createSectionForm").serializeArray();
+        formInputs.forEach(function(item){
+            arrData[item.name] = item.value;
+        });
+
+        if(formInputs.length === formelements.length)
+        {
+            //Call API to add Section
+            $.ajax({
+                url: "../api/adminapi/createSection",
+                type: "POST",
+                data:
+                {
+                    sec : arrData,
+                },
+            })
+            .done(function(){
+                defaultClearForm();
+                $("#modalSectionCreate").modal("toggle");
+                alertSuccess();
+                populateSectionTable();
+            });
+        }
+        else
+        {
+            alertError("Input the necessary elements!");
+        }
+
+    });
+
+    //when clicking the delete button
+    $("tbody").delegate(".sectionDelete", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-sectionId");
+        if(i != null)
+        {
+            //Insert code here for delete
+            selectedSectionId = i;
+            alertDeleteConfirmation(selectedSectionId);
+        }
+    });
+
+    //after confirming delete, call this function
+    function deleteSection(selectedSectionId)
+    {
+        //AJAX delete section
+        $.ajax({
+            url: "../api/adminapi/deleteSection",
+            type: "POST",
+            data:
+            {
+                sectionId : selectedSectionId,
+            },
+        }).done(function(){
+            alertSuccess();
+            populateSectionTable();
+        })
+    }
+
+    //when clicking the delete button
+    $("tbody").delegate(".sectionUpdate", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-sectionId");
+        if(i != null)
+        {
+            
+            $("#createSectionForm")[0].reset();
+            $("#modalSectionUpdate").modal("toggle");
+
+            selectedSectionId = i;
+            selectedSection = sectionList.find(element => element.sectionId == i);
+
+            oFormObject = document.forms["updateSectionForm"];
+            initForm(oFormObject, selectedSection);
+        }
+    });
+
+    //to populate the selected element to the form
+    function initForm(form, data){
+        //for section name
+        $('.inputSectionName').val(data.sectionName);
+        //for the year level
+        $('select, #yearLevel').val(data.yearLevel);
+        $('#departmentSelectUpdate').val(data.departmentId);
+
+        // Get the selected index
+        const actionSelect = document.getElementById("departmentSelectUpdate");
+        const selectedIndex = actionSelect.selectedIndex;
+        const selectedValue = actionSelect.options[selectedIndex].value;
+
+        //from the return value
+        populateCourseSelect(selectedValue, "populate");
+        updateCourseId = data.courseId;
+
+        //$('.courseSelectUpdate').val(data.courseId);
+        // Get the select course update
+
+        // Loop with the value of length within the options
+        @* while (selectCourse.options.length > 0) {
+            if(selectCourse.options[i].courseId === data.courseId)
+            {
+                selectCourse.options[i].selected = true;
+                break;
+            }
+        } *@
+
+        @* for(var i = 0; i < selectCourse.options.length; i++)
+        {
+            if(selectCourse.options[i].value === data.courseId)
+            {
+                selectCourse.options[i].selected = true;
+                break;
+            }
+        } *@
+    }
+
+    //when clicking the delete button
+    $("#updateSection").click((e) => {
+        alertSaveChanges();
+    });
+
+    //after confirming the update
+    function proceedUpdate()
+    {
+        var arrData = {};
+
+        //count the number of element inside the form
+        var formelements = $("#updateSectionForm .form-group");
+
+        //getting the data from the form
+        var formInputs = $("#updateSectionForm").serializeArray();
+        formInputs.forEach(function(item){
+            arrData[item.name] = item.value;
+        });
+
+        arrData.sectionId = selectedSectionId;
+
+        if(formInputs.length === formelements.length)
+        {
+            //Call API to update Section
+            $.ajax({
+                url: "../api/adminapi/updateSection",
+                type: "POST",
+                data:
+                {
+                    sec : arrData,
+                },
+            })
+            .done(function(){
+                defaultClearForm();
+                $("#modalSectionUpdate").modal("toggle");
+                alertSuccess();
+                populateSectionTable();
+            });
+        }
+        else
+        {
+            alertError("Input the necessary elements!");
+        }
+    }
+
+
+    //sweet alert
+    //display alert error
+    function alertError(message)
+    {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error occured',
+            text: message,
+        })
+    }
+
+    //display success action
+    function alertSuccess()
+    {
+        Swal.fire({
+            icon: 'success',
+            title: 'Your work has been saved', 
+            showConfirmButton: false,
+            timer: 1500
+        })
+    }
+
+    //display delete confirmation
+    function alertDeleteConfirmation(selectedSectionId)
+    {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if(result.isConfirmed){
+                deleteSection(selectedSectionId);
+            }
+        })
+    }
+
+    //display update confirmation
+    function alertSaveChanges()
+    {
+        Swal.fire({
+            title: 'Do you want to save the changes?',
+            showCancelButton: true,
+            confirmButtonText: 'Save',
+        }).then((result) => {
+            if(result.isConfirmed){
+                proceedUpdate();
+            }
+        })
+    }
+
+    }); //end of document.ready
+</script>

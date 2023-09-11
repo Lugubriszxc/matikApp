@@ -527,10 +527,87 @@ namespace matikApp.Controllers
         }
 
         //query to delete an unavailable time slot
-
         public IActionResult deleteUATime(int uaId)
         {
             _context.Unavailableperiods.Remove(_context.Unavailableperiods.Find(uaId));
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        //Class/Section API
+        //query to fetch the section list
+        public ActionResult<List<Section>> getSections(){
+            return  _context.Sections.ToList();
+        }
+
+        //query to fetch the section, department and course (inner join)
+        public IActionResult getSecDepCor()
+        {
+            try
+            {
+                var res = 
+                    (
+                    from sec in _context.Sections
+                    join dep in _context.Departments on sec.DepartmentId equals dep.DepartmentId
+                    join cor in _context.Courses on sec.CourseId equals cor.CourseId
+                    
+                    select new SecDepCor
+                    {
+                        SectionId = sec.SectionId,
+                        SectionName = sec.SectionName,
+                        YearLevel = sec.YearLevel,
+                        DepartmentId = dep.DepartmentId,
+                        CourseId = cor.CourseId,
+                        DepartmentName = dep.DepartmentName,
+                        CourseName = cor.CourseName,
+                    }
+
+                ).ToList();
+
+                return Ok(res);
+            }
+            catch
+            {
+                return Ok("Entity not found.");
+            }            
+        }
+
+        //fetch multiple courses with matching department id
+        public ActionResult<List<Course>> getCourseSelectDep(int departmentId){
+            return  _context.Courses.Where(e => e.DepartmentId == departmentId).ToList();
+        }
+
+        //query to create a Time slot
+        public IActionResult createSection(Section sec)
+        {
+            if(sec == null)
+            {
+                return Ok("Error Occurred");
+            }
+
+            _context.Sections.Add(sec);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        //query to delete an section
+        public IActionResult deleteSection(int sectionId)
+        {
+            _context.Sections.Remove(_context.Sections.Find(sectionId));
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        //query to update the section
+        public IActionResult updateSection(Section sec)
+        {
+            if(sec == null)
+            {
+                return Ok("Error Occured");
+            }
+            
+            _context.Sections.Update(sec);
             _context.SaveChanges();
             return Ok();
         }
