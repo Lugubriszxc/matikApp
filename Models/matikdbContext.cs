@@ -54,22 +54,34 @@ namespace matikApp.Models
                     .HasColumnType("int(11)")
                     .HasColumnName("a_id");
 
-                entity.Property(e => e.AClassId)
+                entity.Property(e => e.CourseId)
                     .HasColumnType("int(11)")
-                    .HasColumnName("a_classID");
+                    .HasColumnName("courseID");
 
-                entity.Property(e => e.AInstructorId)
+                entity.Property(e => e.DepartmentId)
                     .HasColumnType("int(11)")
-                    .HasColumnName("a_instructorID");
+                    .HasColumnName("departmentID");
 
-                entity.Property(e => e.ASemester)
+                entity.Property(e => e.InstructorId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("instructorID");
+
+                entity.Property(e => e.SectionId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("sectionID");
+
+                entity.Property(e => e.Semester)
                     .IsRequired()
                     .HasMaxLength(250)
-                    .HasColumnName("a_semester");
+                    .HasColumnName("semester");
 
-                entity.Property(e => e.ASubjectId)
+                entity.Property(e => e.StudentCount)
                     .HasColumnType("int(11)")
-                    .HasColumnName("a_subjectID");
+                    .HasColumnName("studentCount");
+
+                entity.Property(e => e.SubjectId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("subjectID");
             });
 
             modelBuilder.Entity<Authorization>(entity =>

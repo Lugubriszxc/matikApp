@@ -611,5 +611,12 @@ namespace matikApp.Controllers
             _context.SaveChanges();
             return Ok();
         }
+
+        //Assign Instructor API
+        //fetch multiple section with matching year level and course id
+        public ActionResult<List<Section>> getSectionYearrCor(string yearLevel, int courseId){
+            //return  _context.Courses.Where(e => e.DepartmentId == departmentId).ToList();
+            return _context.Sections.Where(e => e.YearLevel == yearLevel && e.CourseId == courseId).ToList();
+        }
     }
 }

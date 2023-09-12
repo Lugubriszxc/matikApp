@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="~/css/tableCss/tableStyle.css" asp-append-version="true"/>
+</head>
+<body>
+    <center><h1>Assign Instructor</h1></center>
+    <button type="button" title="Add AssignInstructor" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalAssignInstructorCreate">
+    <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Assign an Instructor
+    </button>
+    <br><br>
+    @Html.Partial("PartialAssignInstructor/AssignInstructorTable")
+    @Html.Partial("PartialAssignInstructor/AssignInstructorCreate")
+</body>
+</html>
+
+<script>
+    //initialize the variables here as global
+
+    $(document).ready(function(){
+    //call the functions by default
+    defaultUnselect();
+    populateDepartment();
+    checkSelectInputs();
+
+
+    //this is the checker to guide the user 
+    function checkSelectInputs()
+    {
+        const departmentSel = document.getElementById('departmentSelect');
+        const courseSel = document.getElementById('courseSelect');
+        const yearLevelSelect = document.getElementById('yearLevelPicker')
+        const sectionSelect = document.getElementById('sectionSelect')
+        const subjectSelect = document.getElementById('subjectSelect')
+        const instructorSelect = document.getElementById('instructorSelect')
+        const semesterSelect = document.getElementById('semesterSelect')
+
+        //department condition
+        if(departmentSel.selectedIndex !== -1)
+        {
+            courseSel.disabled = false;
+        }
+        else
+        {
+            courseSel.disabled = true;
+            yearLevelSelect.disabled = true;
+            sectionSelect.disabled = true;
+        }
+
+        //course condition
+        if(courseSel.selectedIndex !== -1)
+        {
+            yearLevelSelect.disabled = false;
+        }
+        else
+        {
+            yearLevelSelect.disabled = true;
+            $("#yearLevelPicker").val([]);
+        }
+
+        //year level condition
+        if(yearLevelSelect.selectedIndex !== -1)
+        {
+            sectionSelect.disabled = false;
+        }
+        else
+        {
+            sectionSelect.disabled = true;
+            $("#sectionSelect").val([]);
+        }
+    }
+
+    //used to deselect options
+    function defaultUnselect()
+    {
+        $("#yearLevelPicker").val([]);
+        $("#semesterSelect").val([]);
+    }
+
+    //this is used to populate the department select
+    function populateDepartment()
+    {
+        $.ajax("../api/adminapi/getDepartment")
+        .done(function(result){
+        //console.log(result);
+        var template = document.querySelector("template#departmentOptionTemplate");
+        var parent = document.querySelectorAll("#departmentSelect");
+        var parentUpdate = document.querySelectorAll("#departmentSelectUpdate");
+        
+        //for create modal
+        for(i = 0; i < parent.length; i++){
+          result.forEach(function (item){
+            //console.log(item.departmentName);
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.departmentId;
+            cloned.querySelector("option").innerText= item.departmentName;
+
+            parent[i].prepend(cloned);
+          });
+        }
+
+        //to deselect a selected option
+        $("select").val([]);
+        });
+    }
+
+    //get the select action when selecting an option
+    $("#departmentSelect").change(function(){
+        //after selection, get the department ID and compare it to existing course list
+
+        // Get the selected index
+        const actionSelect = document.getElementById("departmentSelect");
+        const selectedIndex = actionSelect.selectedIndex;
+        const selectedValue = actionSelect.options[selectedIndex].value;
+
+        populateCourseSelect(selectedValue);
+        checkSelectInputs();
+    });
+
+    //get the select action when selecting an option
+    $("#courseSelect").change(function(){
+        checkSelectInputs();
+    });
+
+    //to populate the course selection option
+    function populateCourseSelect(selectedDepartmentId)
+    {
+        const actionSelect = document.getElementById("courseSelect");
+        // Remove all options from the select element
+        while (actionSelect.options.length > 0) {
+            actionSelect.remove(0);
+        }
+
+        //AJAX get course select dep by department ID
+        $.ajax({
+            url: "../api/adminapi/getCourseSelectDep",
+            type: "POST",
+            data:
+            {
+                departmentId : selectedDepartmentId,
+            },
+        }).done(function(result){
+            //template courses
+            var template = document.querySelector("template#courseOptionTemplate");
+            var parent = document.querySelectorAll("#courseSelect");
+            
+            for(i = 0; i < parent.length; i++){
+                result.forEach(function (item){
+                var cloned = template.content.cloneNode(true);
+                cloned.querySelector("option").value = item.courseId;
+                cloned.querySelector("option").innerText= item.courseName;
+
+                parent[i].prepend(cloned);
+                });
+            }
+
+            seletedCourse = result;
+            //to deselect a selected option of course
+            $("#courseSelect").val([]);
+        })
+    }
+
+    //get the select action when selecting an option (year level)
+    $("#yearLevelPicker").change(function(){
+        //after selection, get the department ID and compare it to existing course list
+
+        // Get the selected index of year level
+        const actionSelect = document.getElementById("yearLevelPicker");
+        const selectedIndex = actionSelect.selectedIndex;
+        const selectedValue = actionSelect.options[selectedIndex].value;
+
+        // Get the selected index of course
+        const actionSelectCourse = document.getElementById("courseSelect");
+        const selectedIndexCourse = actionSelectCourse.selectedIndex;
+        const selectedValueCourse = actionSelectCourse.options[selectedIndexCourse].value;
+
+        populateSectionSelect(selectedValue, selectedValueCourse);
+        checkSelectInputs();
+    });
+
+    //to populate the class selection option
+    function populateSectionSelect(yearLevel, courseId)
+    {
+        const actionSelect = document.getElementById("sectionSelect");
+        // Remove all options from the select element
+        while (actionSelect.options.length > 0) {
+            actionSelect.remove(0);
+        }
+
+        //AJAX get section by year level and department and course
+        $.ajax({
+            url: "../api/adminapi/getSectionYearrCor",
+            type: "POST",
+            data:
+            {
+                yearLevel : yearLevel,
+                courseId : courseId,
+            },
+
+        }).done(function(result){
+            //template section
+            var template = document.querySelector("template#sectionOptionTemplate");
+            var parent = document.querySelectorAll("#sectionSelect");
+            
+            for(i = 0; i < parent.length; i++){
+                result.forEach(function (item){
+                var cloned = template.content.cloneNode(true);
+                cloned.querySelector("option").value = item.sectionID;
+                cloned.querySelector("option").innerText= item.sectionName;
+
+                parent[i].prepend(cloned);
+                });
+            }
+
+            seletedCourse = result;
+            //to deselect a selected option of course
+            $("#sectionSelect").val([]);
+        })
+    }
+    
+    }); //end of document.ready function
+</script>

@@ -67,6 +67,11 @@ namespace matikApp.Controllers
             return View("PartialSection/SectionIndex");
         }
 
+        public IActionResult AssignInstructorIndex()
+        {
+            return View("PartialAssignInstructor/AssignInstructorIndex");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
