@@ -618,5 +618,63 @@ namespace matikApp.Controllers
             //return  _context.Courses.Where(e => e.DepartmentId == departmentId).ToList();
             return _context.Sections.Where(e => e.YearLevel == yearLevel && e.CourseId == courseId).ToList();
         }
+
+        //query to assign an instructor
+        public IActionResult createAssignInstructor(Assignsubject asi)
+        {
+            if(asi == null)
+            {
+                return Ok("Error Occured");
+            }
+            _context.Assignsubjects.Add(asi);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        //query to fetch the department, course, section, subject and instructor (inner join)
+        public IActionResult getAllDetailAssignInstructor()
+        {
+            try
+            {
+                var res = 
+                    (
+                    from asi in _context.Assignsubjects
+                    join dep in _context.Departments on asi.DepartmentId equals dep.DepartmentId
+                    join cor in _context.Courses on asi.CourseId equals cor.CourseId
+                    join sec in _context.Sections on asi.SectionId equals sec.SectionId
+                    join ins in _context.Instructors on asi.InstructorId equals ins.InstructorId
+                    join sub in _context.Subjects on asi.SubjectId equals sub.SubjectId
+                    
+                    select new DetailedAssignInstructor
+                    {
+                        AId = asi.AId,
+                        Semester = asi.Semester,
+                        StudentCount = asi.StudentCount,
+                        DepartmentId = dep.DepartmentId,
+                        CourseId = cor.CourseId,
+                        DepartmentName = dep.DepartmentName,
+                        CourseName = cor.CourseName,
+                        SectionId = sec.SectionId,
+                        SectionName = sec.SectionName,
+                        YearLevel = sec.YearLevel,
+                        InstructorId = ins.InstructorId,
+                        InstructorFname = ins.InstructorFname,
+                        InstructorMname = ins.InstructorMname,
+                        InstructorLname = ins.InstructorLname,
+                        SubjectId = sub.SubjectId,
+                        SubjectCode = sub.SubjectCode,
+                        SubjectName = sub.SubjectName,
+                    }
+
+                ).ToList();
+
+                return Ok(res);
+            }
+            catch
+            {
+                return Ok("Entity not found.");
+            }            
+        }
     }
 }

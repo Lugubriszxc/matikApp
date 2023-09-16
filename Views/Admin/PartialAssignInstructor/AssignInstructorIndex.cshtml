@@ -19,13 +19,91 @@
 
 <script>
     //initialize the variables here as global
+    var selectedAssignInstructorId;
+    var selectedAssignInstructor;
+    var assignInstructorList = {};
 
     $(document).ready(function(){
     //call the functions by default
     defaultUnselect();
     populateDepartment();
     checkSelectInputs();
+    populateSubjects();
+    populateInstructors();
+    populateInstructorTable();
 
+
+    //to populate the assign instructor table
+    function populateInstructorTable()
+    {
+        $('#assignInstructorData').DataTable().destroy();
+        if(!$.fn.DataTable.isDataTable('#assignInstructorData'))
+        {
+            $('#assignInstructorData').DataTable({
+                responsive: true,
+                ajax:
+                {
+                    url: '../api/adminapi/getAllDetailAssignInstructor',
+                    dataSrc: '',
+                },
+                columns:
+                [
+                    {data: 'aId'},
+                    {data: 'courseName'},
+                    {data: 'sectionName'},
+                    {data: 'subjectName'},
+                    {
+                        data: 'instructorId',
+                        render : function(data, type, row)
+                        {
+                            var firstname = row['instructorFname'];
+                            var middlename = row['instructorMname'];
+                            var lastname = row['instructorLname'];
+
+                            var combined;
+
+                            if(middlename.value === "")
+                            {
+                                combined = firstname + ' ' + lastname;
+                            }
+                            else
+                            {
+                                combined = firstname + ' ' + middlename + ' ' + lastname; 
+                            }
+
+                            return combined;
+                        }
+                    },
+                    {data: 'semester'},
+                    {data: 'studentCount'},
+                    {
+                        data: 'aId',
+                        render : function (data, type, row)
+                        {
+                            return btnAssignInstructor(data);
+                        }
+                    },
+                ]
+            });
+        }
+        //get the instructors list 
+        getAssignInstructorDetails();
+    }
+
+    //to render buttons in action index
+    function btnAssignInstructor(aId)
+    {
+        return "<center><a class='btn btn-success aiUpdate' data-aId=" + aId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger aiDelete' data-aId=" + aId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+    }
+
+    //get the data of the assign instructor and store it to array
+    function getAssignInstructorDetails()
+    {
+        $.ajax("../api/adminapi/getAllDetailAssignInstructor")
+        .done(function(result){
+            assignInstructorList = result;
+        });
+    }
 
     //this is the checker to guide the user 
     function checkSelectInputs()
@@ -85,20 +163,67 @@
     {
         $.ajax("../api/adminapi/getDepartment")
         .done(function(result){
-        //console.log(result);
         var template = document.querySelector("template#departmentOptionTemplate");
         var parent = document.querySelectorAll("#departmentSelect");
-        var parentUpdate = document.querySelectorAll("#departmentSelectUpdate");
+        
+        //for create modal
+        for(i = 0; i < parent.length; i++){
+          result.forEach(function (item){
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.departmentId;
+            cloned.querySelector("option").innerText= item.departmentName;
+
+            parent[i].append(cloned);
+          });
+        }
+
+        //to deselect a selected option
+        $("select").val([]);
+        });
+    }
+
+    //this is used to populate the subject select
+    function populateSubjects()
+    {
+        $.ajax("../api/adminapi/getSubjects")
+        .done(function(result){
+        var template = document.querySelector("template#subjectOptionTemplate");
+        var parent = document.querySelectorAll("#subjectSelect");
         
         //for create modal
         for(i = 0; i < parent.length; i++){
           result.forEach(function (item){
             //console.log(item.departmentName);
             var cloned = template.content.cloneNode(true);
-            cloned.querySelector("option").value = item.departmentId;
-            cloned.querySelector("option").innerText= item.departmentName;
+            cloned.querySelector("option").value = item.subjectId;
+            cloned.querySelector("option").innerText = item.subjectCode + " | " + item.subjectName;
 
-            parent[i].prepend(cloned);
+            parent[i].append(cloned);
+          });
+        }
+
+        //to deselect a selected option
+        $("select").val([]);
+        });
+    }
+
+    //this is used to populate the instructor select
+    function populateInstructors()
+    {
+        $.ajax("../api/adminapi/getInstructors")
+        .done(function(result){
+        var template = document.querySelector("template#instructorOptionTemplate");
+        var parent = document.querySelectorAll("#instructorSelect");
+        
+        //for create modal
+        for(i = 0; i < parent.length; i++){
+          result.forEach(function (item){
+            //console.log(item.departmentName);
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.instructorId;
+            cloned.querySelector("option").innerText = item.instructorLname + ", " + item.instructorFname;
+
+            parent[i].append(cloned);
           });
         }
 
@@ -153,7 +278,7 @@
                 cloned.querySelector("option").value = item.courseId;
                 cloned.querySelector("option").innerText= item.courseName;
 
-                parent[i].prepend(cloned);
+                parent[i].append(cloned);
                 });
             }
 
@@ -208,16 +333,94 @@
             for(i = 0; i < parent.length; i++){
                 result.forEach(function (item){
                 var cloned = template.content.cloneNode(true);
-                cloned.querySelector("option").value = item.sectionID;
+                cloned.querySelector("option").value = item.sectionId;
                 cloned.querySelector("option").innerText= item.sectionName;
 
-                parent[i].prepend(cloned);
+                parent[i].append(cloned);
                 });
             }
 
             seletedCourse = result;
             //to deselect a selected option of course
             $("#sectionSelect").val([]);
+        })
+    }
+
+
+    //assign an instructor [create]
+    //createAssignInstructor
+    $("#createAssignInstructor").click((e) => {
+        var arrData = {};
+
+        //count the number of element inside the form
+        var formelements = $("#createAssignInstructorForm .form-group");
+
+        //getting the data from the form
+        var formInputs = $("#createAssignInstructorForm").serializeArray();
+        formInputs.forEach(function(item){
+            arrData[item.name] = item.value;
+        });
+
+        let emptyEl = new Boolean(false);
+        //alternative of bool
+        if(formInputs[7].value === '')
+        {
+            //if the firstname or lastname are empty then return true or 0
+            emptyEl = Boolean(true);
+        }
+        else{
+            //if the firstname and lastname are not empty then return false or 1
+            emptyEl = Boolean(false);
+        }
+
+        //if all elements are not empty
+        if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
+        {
+
+            //Call API to assign an instructor
+            $.ajax({
+                url: "../api/adminapi/createAssignInstructor",
+                type: "POST",
+                data:
+                {
+                    asi : arrData,
+                },
+            })
+            .done(function(){
+                $("#createAssignInstructorForm")[0].reset();
+                $("#modalAssignInstructorCreate").modal("toggle");
+                alertSuccess();
+                //populateInstructorTable();
+            });
+        }
+        else   
+        {
+            alertError("Input the necessary elements!");
+        }
+
+    });
+
+
+    //Sweet alert
+    //sweet alert
+    //display error alert
+    function alertError(message)
+    {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error occured',
+            text: message,
+        })
+    }
+
+    //display success action
+    function alertSuccess()
+    {
+        Swal.fire({
+            icon: 'success',
+            title: 'Your work has been saved', 
+            showConfirmButton: false,
+            timer: 1500
         })
     }
     
