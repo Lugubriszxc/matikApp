@@ -27,9 +27,10 @@
     //call the functions by default
     defaultUnselect();
     populateDepartment();
+    populateDepartmentInstructorSelect();
     checkSelectInputs();
     populateSubjects();
-    populateInstructors();
+    //populateInstructors();
     populateInstructorTable();
 
 
@@ -115,6 +116,7 @@
         const subjectSelect = document.getElementById('subjectSelect')
         const instructorSelect = document.getElementById('instructorSelect')
         const semesterSelect = document.getElementById('semesterSelect')
+        const departmentInstructorSelect = document.getElementById('departmentinSelect')
 
         //department condition
         if(departmentSel.selectedIndex !== -1)
@@ -126,6 +128,17 @@
             courseSel.disabled = true;
             yearLevelSelect.disabled = true;
             sectionSelect.disabled = true;
+        }
+
+        //department - instructor condition
+        if(departmentInstructorSelect.selectedIndex !== -1)
+        {
+            instructorSelect.disabled = false;
+        }
+        else
+        {
+            instructorSelect.disabled = true;
+            $("#instructorSelect").val([]);
         }
 
         //course condition
@@ -165,7 +178,7 @@
         .done(function(result){
         var template = document.querySelector("template#departmentOptionTemplate");
         var parent = document.querySelectorAll("#departmentSelect");
-        
+    
         //for create modal
         for(i = 0; i < parent.length; i++){
           result.forEach(function (item){
@@ -174,6 +187,30 @@
             cloned.querySelector("option").innerText= item.departmentName;
 
             parent[i].append(cloned);
+          });
+        }
+
+        //to deselect a selected option
+        $("select").val([]);
+        });
+    }
+
+    //to populate the department for filtering the instructor
+    function populateDepartmentInstructorSelect()
+    {
+        $.ajax("../api/adminapi/getDepartment")
+        .done(function(result){
+        var template = document.querySelector("template#departmentInstructorOptionTemplate");
+        var parentDep = document.querySelectorAll("#departmentinSelect");
+        
+        //for create modal
+        for(i = 0; i < parentDep.length; i++){
+          result.forEach(function (item){
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.departmentId;
+            cloned.querySelector("option").innerText= item.departmentName;
+
+            parentDep[i].append(cloned);
           });
         }
 
@@ -207,7 +244,7 @@
         });
     }
 
-    //this is used to populate the instructor select
+    @* //this is used to populate the instructor select
     function populateInstructors()
     {
         $.ajax("../api/adminapi/getInstructors")
@@ -230,7 +267,7 @@
         //to deselect a selected option
         $("select").val([]);
         });
-    }
+    } *@
 
     //get the select action when selecting an option
     $("#departmentSelect").change(function(){
@@ -244,6 +281,57 @@
         populateCourseSelect(selectedValue);
         checkSelectInputs();
     });
+
+    $("#departmentinSelect").change(function(){
+        //after selection, get the department ID and compare it to existing course list
+
+        //Get the selected index
+        const actionSelect = document.getElementById("departmentinSelect");
+        const selectedIndex = actionSelect.selectedIndex;
+        const selectedValue = actionSelect.options[selectedIndex].value;
+
+        populateInstructorList(selectedValue);
+        checkSelectInputs();
+    });
+
+    //to populate the instructor selection option based on department ID
+    function populateInstructorList(selectedDepartmentId)
+    {
+        const actionSelect = document.getElementById("instructorSelect");
+        // Remove all options from the select element
+        while (actionSelect.options.length > 0) {
+            actionSelect.remove(0);
+        }
+
+        //AJAX get instructor select dep by department ID
+        $.ajax({
+            url: "../api/adminapi/getInstructorSelectDep",
+            type: "POST",
+            data:
+            {
+                departmentId : selectedDepartmentId,
+            },
+        }).done(function(result){
+            //template instructors
+            var template = document.querySelector("template#instructorOptionTemplate");
+            var parent = document.querySelectorAll("#instructorSelect");
+            
+            for(i = 0; i < parent.length; i++){
+                result.forEach(function (item){
+                var cloned = template.content.cloneNode(true);
+                cloned.querySelector("option").value = item.instructorId;
+                cloned.querySelector("option").innerText = item.instructorLname + ", " + item.instructorFname;
+
+                parent[i].append(cloned);
+                });
+            }
+
+            //what is the use of selected course?
+            //seletedCourse = result;
+            //to deselect a selected option
+            $("#instructorSelect").val([]);
+        })
+    }
 
     //get the select action when selecting an option
     $("#courseSelect").change(function(){
@@ -355,15 +443,19 @@
         //count the number of element inside the form
         var formelements = $("#createAssignInstructorForm .form-group");
 
+        //initialize the student count
+        let studCount = document.getElementById('studCount');
+
         //getting the data from the form
         var formInputs = $("#createAssignInstructorForm").serializeArray();
         formInputs.forEach(function(item){
             arrData[item.name] = item.value;
         });
 
+
         let emptyEl = new Boolean(false);
         //alternative of bool
-        if(formInputs[7].value === '')
+        if(studCount.value === '')
         {
             //if the firstname or lastname are empty then return true or 0
             emptyEl = Boolean(true);
@@ -377,20 +469,61 @@
         if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
         {
 
-            //Call API to assign an instructor
+            //check the data if there is an identical data
             $.ajax({
-                url: "../api/adminapi/createAssignInstructor",
+                url: "../api/adminapi/checkAssignInstructorExistingData",
                 type: "POST",
                 data:
                 {
                     asi : arrData,
                 },
             })
-            .done(function(){
-                $("#createAssignInstructorForm")[0].reset();
-                $("#modalAssignInstructorCreate").modal("toggle");
-                alertSuccess();
-                //populateInstructorTable();
+            .done(function(result){
+
+                //false means there is no existing subject in the section
+                if(result == false)
+                {
+                    //check if the data has already an existing subject in the particular section
+                    $.ajax({
+                        url: "../api/adminapi/checkAssignInstructorExistingSubject",
+                        type: "POST",
+                        data:
+                        {
+                            asi : arrData,
+                        },
+                    })
+                    .done(function(result){
+                        
+                        //false means there is no existing data
+                        if(result == false)
+                        {
+                            //you can now proceed to save the data 
+                            //Call API to assign an instructor
+                            $.ajax({
+                                url: "../api/adminapi/createAssignInstructor",
+                                type: "POST",
+                                data:
+                                {
+                                    asi : arrData,
+                                },
+                            })
+                            .done(function(){
+                                $("#createAssignInstructorForm")[0].reset();
+                                $("#modalAssignInstructorCreate").modal("toggle");
+                                alertSuccess();
+                                populateInstructorTable();
+                            });
+                        }
+                        else
+                        {
+                            alertError("There is already a subject registered in this section.");
+                        }
+                    });
+                }
+                else
+                {
+                    alertError("There is an already existing data!");
+                }
             });
         }
         else   
@@ -400,8 +533,47 @@
 
     });
 
+    //upon closing the modal create
+    $("#modalAssignInstructorCreateClose").click(function(){
+        defaultClear();
+    });
 
-    //Sweet alert
+    //delete the assign instructor
+    $("tbody").delegate(".aiDelete", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-aId");
+        if(i != null)
+        {
+            //Code here for deleting the time slot
+            selectedAssignInstructorId = i;
+            alertDeleteConfirmation(selectedAssignInstructorId);
+        }
+    });
+
+    //after confirming delete
+    function deleteAssignInstructor(selectedAssignInstructorId)
+    {
+        //AJAX delete unavailable time slot
+        $.ajax({
+            url: "../api/adminapi/deleteAssignInstructor",
+            type: "POST",
+            data:
+            {
+                aId : selectedAssignInstructorId,
+            },
+        }).done(function(){
+            alertSuccess();
+            populateInstructorTable();
+        })
+    }
+
+
+    function defaultClear()
+    {
+        $("#createAssignInstructorForm")[0].reset();
+        defaultUnselect();
+        $("select").val([]);
+    }
+
     //sweet alert
     //display error alert
     function alertError(message)
@@ -423,6 +595,25 @@
             timer: 1500
         })
     }
+
+    //display delete confirmation
+    function alertDeleteConfirmation(selectedAssignInstructorId)
+    {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if(result.isConfirmed){
+                deleteAssignInstructor(selectedAssignInstructorId);
+            }
+        })
+    }
+
     
     }); //end of document.ready function
 </script>

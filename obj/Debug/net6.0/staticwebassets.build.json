@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "E5JDpuh31zeiE042OuipMfIHas3VR9mowreYypEp1IM=",
+  "Hash": "ZlihabYPQRUk2lbJDpa8KCXryhm/23QiltbUSUsp+Eo=",
   "Source": "matikApp",
   "BasePath": "_content/matikApp",
   "Mode": "Default",
@@ -49,6 +49,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\obj\\Debug\\net6.0\\scopedcss\\projectbundle\\matikApp.bundle.scp.css"
+    },
+    {
+      "Identity": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\wwwroot\\css\\formsStyle.css",
+      "SourceId": "matikApp",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\wwwroot\\",
+      "BasePath": "_content/matikApp",
+      "RelativePath": "css/formsStyle.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\formsStyle.css"
     },
     {
       "Identity": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\wwwroot\\css\\sidebar.css",

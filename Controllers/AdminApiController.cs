@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using matikApp.Models;
 using matikApp.ViewModel;
 using Microsoft.AspNetCore.Identity;
+using System.Reflection.Metadata;
 
 namespace matikApp.Controllers
 {
@@ -577,6 +578,11 @@ namespace matikApp.Controllers
             return  _context.Courses.Where(e => e.DepartmentId == departmentId).ToList();
         }
 
+        //fetch multiple instructors with matching department id
+        public ActionResult<List<Instructor>> getInstructorSelectDep(int departmentId){
+            return  _context.Instructors.Where(e => e.DepartmentId == departmentId).ToList();
+        }
+
         //query to create a Time slot
         public IActionResult createSection(Section sec)
         {
@@ -675,6 +681,54 @@ namespace matikApp.Controllers
             {
                 return Ok("Entity not found.");
             }            
+        }
+
+        //query to delete the specific assign instructor
+        public IActionResult deleteAssignInstructor(int aId)
+        {
+            _context.Assignsubjects.Remove(_context.Assignsubjects.Find(aId));
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        //check if there is any existing data for assign instructor
+        public IActionResult checkAssignInstructorExistingData(Assignsubject asi)
+        {
+            bool isThereExistingData = false;
+
+            //if the row has already the existing datas and subject then this will return true
+            var resExistingData = _context.Assignsubjects.Where(
+                element => element.SectionId == asi.SectionId
+                && element.Semester == asi.Semester
+                && element.SubjectId == asi.SubjectId
+                && element.InstructorId == asi.InstructorId).FirstOrDefault();
+
+            //it means if there is an identical data
+            if(resExistingData != null)
+            {
+                isThereExistingData = true;
+            }
+
+            return Ok(isThereExistingData);
+        }
+
+        //check if there is any existing section id and subject id for assign instructor
+        public IActionResult checkAssignInstructorExistingSubject(Assignsubject asi)
+        {
+            bool isThereExistingSubject = false;
+
+            var resExistingSubject = _context.Assignsubjects.Where(
+                element => element.SectionId == asi.SectionId
+                && element.SubjectId == asi.SubjectId
+            ).FirstOrDefault();
+
+            //it means there is an identical subject and section
+            if(resExistingSubject != null)
+            {
+                isThereExistingSubject = true;
+            }
+
+            return Ok(isThereExistingSubject);
         }
     }
 }

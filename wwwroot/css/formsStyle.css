@@ -1,0 +1,8 @@
+.form-group
+{
+    font-weight: bold;
+}
+
+hr{
+    border: 2px solid black; /* Adjust the thickness and color as needed */
+}
