@@ -22,32 +22,32 @@
   <option value=""></option>
 </template>
 
-<div class="modal fade" id="modalAssignInstructorCreate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalAssignInstructorUpdate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content bg-warning text-dark">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Assign an instructor</h5>
-        <button type="button" id="modalAssignInstructorCreateClose" class="btn-close btn-light" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" id="modalAssignInstructorUpdateClose" class="btn-close btn-light" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body assignInstructorCreate d-flex justify-content-center">
+      <div class="modal-body assignInstructorUpdate d-flex justify-content-center">
        <div>
             <div class="cardInfo" style="width: 25rem;">
             <h4><div class="info-title" id="info-title">
             </div></h4>
             <strong><div class="info-Stocks"></div></strong>
             <hr/>
-            <form id="createAssignInstructorForm">
+            <form id="updateAssignInstructorForm">
             <div class="form-group">
                 <label name="" class="control-label">Department</label>
-                <select id="departmentSelect" name="DepartmentId" class="form-select"></select>
+                <select id="departmentSelectUpdate" name="DepartmentId" class="form-select"></select>
             </div>
             <div class="form-group">
                 <label name="" class="control-label">Course</label>
-                <select id="courseSelect" name="CourseId" class="form-select"></select>
+                <select id="courseSelectUpdate" name="CourseId" class="form-select courseSelectUpdate"></select>
             </div>
             <div class="form-group">
               <label name="" class="control-label">Year Level</label>
-              <select id="yearLevelPicker" name="YearLevel" class="form-select">
+              <select id="yearLevelPickerUpdate" name="YearLevel" class="form-select">
               <option value="1st Year">1st Year</option>
               <option value="2nd Year">2nd Year</option>
               <option value="3rd Year">3rd Year</option>
@@ -56,11 +56,11 @@
             </div>
             <div class="form-group">
                 <label name="" class="control-label">Section</label>
-                <select id="sectionSelect" name="SectionId" class="form-select"></select>
+                <select id="sectionSelectUpdate" name="SectionId" class="form-select"></select>
             </div>
             <div class="form-group">
                 <label name="" class="control-label">Subject</label>
-                <select id="subjectSelect" name="SubjectId" class="form-select"></select>
+                <select id="subjectSelectUpdate" name="SubjectId" class="form-select"></select>
             </div>
             <hr/>
             <div class="form-group">
@@ -69,18 +69,18 @@
                 <div class="row text-center">
                   <div class="col">
                     <label name="" class="control-label">Department</label>
-                    <select id="departmentinSelect" name="" class="form-select departmentinSelect"></select>
+                    <select id="departmentinSelectUpdate" name="" class="form-select departmentinSelect"></select>
                   </div>
                   <div class="col">
                     <label name="" class="control-label">Instructor</label>
-                    <select id="instructorSelect" name="InstructorId" class="form-select"></select>
+                    <select id="instructorSelectUpdate" name="InstructorId" class="form-select"></select>
                   </div>
                 </div>
             </div>
             <hr/>
             <div class="form-group">
                 <label name="" class="control-label">Semester</label>
-                <select id="semesterSelect" name="Semester" class="form-select">
+                <select id="semesterSelectUpdate" name="Semester" class="form-select">
                 <option value="1st Semester">1st Semester</option>
                 <option value="2nd Semester">2nd Semester</option>
                 <option value="Summer">Summer</option>
@@ -88,7 +88,7 @@
             </div>
             <div class="form-group">
                 <label name="" class="control-label">Number of students</label>
-                <input type="number" name="StudentCount" id="studCount" class="form-control" placeholder="Enter number of students" required/>
+                <input type="number" name="StudentCount" id="studCountUpdate" class="form-control" placeholder="Enter number of students" required/>
             </div>
             </form>
             <hr/>
@@ -97,7 +97,7 @@
       </div>
       <div class="modal-footer">
         <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>!-->
-        <button type="button" class="btn btn-primary" id="createAssignInstructor">Confirm</button>
+        <button type="button" class="btn btn-primary" id="updateAssignInstructor">Confirm</button>
       </div>
     </div>
   </div>

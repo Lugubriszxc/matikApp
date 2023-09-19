@@ -18,6 +18,7 @@ namespace matikApp.ViewModel
         public string SectionName { get; set; }
         public string YearLevel { get; set; }
         public int InstructorId { get; set; }
+        public int InstructorDepartmentId {get; set;}
         public string InstructorFname { get; set; }
         public string InstructorMname { get; set; }
         public string InstructorLname { get; set; }

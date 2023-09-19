@@ -31,6 +31,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEFzc2lnbkluc3RydWN0b3JcQXNzaWduSW5zdHJ1Y3RvclRhYmxlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialAssignInstructor/AssignInstructorUpdate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEFzc2lnbkluc3RydWN0b3JcQXNzaWduSW5zdHJ1Y3RvclVwZGF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialCourse/CourseCreate.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbENvdXJzZVxDb3Vyc2VDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 

@@ -14,6 +14,7 @@
     <br><br>
     @Html.Partial("PartialAssignInstructor/AssignInstructorTable")
     @Html.Partial("PartialAssignInstructor/AssignInstructorCreate")
+    @Html.Partial("PartialAssignInstructor/AssignInstructorUpdate")
 </body>
 </html>
 
@@ -22,6 +23,27 @@
     var selectedAssignInstructorId;
     var selectedAssignInstructor;
     var assignInstructorList = {};
+
+    //course update
+    var selectedCourse = {};
+    var updateCourseLength;
+    var updateCourseId;
+
+    //section update
+    var selectedSection = {};
+    var updateSectionLength;
+    var updateSectionId;
+
+    //for the instructor
+    var insDepartmentId;
+    var updateSelectedDepartmentInsId;
+    var selectedInstructor = {};
+    var updateInstructorLength;
+    var updateInstructorId;
+
+    //because of certain situations, only the value can be read in .done function
+    //and so, in order to retain the value, it is initialized as global
+    var selectedValueCourse;
 
     $(document).ready(function(){
     //call the functions by default
@@ -75,7 +97,7 @@
                             return combined;
                         }
                     },
-                    {data: 'semester'},
+                    {data: 'yearLevel'},
                     {data: 'studentCount'},
                     {
                         data: 'aId',
@@ -109,6 +131,7 @@
     //this is the checker to guide the user 
     function checkSelectInputs()
     {
+        //modal create
         const departmentSel = document.getElementById('departmentSelect');
         const courseSel = document.getElementById('courseSelect');
         const yearLevelSelect = document.getElementById('yearLevelPicker')
@@ -117,6 +140,15 @@
         const instructorSelect = document.getElementById('instructorSelect')
         const semesterSelect = document.getElementById('semesterSelect')
         const departmentInstructorSelect = document.getElementById('departmentinSelect')
+
+        const departmentSelUpdate = document.getElementById('departmentSelectUpdate');
+        const courseSelUpdate = document.getElementById('courseSelectUpdate');
+        const yearLevelSelectUpdate = document.getElementById('yearLevelPickerUpdate')
+        const sectionSelectUpdate = document.getElementById('sectionSelectUpdate')
+        const subjectSelectUpdate = document.getElementById('subjectSelectUpdate')
+        const instructorSelectUpdate = document.getElementById('instructorSelectUpdate')
+        const semesterSelectUpdate = document.getElementById('semesterSelectUpdate')
+        const departmentInstructorSelectUpdate = document.getElementById('departmentinSelectUpdate')
 
         //department condition
         if(departmentSel.selectedIndex !== -1)
@@ -130,6 +162,19 @@
             sectionSelect.disabled = true;
         }
 
+        //department update condition
+        @* if(departmentSelUpdate.selectedIndex !== -1)
+        {
+            courseSelUpdate.disabled = false;
+        }
+        else
+        {
+            courseSelUpdate.disabled = true;
+            yearLevelSelectUpdate.disabled = true;
+            sectionSelectUpdate.disabled = true;
+        } *@
+
+
         //department - instructor condition
         if(departmentInstructorSelect.selectedIndex !== -1)
         {
@@ -140,6 +185,18 @@
             instructorSelect.disabled = true;
             $("#instructorSelect").val([]);
         }
+
+        //department - instructor update condition
+        @* if(departmentInstructorSelectUpdate.selectedIndex !== -1)
+        {
+            instructorSelectUpdate.disabled = false;
+        }
+        else
+        {
+            instructorSelectUpdate.disabled = true;
+            $("#instructorSelectUpdate").val([]);
+        } *@
+
 
         //course condition
         if(courseSel.selectedIndex !== -1)
@@ -152,6 +209,18 @@
             $("#yearLevelPicker").val([]);
         }
 
+        //course update condition
+        @* if(courseSelUpdate.selectedIndex !== -1)
+        {
+            yearLevelSelectUpdate.disabled = false;
+        }
+        else
+        {
+            yearLevelSelectUpdate.disabled = true;
+            $("#yearLevelPickerUpdate").val([]);
+        } *@
+
+
         //year level condition
         if(yearLevelSelect.selectedIndex !== -1)
         {
@@ -162,6 +231,17 @@
             sectionSelect.disabled = true;
             $("#sectionSelect").val([]);
         }
+
+        //year level update condition
+        @* if(yearLevelSelectUpdate.selectedIndex !== -1)
+        {
+            sectionSelectUpdate.disabled = false;
+        }
+        else
+        {
+            sectionSelectUpdate.disabled = true;
+            $("#sectionSelectUpdate").val([]);
+        } *@
     }
 
     //used to deselect options
@@ -169,6 +249,8 @@
     {
         $("#yearLevelPicker").val([]);
         $("#semesterSelect").val([]);
+        $("#yearLevelPickerUpdate").val([]);
+        $("#semesterSelectUpdate").val([]);
     }
 
     //this is used to populate the department select
@@ -178,6 +260,8 @@
         .done(function(result){
         var template = document.querySelector("template#departmentOptionTemplate");
         var parent = document.querySelectorAll("#departmentSelect");
+        var parentUpdate = document.querySelectorAll("#departmentSelectUpdate");
+        var parentInsDep = document.querySelectorAll("#departmentinSelectUpdate");
     
         //for create modal
         for(i = 0; i < parent.length; i++){
@@ -187,6 +271,28 @@
             cloned.querySelector("option").innerText= item.departmentName;
 
             parent[i].append(cloned);
+          });
+        }
+
+        //for update modal
+        for(i = 0; i < parentUpdate.length; i++){
+          result.forEach(function (item){
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.departmentId;
+            cloned.querySelector("option").innerText= item.departmentName;
+
+            parentUpdate[i].append(cloned);
+          });
+        }
+
+        //for update modal department for instructor
+        for(i = 0; i < parentInsDep.length; i++){
+          result.forEach(function (item){
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.departmentId;
+            cloned.querySelector("option").innerText= item.departmentName;
+
+            parentInsDep[i].append(cloned);
           });
         }
 
@@ -226,6 +332,7 @@
         .done(function(result){
         var template = document.querySelector("template#subjectOptionTemplate");
         var parent = document.querySelectorAll("#subjectSelect");
+        var parentUpdate = document.querySelectorAll("#subjectSelectUpdate");
         
         //for create modal
         for(i = 0; i < parent.length; i++){
@@ -236,6 +343,18 @@
             cloned.querySelector("option").innerText = item.subjectCode + " | " + item.subjectName;
 
             parent[i].append(cloned);
+          });
+        }
+
+        //for update modal
+        for(i = 0; i < parentUpdate.length; i++){
+          result.forEach(function (item){
+            //console.log(item.departmentName);
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.subjectId;
+            cloned.querySelector("option").innerText = item.subjectCode + " | " + item.subjectName;
+
+            parentUpdate[i].append(cloned);
           });
         }
 
@@ -278,7 +397,7 @@
         const selectedIndex = actionSelect.selectedIndex;
         const selectedValue = actionSelect.options[selectedIndex].value;
 
-        populateCourseSelect(selectedValue);
+        populateCourseSelect(selectedValue, "create");
         checkSelectInputs();
     });
 
@@ -290,91 +409,331 @@
         const selectedIndex = actionSelect.selectedIndex;
         const selectedValue = actionSelect.options[selectedIndex].value;
 
-        populateInstructorList(selectedValue);
+        populateInstructorList(selectedValue, "create");
+        checkSelectInputs();
+    });
+
+    $("#departmentinSelectUpdate").change(function(){
+        //after selection, get the department ID and compare it to existing course list
+
+        //Get the selected index
+        const actionSelect = document.getElementById("departmentinSelectUpdate");
+        const selectedIndex = actionSelect.selectedIndex;
+        const selectedValue = actionSelect.options[selectedIndex].value;
+
+        populateInstructorList(selectedValue, "update");
         checkSelectInputs();
     });
 
     //to populate the instructor selection option based on department ID
-    function populateInstructorList(selectedDepartmentId)
+    function populateInstructorList(selectedDepartmentId, status)
     {
-        const actionSelect = document.getElementById("instructorSelect");
-        // Remove all options from the select element
-        while (actionSelect.options.length > 0) {
-            actionSelect.remove(0);
-        }
-
-        //AJAX get instructor select dep by department ID
-        $.ajax({
-            url: "../api/adminapi/getInstructorSelectDep",
-            type: "POST",
-            data:
-            {
-                departmentId : selectedDepartmentId,
-            },
-        }).done(function(result){
-            //template instructors
-            var template = document.querySelector("template#instructorOptionTemplate");
-            var parent = document.querySelectorAll("#instructorSelect");
-            
-            for(i = 0; i < parent.length; i++){
-                result.forEach(function (item){
-                var cloned = template.content.cloneNode(true);
-                cloned.querySelector("option").value = item.instructorId;
-                cloned.querySelector("option").innerText = item.instructorLname + ", " + item.instructorFname;
-
-                parent[i].append(cloned);
-                });
+        if(status == "create")
+        {
+            const actionSelect = document.getElementById("instructorSelect");
+            // Remove all options from the select element
+            while (actionSelect.options.length > 0) {
+                actionSelect.remove(0);
             }
 
-            //what is the use of selected course?
-            //seletedCourse = result;
-            //to deselect a selected option
-            $("#instructorSelect").val([]);
-        })
+            //AJAX get instructor select dep by department ID
+            $.ajax({
+                url: "../api/adminapi/getInstructorSelectDep",
+                type: "POST",
+                data:
+                {
+                    departmentId : selectedDepartmentId,
+                },
+            }).done(function(result){
+                //template instructors
+                var template = document.querySelector("template#instructorOptionTemplate");
+                var parent = document.querySelectorAll("#instructorSelect");
+                
+                for(i = 0; i < parent.length; i++){
+                    result.forEach(function (item){
+                    var cloned = template.content.cloneNode(true);
+                    cloned.querySelector("option").value = item.instructorId;
+                    cloned.querySelector("option").innerText = item.instructorLname + ", " + item.instructorFname;
+
+                    parent[i].append(cloned);
+                    });
+                }
+
+                //what is the use of selected course?
+                //seletedCourse = result;
+                //to deselect a selected option
+                $("#instructorSelect").val([]);
+            })
+        }
+        else if(status == "update")
+        {
+            const actionSelect = document.getElementById("instructorSelectUpdate");
+            // Remove all options from the select element
+            while (actionSelect.options.length > 0) {
+                actionSelect.remove(0);
+            }
+
+            //AJAX get instructor select dep by department ID
+            $.ajax({
+                url: "../api/adminapi/getInstructorSelectDep",
+                type: "POST",
+                data:
+                {
+                    departmentId : selectedDepartmentId,
+                },
+            }).done(function(result){
+                //template instructors
+                var template = document.querySelector("template#instructorOptionTemplate");
+                var parent = document.querySelectorAll("#instructorSelectUpdate");
+                
+                for(i = 0; i < parent.length; i++){
+                    result.forEach(function (item){
+                    var cloned = template.content.cloneNode(true);
+                    cloned.querySelector("option").value = item.instructorId;
+                    cloned.querySelector("option").innerText = item.instructorLname + ", " + item.instructorFname;
+
+                    parent[i].append(cloned);
+                    });
+                }
+
+                //what is the use of selected course?
+                selectedInstructor = result;
+
+                //Get the select instructor update
+                const selectInstructor = document.getElementById("instructorSelectUpdate");
+                updateInstructorLength = selectInstructor.options.length;
+                $("#instructorSelectUpdate").val([]);
+            })
+        }
+        else //means to populate the data
+        {   
+            const actionSelect = document.getElementById("instructorSelectUpdate");
+            // Remove all options from the select element
+            while (actionSelect.options.length > 0) {
+                actionSelect.remove(0);
+            }
+
+            //AJAX get instructor select dep by department ID
+            $.ajax({
+                url: "../api/adminapi/getInstructorSelectDep",
+                type: "POST",
+                data:
+                {
+                    departmentId : selectedDepartmentId,
+                },
+            }).done(function(result){
+                //template instructors
+                var template = document.querySelector("template#instructorOptionTemplate");
+                var parent = document.querySelectorAll("#instructorSelectUpdate");
+                
+                for(i = 0; i < parent.length; i++){
+                    result.forEach(function (item){
+                    var cloned = template.content.cloneNode(true);
+                    cloned.querySelector("option").value = item.instructorId;
+                    cloned.querySelector("option").innerText = item.instructorLname + ", " + item.instructorFname;
+
+                    parent[i].append(cloned);
+                    });
+                }
+
+                //what is the use of selected course?
+                selectedInstructor = result;
+
+                //Get the select instructor update
+                const selectInstructor = document.getElementById("instructorSelectUpdate");
+                updateInstructorLength = selectInstructor.options.length;
+
+                for(var i = 0; i < selectInstructor.options.length; i++)
+                {
+                    if(selectInstructor.options[i].value == updateInstructorId)
+                    {
+                        selectInstructor.options[i].selected = true;
+                        break;
+                    }
+                }
+            })
+        }
     }
 
     //get the select action when selecting an option
     $("#courseSelect").change(function(){
-        checkSelectInputs();
-    });
-
-    //to populate the course selection option
-    function populateCourseSelect(selectedDepartmentId)
-    {
-        const actionSelect = document.getElementById("courseSelect");
+        $("#yearLevelPicker").val([]);
+        const actionSelect = document.getElementById("sectionSelect");
         // Remove all options from the select element
         while (actionSelect.options.length > 0) {
             actionSelect.remove(0);
         }
+        
+        checkSelectInputs();
+    });
 
-        //AJAX get course select dep by department ID
-        $.ajax({
-            url: "../api/adminapi/getCourseSelectDep",
-            type: "POST",
-            data:
-            {
-                departmentId : selectedDepartmentId,
-            },
-        }).done(function(result){
-            //template courses
-            var template = document.querySelector("template#courseOptionTemplate");
-            var parent = document.querySelectorAll("#courseSelect");
-            
-            for(i = 0; i < parent.length; i++){
-                result.forEach(function (item){
-                var cloned = template.content.cloneNode(true);
-                cloned.querySelector("option").value = item.courseId;
-                cloned.querySelector("option").innerText= item.courseName;
+    //get the select action when selecting an option (UPDATE)
+    $("#courseSelectUpdate").change(function(){
+        $("#yearLevelPickerUpdate").val([]);
+        const actionSelect = document.getElementById("sectionSelectUpdate");
+        // Remove all options from the select element
+        while (actionSelect.options.length > 0) {
+            actionSelect.remove(0);
+        }
+        
+        checkSelectInputs();
+    });
 
-                parent[i].append(cloned);
-                });
+    //to populate the course selection option
+    function populateCourseSelect(selectedDepartmentId, status)
+    {
+        if(status == "create")
+        {
+            $("#courseSelect").val([]);
+            const actionSelect = document.getElementById("courseSelect");
+            // Remove all options from the select element
+            while (actionSelect.options.length > 0) {
+                actionSelect.remove(0);
             }
 
-            seletedCourse = result;
-            //to deselect a selected option of course
-            $("#courseSelect").val([]);
-        })
+            //AJAX get course select dep by department ID
+            $.ajax({
+                url: "../api/adminapi/getCourseSelectDep",
+                type: "POST",
+                data:
+                {
+                    departmentId : selectedDepartmentId,
+                },
+            }).done(function(result){
+                //template courses
+                var template = document.querySelector("template#courseOptionTemplate");
+                var parent = document.querySelectorAll("#courseSelect");
+                
+                for(i = 0; i < parent.length; i++){
+                    result.forEach(function (item){
+                    var cloned = template.content.cloneNode(true);
+                    cloned.querySelector("option").value = item.courseId;
+                    cloned.querySelector("option").innerText= item.courseName;
+
+                    parent[i].append(cloned);
+                    });
+                }
+
+                seletedCourse = result;
+                //to deselect a selected option of course
+                $("#courseSelect").val([]);
+            })
+        }
+        else if(status == "update")
+        {
+            const actionSelect = document.getElementById("courseSelectUpdate");
+            // Remove all options from the select element
+            while (actionSelect.options.length > 0) {
+                actionSelect.remove(0);
+            }
+
+            $("#yearLevelPickerUpdate").val([]);
+
+            const actionSelectSection = document.getElementById("sectionSelectUpdate");
+            // Remove all options from the select element
+            while (actionSelectSection.options.length > 0) {
+                actionSelectSection.remove(0);
+            }
+
+            //AJAX get course select dep by department ID
+            $.ajax({
+                url: "../api/adminapi/getCourseSelectDep",
+                type: "POST",
+                data:
+                {
+                    departmentId : selectedDepartmentId,
+                },
+            }).done(function(result){
+                //template courses
+                var template = document.querySelector("template#courseOptionTemplate");
+                var parent = document.querySelectorAll("#courseSelectUpdate");
+                
+                for(i = 0; i < parent.length; i++){
+                    result.forEach(function (item){
+                    var cloned = template.content.cloneNode(true);
+                    cloned.querySelector("option").value = item.courseId;
+                    cloned.querySelector("option").innerText= item.courseName;
+
+                    parent[i].prepend(cloned);
+                    });
+                }
+
+                seletedCourse = result;
+
+                // Get the select course update
+                const selectCourse = document.getElementById("courseSelectUpdate");
+                updateCourseLength = selectCourse.options.length;
+                $("#courseSelectUpdate").val([]);
+            })
+        }
+        else //else, to populate
+        {
+            //When updating for the purpose of populating the data from the database of course
+            const actionSelect = document.getElementById("courseSelectUpdate");
+            // Remove all options from the select element
+            while (actionSelect.options.length > 0) {
+                actionSelect.remove(0);
+            }
+
+            //AJAX get course select dep by department ID
+            $.ajax({
+                url: "../api/adminapi/getCourseSelectDep",
+                type: "POST",
+                data:
+                {
+                    departmentId : selectedDepartmentId,
+                },
+            }).done(function(result){
+                //template courses
+                var template = document.querySelector("template#courseOptionTemplate");
+                var parent = document.querySelectorAll("#courseSelectUpdate");
+                
+                for(i = 0; i < parent.length; i++){
+                    result.forEach(function (item){
+                    var cloned = template.content.cloneNode(true);
+                    cloned.querySelector("option").value = item.courseId;
+                    cloned.querySelector("option").innerText= item.courseName;
+
+                    parent[i].prepend(cloned);
+                    });
+                }
+
+                seletedCourse = result;
+                // Get the select course update
+                const selectCourse = document.getElementById("courseSelectUpdate");
+                updateCourseLength = selectCourse.options.length;
+
+                for(var i = 0; i < selectCourse.options.length; i++)
+                {
+                    if(selectCourse.options[i].value == updateCourseId)
+                    {
+                        selectCourse.options[i].selected = true;
+                        break;
+                    }
+                }
+
+                //Get the selected index of the course id
+                const actionSelectCourse = document.getElementById("courseSelectUpdate");
+                const selectedIndexCourse = actionSelectCourse.selectedIndex;
+
+                //insert the value to the global
+                selectedValueCourse = actionSelectCourse.options[selectedIndexCourse].value;
+            })
+        }
     }
+
+    //get the select action when selecting an options (UPDATE)
+    $("#departmentSelectUpdate").change(function(){
+        //after selection, get the department ID and compare it to existing course list
+
+        // Get the selected index
+        const actionSelect = document.getElementById("departmentSelectUpdate");
+        const selectedIndex = actionSelect.selectedIndex;
+        const selectedValue = actionSelect.options[selectedIndex].value;
+
+        populateCourseSelect(selectedValue, "update");
+        checkSelectInputs();
+    });
 
     //get the select action when selecting an option (year level)
     $("#yearLevelPicker").change(function(){
@@ -390,48 +749,157 @@
         const selectedIndexCourse = actionSelectCourse.selectedIndex;
         const selectedValueCourse = actionSelectCourse.options[selectedIndexCourse].value;
 
-        populateSectionSelect(selectedValue, selectedValueCourse);
+        populateSectionSelect(selectedValue, selectedValueCourse, "create");
+        checkSelectInputs();
+    });
+
+    //get the select action when selecting an options (UPDATE for year level)
+    $("#yearLevelPickerUpdate").change(function(){
+        //after selection, get the department ID and compare it to existing course list
+
+        // Get the selected index of year level
+        const actionSelect = document.getElementById("yearLevelPickerUpdate");
+        const selectedIndex = actionSelect.selectedIndex;
+        const selectedValue = actionSelect.options[selectedIndex].value;
+
+        // Get the selected index of course
+        const actionSelectCourse = document.getElementById("courseSelectUpdate");
+        const selectedIndexCourse = actionSelectCourse.selectedIndex;
+        const selectedValueCourse = actionSelectCourse.options[selectedIndexCourse].value;
+
+        populateSectionSelect(selectedValue, selectedValueCourse, "update");
         checkSelectInputs();
     });
 
     //to populate the class selection option
-    function populateSectionSelect(yearLevel, courseId)
+    function populateSectionSelect(yearLevel, courseId, status)
     {
-        const actionSelect = document.getElementById("sectionSelect");
-        // Remove all options from the select element
-        while (actionSelect.options.length > 0) {
-            actionSelect.remove(0);
-        }
-
-        //AJAX get section by year level and department and course
-        $.ajax({
-            url: "../api/adminapi/getSectionYearrCor",
-            type: "POST",
-            data:
-            {
-                yearLevel : yearLevel,
-                courseId : courseId,
-            },
-
-        }).done(function(result){
-            //template section
-            var template = document.querySelector("template#sectionOptionTemplate");
-            var parent = document.querySelectorAll("#sectionSelect");
-            
-            for(i = 0; i < parent.length; i++){
-                result.forEach(function (item){
-                var cloned = template.content.cloneNode(true);
-                cloned.querySelector("option").value = item.sectionId;
-                cloned.querySelector("option").innerText= item.sectionName;
-
-                parent[i].append(cloned);
-                });
+        if(status == "create")
+        {
+            const actionSelect = document.getElementById("sectionSelect");
+            // Remove all options from the select element
+            while (actionSelect.options.length > 0) {
+                actionSelect.remove(0);
             }
 
-            seletedCourse = result;
-            //to deselect a selected option of course
-            $("#sectionSelect").val([]);
-        })
+            //AJAX get section by year level and department and course
+            $.ajax({
+                url: "../api/adminapi/getSectionYearrCor",
+                type: "POST",
+                data:
+                {
+                    yearLevel : yearLevel,
+                    courseId : courseId,
+                },
+
+            }).done(function(result){
+                //template section
+                var template = document.querySelector("template#sectionOptionTemplate");
+                var parent = document.querySelectorAll("#sectionSelect");
+                
+                for(i = 0; i < parent.length; i++){
+                    result.forEach(function (item){
+                    var cloned = template.content.cloneNode(true);
+                    cloned.querySelector("option").value = item.sectionId;
+                    cloned.querySelector("option").innerText= item.sectionName;
+
+                    parent[i].append(cloned);
+                    });
+                }
+
+                seletedCourse = result;
+                //to deselect a selected option of course
+                $("#sectionSelect").val([]);
+            })
+        }
+        else if(status == "update")
+        {
+            const actionSelect = document.getElementById("sectionSelectUpdate");
+            // Remove all options from the select element
+            while (actionSelect.options.length > 0) {
+                actionSelect.remove(0);
+            }
+
+            //AJAX get section by year level and department and course
+            $.ajax({
+                url: "../api/adminapi/getSectionYearrCor",
+                type: "POST",
+                data:
+                {
+                    yearLevel : yearLevel,
+                    courseId : updateCourseId,
+                },
+
+            }).done(function(result){
+                //template section
+                var template = document.querySelector("template#sectionOptionTemplate");
+                var parent = document.querySelectorAll("#sectionSelectUpdate");
+                
+                for(i = 0; i < parent.length; i++){
+                    result.forEach(function (item){
+                    var cloned = template.content.cloneNode(true);
+                    cloned.querySelector("option").value = item.sectionId;
+                    cloned.querySelector("option").innerText= item.sectionName;
+
+                    parent[i].append(cloned);
+                    });
+                }
+
+                seletedCourse = result;
+                // Get the select section update
+                const selectSection = document.getElementById("sectionSelectUpdate");
+                updateSectionLength = selectSection.options.length;
+                $("#sectionSelectUpdate").val([]);
+            })
+        }
+        else
+        {
+            const actionSelect = document.getElementById("sectionSelectUpdate");
+            // Remove all options from the select element
+            while (actionSelect.options.length > 0) {
+                actionSelect.remove(0);
+            }
+
+            //AJAX get section by year level and department and course
+            $.ajax({
+                url: "../api/adminapi/getSectionYearrCor",
+                type: "POST",
+                data:
+                {
+                    yearLevel : yearLevel,
+                    courseId : updateCourseId,
+                },
+
+            }).done(function(result){
+                //template section
+                var template = document.querySelector("template#sectionOptionTemplate");
+                var parent = document.querySelectorAll("#sectionSelectUpdate");
+                
+                for(i = 0; i < parent.length; i++){
+                    result.forEach(function (item){
+                    var cloned = template.content.cloneNode(true);
+                    cloned.querySelector("option").value = item.sectionId;
+                    cloned.querySelector("option").innerText= item.sectionName;
+
+                    parent[i].append(cloned);
+                    });
+                }
+
+                seletedCourse = result;
+                // Get the select section update
+                const selectSection = document.getElementById("sectionSelectUpdate");
+                updateSectionLength = selectSection.options.length;
+
+                for(var i = 0; i < selectSection.options.length; i++)
+                {
+                    if(selectSection.options[i].value == updateSectionId)
+                    {
+                        selectSection.options[i].selected = true;
+                        break;
+                    }
+                }
+            })
+        }
     }
 
 
@@ -457,11 +925,11 @@
         //alternative of bool
         if(studCount.value === '')
         {
-            //if the firstname or lastname are empty then return true or 0
+            //if the student count is empty return true 
             emptyEl = Boolean(true);
         }
         else{
-            //if the firstname and lastname are not empty then return false or 1
+            //if the student count is not empty then return false
             emptyEl = Boolean(false);
         }
 
@@ -533,6 +1001,109 @@
 
     });
 
+    //when clicking the update button
+    $("#updateAssignInstructor").click((e) => {
+        alertSaveChanges();
+    });
+
+    function proceedUpdate()
+    {
+        var arrData = {};
+
+        //count the number of element inside the form
+        var formelements = $("#updateAssignInstructorForm .form-group");
+
+        //initialize the student count
+        let studCount = document.getElementById('studCountUpdate');
+
+        //getting the data from the form
+        var formInputs = $("#updateAssignInstructorForm").serializeArray();
+        formInputs.forEach(function(item){
+            arrData[item.name] = item.value;
+        });
+
+        arrData.aId = selectedAssignInstructorId;
+
+
+        let emptyEl = new Boolean(false);
+        //alternative of bool
+        if(studCount.value === '')
+        {
+            //if the student count is empty then return true
+            emptyEl = Boolean(true);
+        }
+        else{
+            //if the student count is not empty then return false
+            emptyEl = Boolean(false);
+        }
+
+        //if all elements are not empty
+        if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
+        {
+
+            //check the data if there is an identical data
+            $.ajax({
+                url: "../api/adminapi/checkAssignInstructorExistingData",
+                type: "POST",
+                data:
+                {
+                    asi : arrData,
+                },
+            })
+            .done(function(result){
+                //false means there is no existing subject in the section
+                if(result == false)
+                {
+                    //check if the data has already an existing subject in the particular section
+                    $.ajax({
+                        url: "../api/adminapi/checkAssignInstructorExistingSubject",
+                        type: "POST",
+                        data:
+                        {
+                            asi : arrData,
+                        },
+                    })
+                    .done(function(result){
+                        
+                        //false means there is no existing data
+                        if(result == false)
+                        {
+                            //you can now proceed to save the data 
+                            //Call API to assign an instructor
+                            $.ajax({
+                                url: "../api/adminapi/updateAssignInstructor",
+                                type: "POST",
+                                data:
+                                {
+                                    asi : arrData,
+                                },
+                            })
+                            .done(function(){
+                                $("#createAssignInstructorForm")[0].reset();
+                                $("#updateAssignInstructorForm")[0].reset();
+                                $("#modalAssignInstructorUpdate").modal("toggle");
+                                alertSuccess();
+                                populateInstructorTable();
+                            });
+                        }
+                        else
+                        {
+                            alertError("There is already a subject registered in this section.");
+                        }
+                    });
+                }
+                else
+                {
+                    alertError("There is an already existing data!");
+                }
+            });
+        }
+        else   
+        {
+            alertError("Input the necessary elements!");
+        }
+    }
+
     //upon closing the modal create
     $("#modalAssignInstructorCreateClose").click(function(){
         defaultClear();
@@ -566,10 +1137,81 @@
         })
     }
 
+    //when clicking the update button
+    $("tbody").delegate(".aiUpdate", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-aId");
+        if(i != null)
+        {
+            //defaultClear();
+            $("#createAssignInstructorForm")[0].reset();
+            $("#modalAssignInstructorUpdate").modal("toggle");
+
+            selectedAssignInstructorId = i;
+            selectedAssignInstructor = assignInstructorList.find(element => element.aId == i);
+
+            oFormObject = document.forms["updateAssignInstructorForm"];
+            initForm(oFormObject, selectedAssignInstructor);
+        }
+    });
+
+    
+    //to populate the selected element to the form
+    function initForm(form, data)
+    {
+        //for the department
+        $('#departmentSelectUpdate').val(data.departmentId);
+
+        // Get the selected index
+        const actionSelect = document.getElementById('departmentSelectUpdate');
+        const selectedIndex = actionSelect.selectedIndex;
+        const selectedValue = actionSelect.options[selectedIndex].value;
+
+        //populate the data of the course
+        populateCourseSelect(selectedValue, "populate");
+
+        //this updateCourseId is needed
+        updateCourseId = data.courseId;
+
+        //this time is for the year and section
+        $('#yearLevelPickerUpdate').val(data.yearLevel);
+
+        //Get the selected index of the year level
+        const actionSelectYear = document.getElementById('yearLevelPickerUpdate'); 
+        const selectedIndexYear = actionSelectYear.selectedIndex;
+        const selectedValueYear = actionSelectYear.options[selectedIndexYear].value;
+
+        //populate the data of the section
+        populateSectionSelect(selectedValueYear, updateCourseId, "populate");
+        updateSectionId = data.sectionId;
+
+        //subject
+        $('#subjectSelectUpdate').val(data.subjectId);
+
+        //semester
+        $('#semesterSelectUpdate').val(data.semester);
+
+        //number of students
+        $('#studCountUpdate').val(data.studentCount);
+
+        //for the instructor : the goal is to get the department id of the particular instructor
+        //the data of the department of the instructor is already stored when doing the inner join
+
+        $('#departmentinSelectUpdate').val(data.instructorDepartmentId);
+
+        //Get the selected index of the department for instructor
+        const actionSelectDepIn = document.getElementById("departmentinSelectUpdate");
+        const selectedIndexDepIn = actionSelectDepIn.selectedIndex;
+        const selectedValueDepIn = actionSelectDepIn.options[selectedIndexDepIn].value;
+
+        populateInstructorList(selectedValueDepIn, "populate");
+        updateInstructorId = data.instructorId;
+    }
+
 
     function defaultClear()
     {
         $("#createAssignInstructorForm")[0].reset();
+        $("#updateAssignInstructorForm")[0].reset();
         defaultUnselect();
         $("select").val([]);
     }
@@ -610,6 +1252,20 @@
         }).then((result) => {
             if(result.isConfirmed){
                 deleteAssignInstructor(selectedAssignInstructorId);
+            }
+        })
+    }
+
+    //display update confirmation
+    function alertSaveChanges()
+    {
+        Swal.fire({
+            title: 'Do you want to save the changes?',
+            showCancelButton: true,
+            confirmButtonText: 'Save',
+        }).then((result) => {
+            if(result.isConfirmed){
+                proceedUpdate();
             }
         })
     }

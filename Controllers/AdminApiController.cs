@@ -638,6 +638,19 @@ namespace matikApp.Controllers
             return Ok();
         }
 
+        //query to update an assigned instructor and subject
+        public IActionResult updateAssignInstructor(Assignsubject asi)
+        {
+            if(asi == null)
+            {
+                return Ok("Error Occured");
+            }
+            
+            _context.Assignsubjects.Update(asi);
+            _context.SaveChanges();
+            return Ok();
+        }
+
         //query to fetch the department, course, section, subject and instructor (inner join)
         public IActionResult getAllDetailAssignInstructor()
         {
@@ -665,6 +678,7 @@ namespace matikApp.Controllers
                         SectionName = sec.SectionName,
                         YearLevel = sec.YearLevel,
                         InstructorId = ins.InstructorId,
+                        InstructorDepartmentId = ins.DepartmentId,
                         InstructorFname = ins.InstructorFname,
                         InstructorMname = ins.InstructorMname,
                         InstructorLname = ins.InstructorLname,
