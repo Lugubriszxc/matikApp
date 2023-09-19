@@ -723,7 +723,7 @@ namespace matikApp.Controllers
                 isThereExistingData = true;
             }
 
-            return Ok(isThereExistingData);
+            return Ok(resExistingData);
         }
 
         //check if there is any existing section id and subject id for assign instructor
@@ -742,7 +742,7 @@ namespace matikApp.Controllers
                 isThereExistingSubject = true;
             }
 
-            return Ok(isThereExistingSubject);
+            return Ok(resExistingSubject);
         }
     }
 }

@@ -827,7 +827,7 @@
                 data:
                 {
                     yearLevel : yearLevel,
-                    courseId : updateCourseId,
+                    courseId : courseId,
                 },
 
             }).done(function(result){
@@ -949,7 +949,7 @@
             .done(function(result){
 
                 //false means there is no existing subject in the section
-                if(result == false)
+                if(result == null)
                 {
                     //check if the data has already an existing subject in the particular section
                     $.ajax({
@@ -963,7 +963,7 @@
                     .done(function(result){
                         
                         //false means there is no existing data
-                        if(result == false)
+                        if(result == null)
                         {
                             //you can now proceed to save the data 
                             //Call API to assign an instructor
@@ -1010,6 +1010,12 @@
     {
         var arrData = {};
 
+        //GET YOUR ORIGINAL DATA FROM THE SELECTED CELL
+        var oClassID = selectedAssignInstructor.sectionId;
+        var oSemester = selectedAssignInstructor.semester;
+        var oSubjectID = selectedAssignInstructor.subjectId;
+        var oInstructorID = selectedAssignInstructor.instructorId;
+
         //count the number of element inside the form
         var formelements = $("#updateAssignInstructorForm .form-group");
 
@@ -1052,7 +1058,7 @@
             })
             .done(function(result){
                 //false means there is no existing subject in the section
-                if(result == false)
+                if(result == null)
                 {
                     //check if the data has already an existing subject in the particular section
                     $.ajax({
@@ -1064,11 +1070,9 @@
                         },
                     })
                     .done(function(result){
-                        
-                        //false means there is no existing data
-                        if(result == false)
+                        if(result == null)
                         {
-                            //you can now proceed to save the data 
+                            //If there's none, then you're free to proceed
                             //Call API to assign an instructor
                             $.ajax({
                                 url: "../api/adminapi/updateAssignInstructor",
@@ -1088,13 +1092,107 @@
                         }
                         else
                         {
-                            alertError("There is already a subject registered in this section.");
+                            if(oClassID == result.sectionId && oSubjectID == result.subjectId)
+                            {
+                                //If it's because of the selected cell, you can proceed to update
+                                //Call API to assign an instructor
+                                $.ajax({
+                                    url: "../api/adminapi/updateAssignInstructor",
+                                    type: "POST",
+                                    data:
+                                    {
+                                        asi : arrData,
+                                    },
+                                })
+                                .done(function(){
+                                    $("#createAssignInstructorForm")[0].reset();
+                                    $("#updateAssignInstructorForm")[0].reset();
+                                    $("#modalAssignInstructorUpdate").modal("toggle");
+                                    alertSuccess();
+                                    populateInstructorTable();
+                                });
+                            }
+                            else
+                            {
+                                alertError("There is already a subject registered in this section.");
+                            }
                         }
                     });
                 }
                 else
                 {
-                    alertError("There is an already existing data!");
+                    //alertError("There is an already existing data!");
+                    //If there is an existing data, check if it's because of your selected cell
+
+                    if(oClassID == result.sectionId && oSemester == result.semester && oSubjectID == result.subjectId && oInstructorID == result.instructorId)
+                    {
+                        //If it's because of the selected cell
+                        //check if the data has already an existing subject in the particular section
+                        $.ajax({
+                            url: "../api/adminapi/checkAssignInstructorExistingSubject",
+                            type: "POST",
+                            data:
+                            {
+                                asi : arrData,
+                            },
+                        })
+                        .done(function(result){
+                            
+                            //false means there is no existing data
+                            if(result == null)
+                            {
+                                //you can now proceed to save the data 
+                                //Call API to assign an instructor
+                                $.ajax({
+                                    url: "../api/adminapi/updateAssignInstructor",
+                                    type: "POST",
+                                    data:
+                                    {
+                                        asi : arrData,
+                                    },
+                                })
+                                .done(function(){
+                                    $("#createAssignInstructorForm")[0].reset();
+                                    $("#updateAssignInstructorForm")[0].reset();
+                                    $("#modalAssignInstructorUpdate").modal("toggle");
+                                    alertSuccess();
+                                    populateInstructorTable();
+                                });
+                            }
+                            else
+                            {
+                                //If there's an existing subject, check if it's because of the selected cell
+                                if(oClassID == result.sectionId && oSubjectID == result.subjectId)
+                                {
+                                    //If it's because of the selected cell, you can proceed to update
+                                    //Call API to assign an instructor
+                                    $.ajax({
+                                        url: "../api/adminapi/updateAssignInstructor",
+                                        type: "POST",
+                                        data:
+                                        {
+                                            asi : arrData,
+                                        },
+                                    })
+                                    .done(function(){
+                                        $("#createAssignInstructorForm")[0].reset();
+                                        $("#updateAssignInstructorForm")[0].reset();
+                                        $("#modalAssignInstructorUpdate").modal("toggle");
+                                        alertSuccess();
+                                        populateInstructorTable();
+                                    });
+                                }
+                                else
+                                {
+                                    alertError("There is already a subject registered in this section.");
+                                }
+                            }
+                        });
+                    }
+                    else
+                    {
+                        alertError("There is an already existing data!");
+                    }
                 }
             });
         }
