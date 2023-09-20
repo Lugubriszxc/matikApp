@@ -1,6 +1,6 @@
 <center><h1>Department</h1></center>
 
-<button type="button" title="Create Department" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalDepartmentCreate">
+<button type="button" title="Create Department" id="createDepartmentbtn" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalDepartmentCreate">
   <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Create Department
 </button>
 
@@ -237,6 +237,23 @@
       alertDeleteConfirmation();
     }
   });
+
+  //upon closing the modal create
+  $("#modalDepartmentCreateClose").click(function(){
+    defaultClear();
+  });
+
+  //upon opening of create modal
+  $("#createDepartmentbtn").click((e) => {
+    defaultClear();
+  });
+
+  function defaultClear()
+  {
+    $("#createDeanForm")[0].reset();
+    $("#updateDeanForm")[0].reset();
+    $("select").val([]);
+  }
 
   function alertDeleteConfirmation()
   {

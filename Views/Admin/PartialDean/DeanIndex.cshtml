@@ -1,5 +1,5 @@
 <center><h1>Dean</h1></center>
-<button type="button" title="Create Dean" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalDeanCreate">
+<button type="button" title="Create Dean" id="createDeanbtn" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalDeanCreate">
   <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Create Dean
 </button>
 
@@ -353,6 +353,23 @@
     $("#updateDean").click(function(){
         alertSaveChanges();
     });
+
+    //upon closing the modal create
+    $("#modalDeanCreateClose").click(function(){
+        defaultClear();
+    });
+
+    //upon opening the modal create
+    $("#createDeanbtn").click(function(){
+        defaultClear();
+    });
+
+    function defaultClear()
+    {
+        $("#createDeanForm")[0].reset();
+        $("#updateDeanForm")[0].reset();
+        $("select").val([]);
+    }
 
     //display error alert
     function alertError(message)

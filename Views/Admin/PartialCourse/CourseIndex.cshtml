@@ -1,6 +1,6 @@
 <center><h1>Program</h1></center>
 
-<button type="button" title="Create Course" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalCourseCreate">
+<button type="button" id="createCoursebtn" title="Create Course" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalCourseCreate">
   <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Create Program
 </button>
 
@@ -323,6 +323,23 @@ $(document).ready(function(){
         $("select").val([]);
       });
     }
+  }
+
+  //upon closing the modal create
+  $("#modalCourseCreateClose").click(function(){
+    defaultClear();
+  });
+
+  //upon opening of create modal
+  $("#createCoursebtn").click((e) => {
+    defaultClear();
+  });
+
+  function defaultClear()
+  {
+    $("#createCourseForm")[0].reset();
+    $("#updateCourseForm")[0].reset();
+    $("select").val([]);
   }
 
 //don't touch this

@@ -2,7 +2,7 @@
     <h1>Instructor</h1>
 </center>
 
-<button type="button" title="Create Instructor" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalInstructorCreate">
+<button type="button" title="Create Instructor" id="createInstructorbtn" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalInstructorCreate">
   <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Create Instructor
 </button>
 
@@ -401,6 +401,7 @@
     //when clicking add unavailable time period
     $("#uPAdd").click(function(){
         $("#modalUnavailablePeriodTable").modal("toggle");
+        $("#modalTimePeriodCreate").modal("toggle");
     });
 
     //after clicking create time period
@@ -540,6 +541,22 @@
         {
             alertError("Input the necessary elements!");
         }
+    }
+
+    //upon closing the modal create
+    $("#modalInstructorCreateClose").click(function(){
+        defaultClear();
+    });
+
+    $("#createInstructorbtn").click((e) => {
+        defaultClear();
+    });
+
+    function defaultClear()
+    {
+        $("#createInstructorForm")[0].reset();
+        $("#updateInstructorForm")[0].reset();
+        $("select").val([]);
     }
 
 

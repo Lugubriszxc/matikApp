@@ -1,6 +1,6 @@
 <center><h1>Building</h1></center>
 
-<button type="button" title="Create Building" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalBuildingCreate">
+<button type="button" title="Create Building" id="createBuildingbtn" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalBuildingCreate">
   <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Create Building
 </button>
 
@@ -251,6 +251,23 @@
         {
             alertError("Input the necessary elements!");
         }
+    }
+
+    //upon closing the modal create
+    $("#modalBuildingCreateClose").click(function(){
+        defaultClear();
+    });
+
+    //upon opening of create modal
+    $("#createBuildingbtn").click((e) => {
+        defaultClear();
+    });
+
+    function defaultClear()
+    {
+        $("#createBuildingForm")[0].reset();
+        $("#updateBuildingForm")[0].reset();
+        $("select").val([]);
     }
 
     //sweet alert

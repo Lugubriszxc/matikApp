@@ -8,7 +8,7 @@
 </head>
 <body>
     <center><h1>Subject Index</h1></center>
-    <button type="button" title="Add Subject" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalSubjectCreate">
+    <button type="button" id="createSubjectbtn" title="Add Subject" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalSubjectCreate">
     <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Add Subject
     </button>
 
@@ -151,6 +151,7 @@
                 alertSuccess();
                 populateSubjectTable();
             });
+            
         }else{
             alertError("Input the necessary elements!");
         }
@@ -258,6 +259,22 @@
         }
     }
 
+    //upon closing the modal create
+    $("#modalSubjectCreateClose").click(function(){
+        defaultClear();
+    });
+
+    //upon opening of create modal
+    $("#createSubjectbtn").click((e) => {
+        defaultClear();
+    });
+
+    function defaultClear()
+    {
+        $("#createSubjectForm")[0].reset();
+        $("#updateSubjectForm")[0].reset();
+        $("select").val([]);
+    }
 
     //sweet alert
     //display error alert

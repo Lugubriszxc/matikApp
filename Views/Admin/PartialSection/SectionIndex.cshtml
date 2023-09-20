@@ -8,7 +8,7 @@
 </head>
 <body>
     <center><h1>Section Index</h1></center>
-    <button type="button" title="Add Section" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalSectionCreate">
+    <button type="button" title="Add Section" id="createSectionbtn" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalSectionCreate">
     <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Add Section
     </button>
     <br><br>
@@ -500,6 +500,22 @@
         }
     }
 
+    //upon closing the modal create
+    $("#modalSectionCreateClose").click(function(){
+        defaultClear();
+    });
+
+    //upon opening of create modal
+    $("#createSectionbtn").click((e) => {
+        defaultClear();
+    });
+
+    function defaultClear()
+    {
+        $("#createSectionForm")[0].reset();
+        $("#updateSectionForm")[0].reset();
+        $("select").val([]);
+    }
 
     //sweet alert
     //display alert error

@@ -8,7 +8,7 @@
 </head>
 <body>
     <center><h1>Room Index</h1></center>
-    <button type="button" title="Create Room" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalRoomCreate">
+    <button type="button" id="createRoombtn" title="Create Room" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalRoomCreate">
     <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Create Room
     </button>
 
@@ -373,6 +373,7 @@
 
     function clearForm(){
         $("#createRoomForm")[0].reset();
+        $("#updateRoomForm")[0].reset();
       //to deselect a selected option
         $("select").val([]);
     }

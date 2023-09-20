@@ -8,7 +8,7 @@
 </head>
 <body>
     <center><h1>Time Index</h1></center>
-    <button type="button" title="Add Time" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalTimeCreate">
+    <button type="button" title="Add Time" id="createTimebtn" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalTimeCreate">
     <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Add Time Slot
     </button>
 
@@ -376,6 +376,22 @@
         }
     }
 
+    //upon closing the modal create
+    $("#modalTimeCreateClose").click(function(){
+        defaultClear();
+    });
+
+    //upon opening of create modal
+    $("#createTimebtn").click((e) => {
+        defaultClear();
+    });
+
+    function defaultClear()
+    {
+        $("#createTimeForm")[0].reset();
+        $("#updateTimeForm")[0].reset();
+        $("select").val([]);
+    }
 
     //sweet alert
     //display error alert
