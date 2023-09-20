@@ -8,7 +8,7 @@
 </head>
 <body>
     <center><h1>Assign Instructor</h1></center>
-    <button type="button" title="Add AssignInstructor" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalAssignInstructorCreate">
+    <button type="button" id="createAssignInstructorbtn" title="Add AssignInstructor" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalAssignInstructorCreate">
     <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Assign an Instructor
     </button>
     <br><br>
@@ -1207,6 +1207,12 @@
         defaultClear();
     });
 
+    //upon closing the modal update
+    //upon closing the modal create
+    $("#modalAssignInstructorUpdateClose").click(function(){
+        defaultClear();
+    });
+
     //delete the assign instructor
     $("tbody").delegate(".aiDelete", "click", function(e){
         var i = e.target.closest("a").getAttribute("data-aId");
@@ -1304,6 +1310,11 @@
         populateInstructorList(selectedValueDepIn, "populate");
         updateInstructorId = data.instructorId;
     }
+
+    //upon opening of create modal
+    $("#createAssignInstructorbtn").click((e) => {
+        defaultClear();
+    });
 
 
     function defaultClear()

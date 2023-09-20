@@ -207,17 +207,8 @@
         //for the subject name
         $('.inputSubjectName').val(data.subjectName);
 
-        //for the radio button
-        if(data.roomType == "Computer Laboratory")
-        {
-            $('.comLab').prop('checked', true);
-            console.log("Computer Laboratory");
-        }
-        else if(data.roomType == "Lecture Room")
-        {
-            $('.lecRoom').prop('checked', true);
-            console.log("Lecture Room");
-        }
+        //for the room type selection
+        $('.roomTypeSelect').val(data.roomType);
 
         //for the subject units
         $('.inputSubjectUnit').val(data.subjectUnit);

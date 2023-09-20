@@ -32,24 +32,13 @@
             <div class="form-group">
                 <label name="Type" class="control-label">Room Type</label>
                 <br>
-                <div class="row text-center">
-                    <div class="col">
-                        <input name="RoomType" class="form-check-input comLab" type="radio" value="Computer Laboratory" id="comLab"/>
-                        <label class="form-check-label" for="flexCheckChecked">Computer Laboratory</label>
-                    </div>
-                    <div class="col">
-                        <input name="RoomType" class="form-check-input lecRoom" type="radio" value="Lecture Room" id="lecRoom"/>
-                        <label class="form-check-label" for="flexCheckChecked">Lecture Room</label>
-                    </div>
-                    <div class="col">
-                        <input name="RoomType" class="form-check-input sciLab" type="radio" value="Science Laboratory" id="sciLab"/>
-                        <label class="form-check-label" for="flexCheckChecked">Science Laboratory</label>
-                    </div>
-                    <div class="col">
-                        <input name="RoomType" class="form-check-input speechLab" type="radio" value="Speech Laboratory" id="speechLab"/>
-                        <label class="form-check-label" for="flexCheckChecked">Speech Laboratory</label>
-                    </div>
-                </div>
+                <select id="roomTypeSelect" name="RoomType" class="form-select">
+                <option value="Computer Laboratory">Computer Laboratory</option>
+                <option value="Lecture Room">Lecture Room</option>
+                <option value="Science Laboratory">Science Laboratory</option>
+                <option value="Speech Laboratory">Speech Laboratory</option>
+                <option value="Food Laboratory">Food Laboratory</option>
+                </select>
             </div>
             </form>
             <hr/>

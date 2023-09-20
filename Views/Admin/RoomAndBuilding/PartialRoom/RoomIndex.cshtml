@@ -225,8 +225,11 @@
         //for the room capacity
         $('.inputRoomCapacity').val(data.roomCapacity);
 
+        //for the room type
+        $('.roomTypeSelect').val(data.roomType);
+
         //for the radio button
-        if(data.roomType == "Computer Laboratory")
+        @* if(data.roomType == "Computer Laboratory")
         {
             $('.comLab').prop('checked', true);
             console.log("Computer Laboratory");
@@ -245,7 +248,9 @@
         {
             $('.speechLab').prop('checked', true);
             console.log("Speech Laboratory");
-        }
+        } *@
+
+
     }
 
     //when clicking update
