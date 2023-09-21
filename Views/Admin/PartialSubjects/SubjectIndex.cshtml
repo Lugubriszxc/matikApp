@@ -136,20 +136,39 @@
 
         if(formInputs.length === formelements.length)
         {
-            //Call API to add Subject
+            //Call API to check existing subject
             $.ajax({
-                url: "../api/adminapi/createSubject",
+                url: "../api/adminapi/checkSubCodeName",
                 type: "POST",
                 data:
                 {
                     sub : arrData,
                 },
             })
-            .done(function(){
-                clearForm();
-                $("#modalSubjectCreate").modal("toggle");
-                alertSuccess();
-                populateSubjectTable();
+            .done(function(result){
+                //if the result is null then you're to proceed to add the new data
+                if(result == null)
+                {
+                    //Call API to add Subject
+                    $.ajax({
+                        url: "../api/adminapi/createSubject",
+                        type: "POST",
+                        data:
+                        {
+                            sub : arrData,
+                        },
+                    })
+                    .done(function(){
+                        clearForm();
+                        $("#modalSubjectCreate").modal("toggle");
+                        alertSuccess();
+                        populateSubjectTable();
+                    });
+                }
+                else
+                {
+                    alertError("There is already an existing subject!");
+                }
             });
             
         }else{
@@ -226,6 +245,10 @@
     function proceedUpdate(){
         var arrData = {};
 
+        //GET YOUR ORIGINAL DATA FROM THE SELECTED CELL
+        var oSubjectCode = selectedSubject.subjectCode;
+        var oSubjectName = selectedSubject.subjectName;
+
         //count the number of element inside the form
         var formelements = $("#updateSubjectForm .form-group");
 
@@ -239,20 +262,61 @@
 
         if(formInputs.length === formelements.length)
         {
-            //Call API to update Subject
+            //check if there is an existing subject code and name
             $.ajax({
-                url: "../api/adminapi/updateSubject",
+                url: "../api/adminapi/checkSubCodeName",
                 type: "POST",
                 data:
                 {
                     sub : arrData,
                 },
             })
-            .done(function(){
-                clearForm();
-                $("#modalSubjectUpdate").modal("toggle");
-                alertSuccess();
-                populateSubjectTable();
+            .done(function(result){
+                //if the result is null then you can proceed to update the data
+                if(result == null)
+                {
+                    //Call API to update Subject
+                    $.ajax({
+                        url: "../api/adminapi/updateSubject",
+                        type: "POST",
+                        data:
+                        {
+                            sub : arrData,
+                        },
+                    })
+                    .done(function(){
+                        clearForm();
+                        $("#modalSubjectUpdate").modal("toggle");
+                        alertSuccess();
+                        populateSubjectTable();
+                    });
+                }
+                else
+                {
+                    //if there is an existing data, check if it's because of the existing inputs
+                    if(oSubjectCode == result.subjectCode && oSubjectName == result.subjectName)
+                    {
+                        //Call API to update Subject
+                        $.ajax({
+                            url: "../api/adminapi/updateSubject",
+                            type: "POST",
+                            data:
+                            {
+                                sub : arrData,
+                            },
+                        })
+                        .done(function(){
+                            clearForm();
+                            $("#modalSubjectUpdate").modal("toggle");
+                            alertSuccess();
+                            populateSubjectTable();
+                        });
+                    }
+                    else
+                    {
+                        alertError("There is already an existing subject!");
+                    }
+                }
             });
         }else{
             alertError("Input the necessary elements!");

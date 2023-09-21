@@ -744,5 +744,16 @@ namespace matikApp.Controllers
 
             return Ok(resExistingSubject);
         }
+
+        //check if there is any existing data that matches both subject code and subject name
+        public IActionResult checkSubCodeName(Subject sub)
+        {
+            var res = _context.Subjects.Where(
+                element => element.SubjectCode == sub.SubjectCode
+                && element.SubjectName == sub.SubjectName
+            ).FirstOrDefault();
+
+            return Ok(res);
+        }
     }
 }
