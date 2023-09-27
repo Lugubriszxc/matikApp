@@ -267,6 +267,33 @@ namespace matikApp.Controllers
             return Ok(res);
         }
 
+        //to fetch the subjects handled of the instructor
+        public IActionResult getSubjectHandlePeriod(int instructorId)
+        {
+            var res = 
+                (
+                from i in _context.Instructors
+                join sh in _context.Subjecthandleds on i.InstructorId equals sh.InstructorId
+                join s in _context.Subjects on sh.SubjectId equals s.SubjectId
+                where i.InstructorId == instructorId
+                
+                select new InstructorSubject
+                {
+                    ShId = sh.ShId,
+                    InstructorId = i.InstructorId,
+                    InstructorFname = i.InstructorFname,
+                    InstructorMname = i.InstructorMname,
+                    InstructorLname = i.InstructorLname,
+                    SubjectId = s.SubjectId,
+                    SubjectCode = s.SubjectCode,
+                    SubjectName = s.SubjectName,
+                    SubjectUnit = s.SubjectUnit                    
+                }
+                ).ToList();
+
+            return Ok(res);
+        }
+
         //query to fetch the instructor list
         public ActionResult<List<Instructor>> getInstructors(){
             return  _context.Instructors.ToList();
@@ -527,10 +554,33 @@ namespace matikApp.Controllers
             return Ok();
         }
 
+        //query to create subject handled
+        public IActionResult addSubjectHandled(Subjecthandled sh)
+        {
+            if(sh.InstructorId == 0 || sh.InstructorId == null || sh.SubjectId == 0 || sh.SubjectId == null)
+            {
+                return Ok("Error Occurred");
+            }
+
+            // var res = _context.Subjecthandleds;
+            _context.Subjecthandleds.Add(sh);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
         //query to delete an unavailable time slot
         public IActionResult deleteUATime(int uaId)
         {
             _context.Unavailableperiods.Remove(_context.Unavailableperiods.Find(uaId));
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        //query to delete a subject handled
+        public IActionResult deleteSubjectHandled(int shId)
+        {
+            _context.Subjecthandleds.Remove(_context.Subjecthandleds.Find(shId));
             _context.SaveChanges();
             return Ok();
         }

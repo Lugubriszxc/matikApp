@@ -26,6 +26,7 @@ namespace matikApp.Models
         public virtual DbSet<Room> Rooms { get; set; }
         public virtual DbSet<Section> Sections { get; set; }
         public virtual DbSet<Subject> Subjects { get; set; }
+        public virtual DbSet<Subjecthandled> Subjecthandleds { get; set; }
         public virtual DbSet<Timeslot> Timeslots { get; set; }
         public virtual DbSet<Unavailableperiod> Unavailableperiods { get; set; }
 
@@ -295,6 +296,26 @@ namespace matikApp.Models
                 entity.Property(e => e.SubjectUnit)
                     .HasColumnType("int(11)")
                     .HasColumnName("subjectUnit");
+            });
+
+            modelBuilder.Entity<Subjecthandled>(entity =>
+            {
+                entity.HasKey(e => e.ShId)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("subjecthandled");
+
+                entity.Property(e => e.ShId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("shID");
+
+                entity.Property(e => e.InstructorId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("instructorID");
+
+                entity.Property(e => e.SubjectId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("subjectID");
             });
 
             modelBuilder.Entity<Timeslot>(entity =>
