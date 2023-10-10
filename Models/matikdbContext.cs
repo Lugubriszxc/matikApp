@@ -63,10 +63,6 @@ namespace matikApp.Models
                     .HasColumnType("int(11)")
                     .HasColumnName("departmentID");
 
-                entity.Property(e => e.InstructorId)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("instructorID");
-
                 entity.Property(e => e.SectionId)
                     .HasColumnType("int(11)")
                     .HasColumnName("sectionID");

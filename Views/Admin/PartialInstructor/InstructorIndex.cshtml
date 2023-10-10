@@ -443,17 +443,35 @@
         };
 
         $.ajax({
-                url: "../api/adminapi/addSubjectHandled",
+                url: "../api/adminapi/checkSubjectHandled",
                 type: "POST",
                 data:
                 {
                     sh : myArray,
                 },
             })
-            .done(function(){
-                $("#modalAddSubjectHandledTable").modal("toggle");
-                alertSuccess();
-                populateSubjectHandled(selectedInstructorId);
+            .done(function(result){
+                //this means if there is no identical subject
+                if(result == null)
+                {
+                    $.ajax({
+                    url: "../api/adminapi/addSubjectHandled",
+                    type: "POST",
+                    data:
+                    {
+                        sh : myArray,
+                    },
+                    })
+                    .done(function(){
+                        $("#modalAddSubjectHandledTable").modal("toggle");
+                        alertSuccess();
+                        populateSubjectHandled(selectedInstructorId);
+                    });
+                }
+                else
+                {
+                    alertError("There is already a designated subject for this instructor");
+                }
             });
     }
 

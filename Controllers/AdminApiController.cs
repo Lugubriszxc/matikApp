@@ -467,6 +467,14 @@ namespace matikApp.Controllers
             return  _context.Subjects.ToList();
         }
 
+        //filter the subject list
+        public IActionResult filterSubjectList(string searchedItem)
+        {
+            searchedItem = searchedItem.ToLower();
+            var searchedSubject = _context.Subjects.Where(e => e.SubjectName.ToLower().Contains(searchedItem) || e.SubjectCode.ToLower().Contains(searchedItem));
+            return Ok(searchedSubject);
+        }
+
         //query to create a room
         public IActionResult createSubject(Subject sub)
         {
@@ -567,6 +575,13 @@ namespace matikApp.Controllers
             _context.SaveChanges();
 
             return Ok();
+        }
+
+        //check if there is any existing data for subject handled
+        public IActionResult checkSubjectHandled(Subjecthandled sh)
+        {
+            var res = _context.Subjecthandleds.Where(x => x.SubjectId == sh.SubjectId && x.InstructorId == sh.InstructorId).FirstOrDefault();
+            return Ok(res);
         }
 
         //query to delete an unavailable time slot
@@ -712,7 +727,6 @@ namespace matikApp.Controllers
                     join dep in _context.Departments on asi.DepartmentId equals dep.DepartmentId
                     join cor in _context.Courses on asi.CourseId equals cor.CourseId
                     join sec in _context.Sections on asi.SectionId equals sec.SectionId
-                    join ins in _context.Instructors on asi.InstructorId equals ins.InstructorId
                     join sub in _context.Subjects on asi.SubjectId equals sub.SubjectId
                     
                     select new DetailedAssignInstructor
@@ -727,11 +741,6 @@ namespace matikApp.Controllers
                         SectionId = sec.SectionId,
                         SectionName = sec.SectionName,
                         YearLevel = sec.YearLevel,
-                        InstructorId = ins.InstructorId,
-                        InstructorDepartmentId = ins.DepartmentId,
-                        InstructorFname = ins.InstructorFname,
-                        InstructorMname = ins.InstructorMname,
-                        InstructorLname = ins.InstructorLname,
                         SubjectId = sub.SubjectId,
                         SubjectCode = sub.SubjectCode,
                         SubjectName = sub.SubjectName,
@@ -764,8 +773,7 @@ namespace matikApp.Controllers
             var resExistingData = _context.Assignsubjects.Where(
                 element => element.SectionId == asi.SectionId
                 && element.Semester == asi.Semester
-                && element.SubjectId == asi.SubjectId
-                && element.InstructorId == asi.InstructorId).FirstOrDefault();
+                && element.SubjectId == asi.SubjectId).FirstOrDefault();
 
             //it means if there is an identical data
             if(resExistingData != null)

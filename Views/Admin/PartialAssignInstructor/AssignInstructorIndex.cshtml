@@ -75,28 +75,6 @@
                     {data: 'courseName'},
                     {data: 'sectionName'},
                     {data: 'subjectName'},
-                    {
-                        data: 'instructorId',
-                        render : function(data, type, row)
-                        {
-                            var firstname = row['instructorFname'];
-                            var middlename = row['instructorMname'];
-                            var lastname = row['instructorLname'];
-
-                            var combined;
-
-                            if(middlename.value === "")
-                            {
-                                combined = firstname + ' ' + lastname;
-                            }
-                            else
-                            {
-                                combined = firstname + ' ' + middlename + ' ' + lastname; 
-                            }
-
-                            return combined;
-                        }
-                    },
                     {data: 'yearLevel'},
                     {data: 'studentCount'},
                     {
@@ -137,18 +115,14 @@
         const yearLevelSelect = document.getElementById('yearLevelPicker')
         const sectionSelect = document.getElementById('sectionSelect')
         const subjectSelect = document.getElementById('subjectSelect')
-        const instructorSelect = document.getElementById('instructorSelect')
         const semesterSelect = document.getElementById('semesterSelect')
-        const departmentInstructorSelect = document.getElementById('departmentinSelect')
 
         const departmentSelUpdate = document.getElementById('departmentSelectUpdate');
         const courseSelUpdate = document.getElementById('courseSelectUpdate');
         const yearLevelSelectUpdate = document.getElementById('yearLevelPickerUpdate')
         const sectionSelectUpdate = document.getElementById('sectionSelectUpdate')
         const subjectSelectUpdate = document.getElementById('subjectSelectUpdate')
-        const instructorSelectUpdate = document.getElementById('instructorSelectUpdate')
         const semesterSelectUpdate = document.getElementById('semesterSelectUpdate')
-        const departmentInstructorSelectUpdate = document.getElementById('departmentinSelectUpdate')
 
         //department condition
         if(departmentSel.selectedIndex !== -1)
@@ -173,18 +147,6 @@
             yearLevelSelectUpdate.disabled = true;
             sectionSelectUpdate.disabled = true;
         } *@
-
-
-        //department - instructor condition
-        if(departmentInstructorSelect.selectedIndex !== -1)
-        {
-            instructorSelect.disabled = false;
-        }
-        else
-        {
-            instructorSelect.disabled = true;
-            $("#instructorSelect").val([]);
-        }
 
         //department - instructor update condition
         @* if(departmentInstructorSelectUpdate.selectedIndex !== -1)
@@ -325,6 +287,52 @@
         });
     }
 
+    //call this function if filter is empty
+    function emptyCreateFilterSubject()
+    {
+        $.ajax("../api/adminapi/getSubjects")
+        .done(function(result){
+        var template = document.querySelector("template#subjectOptionTemplate");
+        var parent = document.querySelectorAll("#subjectSelect");
+
+        //for create modal
+        for(i = 0; i < parent.length; i++){
+          result.forEach(function (item){
+            //console.log(item.departmentName);
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.subjectId;
+            cloned.querySelector("option").innerText = item.subjectCode + " | " + item.subjectName;
+
+            parent[i].append(cloned);
+          });
+        }
+
+        });
+    }
+
+    //call this function if the update filter is empty
+    function emptyUpdateFilterSubject()
+    {
+        $.ajax("../api/adminapi/getSubjects")
+        .done(function(result){
+        var template = document.querySelector("template#subjectOptionTemplate");
+        var parentUpdate = document.querySelectorAll("#subjectSelectUpdate");
+
+        //for update modal
+        for(i = 0; i < parentUpdate.length; i++){
+          result.forEach(function (item){
+            //console.log(item.departmentName);
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.subjectId;
+            cloned.querySelector("option").innerText = item.subjectCode + " | " + item.subjectName;
+
+            parentUpdate[i].append(cloned);
+          });
+        }
+
+        });
+    }
+
     //this is used to populate the subject select
     function populateSubjects()
     {
@@ -334,6 +342,9 @@
         var parent = document.querySelectorAll("#subjectSelect");
         var parentUpdate = document.querySelectorAll("#subjectSelectUpdate");
         
+        @* document.querySelector("#subjectSelect").innerHTML = "";
+        document.querySelector("#subjectSelectUpdate").innerHTML = ""; *@
+
         //for create modal
         for(i = 0; i < parent.length; i++){
           result.forEach(function (item){
@@ -401,7 +412,7 @@
         checkSelectInputs();
     });
 
-    $("#departmentinSelect").change(function(){
+    @* $("#departmentinSelect").change(function(){
         //after selection, get the department ID and compare it to existing course list
 
         //Get the selected index
@@ -411,9 +422,9 @@
 
         populateInstructorList(selectedValue, "create");
         checkSelectInputs();
-    });
+    }); *@
 
-    $("#departmentinSelectUpdate").change(function(){
+    @* $("#departmentinSelectUpdate").change(function(){
         //after selection, get the department ID and compare it to existing course list
 
         //Get the selected index
@@ -423,10 +434,10 @@
 
         populateInstructorList(selectedValue, "update");
         checkSelectInputs();
-    });
+    }); *@
 
     //to populate the instructor selection option based on department ID
-    function populateInstructorList(selectedDepartmentId, status)
+    @* function populateInstructorList(selectedDepartmentId, status)
     {
         if(status == "create")
         {
@@ -553,7 +564,7 @@
                 }
             })
         }
-    }
+    } *@
 
     //get the select action when selecting an option
     $("#courseSelect").change(function(){
@@ -914,12 +925,25 @@
         //initialize the student count
         let studCount = document.getElementById('studCount');
 
+        //initialize the filter input 
+        let filterBox = document.getElementById('filterSub');
+
+
+
         //getting the data from the form
         var formInputs = $("#createAssignInstructorForm").serializeArray();
         formInputs.forEach(function(item){
             arrData[item.name] = item.value;
         });
 
+        //making the filter box not necessary for conditional statements
+        let emptyFilter = new Boolean(false);
+        emptyFilter = Boolean(false);
+
+        if(filterBox.value === '')
+        {
+            emptyFilter = Boolean(false);
+        }
 
         let emptyEl = new Boolean(false);
         //alternative of bool
@@ -934,7 +958,7 @@
         }
 
         //if all elements are not empty
-        if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
+        if(formInputs.length === formelements.length && emptyEl ===  Boolean(false) && emptyFilter === Boolean(false))
         {
 
             //check the data if there is an identical data
@@ -1022,6 +1046,9 @@
         //initialize the student count
         let studCount = document.getElementById('studCountUpdate');
 
+        //initialize the filter box 
+        let filterBox = document.getElementById('filterSubUpdate');
+
         //getting the data from the form
         var formInputs = $("#updateAssignInstructorForm").serializeArray();
         formInputs.forEach(function(item){
@@ -1029,6 +1056,15 @@
         });
 
         arrData.aId = selectedAssignInstructorId;
+
+        //making the filter box not necessary for conditional statements
+        let emptyFilter = new Boolean(false);
+        emptyFilter = Boolean(false);
+
+        if(filterBox.value === '')
+        {
+            emptyFilter = Boolean(false);
+        }
 
 
         let emptyEl = new Boolean(false);
@@ -1044,7 +1080,7 @@
         }
 
         //if all elements are not empty
-        if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
+        if(formInputs.length === formelements.length && emptyEl ===  Boolean(false) && emptyFilter === Boolean(false))
         {
 
             //check the data if there is an identical data
@@ -1124,7 +1160,7 @@
                     //alertError("There is an already existing data!");
                     //If there is an existing data, check if it's because of your selected cell
 
-                    if(oClassID == result.sectionId && oSemester == result.semester && oSubjectID == result.subjectId && oInstructorID == result.instructorId)
+                    if(oClassID == result.sectionId && oSemester == result.semester && oSubjectID == result.subjectId)
                     {
                         //If it's because of the selected cell
                         //check if the data has already an existing subject in the particular section
@@ -1300,16 +1336,123 @@
         //for the instructor : the goal is to get the department id of the particular instructor
         //the data of the department of the instructor is already stored when doing the inner join
 
-        $('#departmentinSelectUpdate').val(data.instructorDepartmentId);
-
         //Get the selected index of the department for instructor
-        const actionSelectDepIn = document.getElementById("departmentinSelectUpdate");
+        @* const actionSelectDepIn = document.getElementById("departmentinSelectUpdate");
         const selectedIndexDepIn = actionSelectDepIn.selectedIndex;
         const selectedValueDepIn = actionSelectDepIn.options[selectedIndexDepIn].value;
 
-        populateInstructorList(selectedValueDepIn, "populate");
-        updateInstructorId = data.instructorId;
+        populateInstructorList(selectedValueDepIn, "populate"); *@
     }
+
+
+    //filtering the subject list upon creating
+    $('#filterSub').on("input", function(){
+      var searchedItem = $(this).val();
+
+      //console.log(searchedItem);
+
+      //var sear = productList.filter(element => element.name.toLowerCase().includes(searchedItem.toLowerCase()) || element.name.toUpperCase().includes(searchedItem.toUpperCase()));
+      //console.log(sear);
+
+        if(searchedItem === '')
+        {
+            //populateSubjects();
+            emptyCreateFilterSubject();
+        }
+        else
+        {
+            //AJAX to filter the subject list with subject code and name as basis
+            $.ajax({
+                url: "../api/adminapi/filterSubjectList",
+                type: "POST",
+                data:
+                {
+                    searchedItem : searchedItem,
+                },
+            }).done(function(result){
+                var template = document.querySelector("template#subjectOptionTemplate");
+                var parent = document.querySelectorAll("#subjectSelect");
+                //var parentUpdate = document.querySelectorAll("#subjectSelectUpdate");
+
+                document.querySelector("#subjectSelect").innerHTML = "";
+                //document.querySelector("#subjectSelectUpdate").innerHTML = "";
+            
+                //for create modal
+                for(i = 0; i < parent.length; i++){
+                result.forEach(function (item){
+                    //console.log(item.departmentName);
+                    var cloned = template.content.cloneNode(true);
+                    cloned.querySelector("option").value = item.subjectId;
+                    cloned.querySelector("option").innerText = item.subjectCode + " | " + item.subjectName;
+
+                    parent[i].append(cloned);
+                });
+                }
+
+                @* //for update modal
+                for(i = 0; i < parentUpdate.length; i++){
+                result.forEach(function (item){
+                    //console.log(item.departmentName);
+                    var cloned = template.content.cloneNode(true);
+                    cloned.querySelector("option").value = item.subjectId;
+                    cloned.querySelector("option").innerText = item.subjectCode + " | " + item.subjectName;
+
+                    parentUpdate[i].append(cloned);
+                });
+                } *@
+
+            });
+        }
+
+      //console.log(searchedItem);
+      
+    });
+
+
+    //filtering the subject list upon updating
+    $('#filterSubUpdate').on("input", function(){
+      var searchedItem = $(this).val();
+
+        if(searchedItem === '')
+        {
+            //populateSubjects();
+            emptyUpdateFilterSubject();
+        }
+        else
+        {
+            //AJAX to filter the subject list with subject code and name as basis
+            $.ajax({
+                url: "../api/adminapi/filterSubjectList",
+                type: "POST",
+                data:
+                {
+                    searchedItem : searchedItem,
+                },
+            }).done(function(result){
+                var template = document.querySelector("template#subjectOptionTemplate");
+                var parentUpdate = document.querySelectorAll("#subjectSelectUpdate");
+
+                document.querySelector("#subjectSelectUpdate").innerHTML = "";
+
+                //for update modal
+                for(i = 0; i < parentUpdate.length; i++){
+                result.forEach(function (item){
+                    //console.log(item.departmentName);
+                    var cloned = template.content.cloneNode(true);
+                    cloned.querySelector("option").value = item.subjectId;
+                    cloned.querySelector("option").innerText = item.subjectCode + " | " + item.subjectName;
+
+                    parentUpdate[i].append(cloned);
+                });
+                }
+
+            });
+        }
+
+      //console.log(searchedItem);
+      
+    });
+
 
     //upon opening of create modal
     $("#createAssignInstructorbtn").click((e) => {
