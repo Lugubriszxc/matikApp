@@ -129,20 +129,42 @@
 
         if(formInputs.length === formelements.length && emptyEl === Boolean(false))
         {
-            //Call API to add Room
+            //checkRoomExistingData : room
+
+            //check if there is an identical data
             $.ajax({
-                url: "../api/adminapi/createRoom",
+                url: "../api/adminapi/checkRoomExistingData",
                 type: "POST",
                 data:
                 {
-                    rm : arrData,
+                    room : arrData,
                 },
             })
-            .done(function(){
-                clearForm();
-                $("#modalRoomCreate").modal("toggle");
-                alertSuccess();
-                populateRoomTable();
+            .done(function(result){
+                //null means there is no existing data and can add room
+                if(result == null)
+                {
+                    //Call API to add Room
+                    $.ajax({
+                        url: "../api/adminapi/createRoom",
+                        type: "POST",
+                        data:
+                        {
+                            rm : arrData,
+                        },
+                    })
+                    .done(function(){
+                        clearForm();
+                        $("#modalRoomCreate").modal("toggle");
+                        alertSuccess();
+                        populateRoomTable();
+                    });
+                }
+                else
+                {
+                    //if there is an existing data
+                    alertError("There is already an identical name of the room registered here");
+                }
             });
         }else{
             alertError("Input the necessary elements!");
@@ -262,6 +284,9 @@
     function proceedUpdate(){
         var arrData = {};
 
+        //GET YOUR ORIGINAL DATA FROM THE SELECTED CELL
+        var oRoomName = selectedRoom.roomName;
+
         //count the number of element inside the form
         var formelements = $("#updateRoomForm .form-group");
 
@@ -286,20 +311,63 @@
 
         if(formInputs.length === formelements.length && emptyEl === Boolean(false))
         {
-            //Call API to update Room
+
+            //check if there is an identical data
+            //check if there is an identical data
             $.ajax({
-                url: "../api/adminapi/updateRoom",
+                url: "../api/adminapi/checkRoomExistingData",
                 type: "POST",
                 data:
                 {
-                    rm : arrData,
+                    room : arrData,
                 },
             })
-            .done(function(){
-                clearForm();
-                $("#modalRoomUpdate").modal("toggle");
-                alertSuccess();
-                populateRoomTable();
+            .done(function(result){
+                //null means there is no existing data and can update room
+                if(result == null)
+                {
+                    //Call API to update Room
+                    $.ajax({
+                        url: "../api/adminapi/updateRoom",
+                        type: "POST",
+                        data:
+                        {
+                            rm : arrData,
+                        },
+                    })
+                    .done(function(){
+                        clearForm();
+                        $("#modalRoomUpdate").modal("toggle");
+                        alertSuccess();
+                        populateRoomTable();
+                    });
+                }
+                else
+                {
+                    //check if it's just because of the selected cell
+                    if(oRoomName == result.roomName)
+                    {
+                        //Call API to update Room
+                        $.ajax({
+                            url: "../api/adminapi/updateRoom",
+                            type: "POST",
+                            data:
+                            {
+                                rm : arrData,
+                            },
+                        })
+                        .done(function(){
+                            clearForm();
+                            $("#modalRoomUpdate").modal("toggle");
+                            alertSuccess();
+                            populateRoomTable();
+                        });
+                    }
+                    else
+                    {
+                        alertError("There is already a room registered!");
+                    }
+                }
             });
         }else{
             alertError("Input the necessary elements!");

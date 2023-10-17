@@ -784,6 +784,15 @@ namespace matikApp.Controllers
             return Ok(resExistingData);
         }
 
+        //check if there is any existing data for room
+        public IActionResult checkRoomExistingData(Room room)
+        {
+            //if the row has already the existing datas and subject then this will return true
+            var resExistingData = _context.Rooms.Where(element => element.RoomName == room.RoomName).FirstOrDefault();
+
+            return Ok(resExistingData);
+        }
+
         //check if there is any existing section id and subject id for assign instructor
         public IActionResult checkAssignInstructorExistingSubject(Assignsubject asi)
         {

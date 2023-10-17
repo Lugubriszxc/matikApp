@@ -928,8 +928,6 @@
         //initialize the filter input 
         let filterBox = document.getElementById('filterSub');
 
-
-
         //getting the data from the form
         var formInputs = $("#createAssignInstructorForm").serializeArray();
         formInputs.forEach(function(item){
@@ -1083,7 +1081,7 @@
         if(formInputs.length === formelements.length && emptyEl ===  Boolean(false) && emptyFilter === Boolean(false))
         {
 
-            //check the data if there is an identical data
+            //check if there is an identical data
             $.ajax({
                 url: "../api/adminapi/checkAssignInstructorExistingData",
                 type: "POST",
