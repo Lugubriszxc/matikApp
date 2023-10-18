@@ -19,6 +19,22 @@ build_property._RazorSourceGeneratorDebug =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cbWlzY01hdGlrXFBhcnRpYWxBbGVydFxEaXNwbGF5QWxlcnQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialAcademicYear/AcademicYearCreate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEFjYWRlbWljWWVhclxBY2FkZW1pY1llYXJDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialAcademicYear/AcademicYearIndex.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEFjYWRlbWljWWVhclxBY2FkZW1pY1llYXJJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialAcademicYear/AcademicYearTable.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEFjYWRlbWljWWVhclxBY2FkZW1pY1llYXJUYWJsZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialAcademicYear/AcademicYearUpdate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEFjYWRlbWljWWVhclxBY2FkZW1pY1llYXJVcGRhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialAssignInstructor/AssignInstructorCreate.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEFzc2lnbkluc3RydWN0b3JcQXNzaWduSW5zdHJ1Y3RvckNyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 

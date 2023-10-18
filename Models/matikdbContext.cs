@@ -16,6 +16,7 @@ namespace matikApp.Models
         {
         }
 
+        public virtual DbSet<Acadyear> Acadyears { get; set; }
         public virtual DbSet<Assignsubject> Assignsubjects { get; set; }
         public virtual DbSet<Authorization> Authorizations { get; set; }
         public virtual DbSet<Building> Buildings { get; set; }
@@ -23,6 +24,7 @@ namespace matikApp.Models
         public virtual DbSet<Dean> Deans { get; set; }
         public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<Instructor> Instructors { get; set; }
+        public virtual DbSet<Regissection> Regissections { get; set; }
         public virtual DbSet<Room> Rooms { get; set; }
         public virtual DbSet<Section> Sections { get; set; }
         public virtual DbSet<Subject> Subjects { get; set; }
@@ -43,6 +45,20 @@ namespace matikApp.Models
         {
             modelBuilder.UseCollation("utf8mb4_general_ci")
                 .HasCharSet("utf8mb4");
+
+            modelBuilder.Entity<Acadyear>(entity =>
+            {
+                entity.ToTable("acadyear");
+
+                entity.Property(e => e.AcadYearId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("acadYearID");
+
+                entity.Property(e => e.AcadYearName)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("acadYearName");
+            });
 
             modelBuilder.Entity<Assignsubject>(entity =>
             {
@@ -206,6 +222,32 @@ namespace matikApp.Models
                     .IsRequired()
                     .HasMaxLength(250)
                     .HasColumnName("instructor_mname");
+            });
+
+            modelBuilder.Entity<Regissection>(entity =>
+            {
+                entity.ToTable("regissection");
+
+                entity.Property(e => e.RegisSectionId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("regisSectionID");
+
+                entity.Property(e => e.AcadYearId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("acadYearID");
+
+                entity.Property(e => e.SectionId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("sectionID");
+
+                entity.Property(e => e.Semester)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("semester");
+
+                entity.Property(e => e.TotalStudents)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("totalStudents");
             });
 
             modelBuilder.Entity<Room>(entity =>

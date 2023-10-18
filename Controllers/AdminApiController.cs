@@ -822,5 +822,45 @@ namespace matikApp.Controllers
 
             return Ok(res);
         }
+
+
+        //Academic Year API SECTION
+
+        //check if there is any existing data that matches academic year name
+        public IActionResult checkAcadYear(Acadyear acad)
+        {
+            var res = _context.Acadyears.Where(
+                element => element.AcadYearName == acad.AcadYearName
+            ).FirstOrDefault();
+
+            return Ok(res);
+        }
+
+        public IActionResult createAcademicYear(Acadyear acad)
+        {
+            _context.Acadyears.Add(acad);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        public ActionResult<List<Acadyear>> getAcademicYear(){
+            return  _context.Acadyears.ToList();
+        }
+
+        public IActionResult updateAcademicYear(Acadyear acad)
+        {
+            _context.Acadyears.Update(acad);
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        public IActionResult deleteAcademicYear(int acadYearId)
+        {
+            var res = _context.Acadyears.Where(element => element.AcadYearId == acadYearId).FirstOrDefault();
+            _context.Acadyears.Remove(res);
+            _context.SaveChanges();
+            return Ok();
+        }
     }
 }

@@ -72,6 +72,11 @@ namespace matikApp.Controllers
             return View("PartialAssignInstructor/AssignInstructorIndex");
         }
 
+        public IActionResult AcademicYearIndex()
+        {
+            return View("PartialAcademicYear/AcademicYearIndex");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

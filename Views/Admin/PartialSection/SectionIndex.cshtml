@@ -77,7 +77,7 @@
     //to render buttons in action index
     function btnSection(sectionId)
     {
-        return "<center><a class='btn btn-success sectionUpdate' data-sectionId=" + sectionId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger sectionDelete' data-sectionId=" + sectionId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+        return "<center><a class='btn btn-warning sectionRegisAcad' title='Register Academic Details' data-sectionId=" + sectionId + "><i class='fa-solid fa-school-circle-exclamation' style='color : #ffffff;'></i></a> | <a class='btn btn-success sectionUpdate' data-sectionId=" + sectionId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger sectionDelete' data-sectionId=" + sectionId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
     }
 
     //get the data of the section and store it to array
@@ -379,6 +379,16 @@
             //Insert code here for delete
             selectedSectionId = i;
             alertDeleteConfirmation(selectedSectionId);
+        }
+    });
+
+    //when clicking the register section acads
+    $("tbody").delegate(".sectionRegisAcad", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-sectionId");
+        if(i != null)
+        {
+            selectedSectionId = i;
+            console.log("I was clicked");
         }
     });
 
