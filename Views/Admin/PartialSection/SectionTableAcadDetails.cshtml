@@ -1,0 +1,41 @@
+<div class="modal fade" id="modalRegisSectionTable" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content bg-warning text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Unavailable Period</h5>
+        <button type="button" id="modalRegisSectionTableClose" class="btn-close btn-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Document</title>
+        </head>
+        <body>
+          <button type="button" title="Register new academic details" class="btn btn-success rSAdd" id="rSAdd" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalRegisSectionCreate">
+            <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Register Academic Details
+          </button>
+          <br/><br/>
+          <div class="container bg-dark text-light">
+            <table id="regisSectionTable" class="display table table-bordered table-hover text-light" width="100%">
+              <thead>
+                  <tr>
+                      <th>ID</th>
+                      <th>Academic Year</th>
+                      <th>Semester</th>
+                      <th>Total Students</th>
+                      <th>Action</th>
+                  </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </body>
+        </html>
+       </div>
+      </div>
+    </div>
+  </div>
+</div>

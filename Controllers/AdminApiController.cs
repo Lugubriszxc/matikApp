@@ -862,5 +862,61 @@ namespace matikApp.Controllers
             _context.SaveChanges();
             return Ok();
         }
+
+        //Regis Section Academic Details API
+
+        //to fetch the subjects handled of the instructor
+        public IActionResult getRegisSection(int sectionID)
+        {
+            var res = 
+            (
+                from sec in _context.Sections
+                join rs in _context.Regissections on sec.SectionId equals rs.SectionId
+                join acad in _context.Acadyears on rs.AcadYearId equals acad.AcadYearId
+                where sec.SectionId == sectionID
+
+                select new RegisSectionAcad
+                {
+                    RegisSectionId = rs.RegisSectionId,
+                    SectionId = sec.SectionId,
+                    AcadYearId = acad.AcadYearId,
+                    AcadYearName = acad.AcadYearName,
+                    Semester = rs.Semester,
+                    TotalStudents = rs.TotalStudents
+                }
+
+            ).ToList();
+
+            return Ok(res);
+        }
+
+        public IActionResult createRegisSection(Regissection rs)
+        {
+            _context.Regissections.Add(rs);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        //check if the same academic year and semester is registered
+        public IActionResult checkRegisSection(Regissection rs)
+        {
+            var res = _context.Regissections.Where(
+                element => element.AcadYearId == rs.AcadYearId
+                && element.Semester == rs.Semester
+                && element.SectionId == rs.SectionId
+            ).FirstOrDefault();
+
+            return Ok(res);
+        }
+
+        //deleting the selected academic details
+        public IActionResult deleteRegisSection(int regisSectionId)
+        {
+            var res = _context.Regissections.Where(element => element.RegisSectionId == regisSectionId).FirstOrDefault();
+            _context.Regissections.Remove(res);
+            _context.SaveChanges();
+            return Ok();
+        }
     }
 }
