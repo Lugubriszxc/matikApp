@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="~/css/tableCss/tableStyle.css" asp-append-version="true"/>
+    <script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/js/multi-select-tag.js"></script>
 </head>
 <body>
     <center><h1>Assign Subject</h1></center>
@@ -73,10 +74,9 @@
                 [
                     {data: 'aId'},
                     {data: 'courseName'},
-                    {data: 'sectionName'},
                     {data: 'subjectName'},
                     {data: 'yearLevel'},
-                    {data: 'studentCount'},
+                    {data: 'semester'},
                     {
                         data: 'aId',
                         render : function (data, type, row)
@@ -113,14 +113,14 @@
         const departmentSel = document.getElementById('departmentSelect');
         const courseSel = document.getElementById('courseSelect');
         const yearLevelSelect = document.getElementById('yearLevelPicker')
-        const sectionSelect = document.getElementById('sectionSelect')
+        @* const sectionSelect = document.getElementById('sectionSelect') *@
         const subjectSelect = document.getElementById('subjectSelect')
         const semesterSelect = document.getElementById('semesterSelect')
 
         const departmentSelUpdate = document.getElementById('departmentSelectUpdate');
         const courseSelUpdate = document.getElementById('courseSelectUpdate');
         const yearLevelSelectUpdate = document.getElementById('yearLevelPickerUpdate')
-        const sectionSelectUpdate = document.getElementById('sectionSelectUpdate')
+        @* const sectionSelectUpdate = document.getElementById('sectionSelectUpdate') *@
         const subjectSelectUpdate = document.getElementById('subjectSelectUpdate')
         const semesterSelectUpdate = document.getElementById('semesterSelectUpdate')
 
@@ -133,7 +133,7 @@
         {
             courseSel.disabled = true;
             yearLevelSelect.disabled = true;
-            sectionSelect.disabled = true;
+            @* sectionSelect.disabled = true; *@
         }
 
         //department update condition
@@ -186,12 +186,12 @@
         //year level condition
         if(yearLevelSelect.selectedIndex !== -1)
         {
-            sectionSelect.disabled = false;
+            @* sectionSelect.disabled = false; *@
         }
         else
         {
-            sectionSelect.disabled = true;
-            $("#sectionSelect").val([]);
+            @* sectionSelect.disabled = true;
+            $("#sectionSelect").val([]); *@
         }
 
         //year level update condition
@@ -308,6 +308,22 @@
         }
 
         });
+        
+        @* $.ajax({
+            url: '../api/adminapi/getSubjects', // replace with your URL
+            type: 'GET',
+            success: function(data) {
+                var mySelect = document.getElementById('subjectSelect');
+                var multiSelectTag = new MultiSelectTag(subjectSelect, {
+                    data: data.map(function(item) {
+                        return {value: item.value, subjectId: item.subjectName}; // replace 'value' and 'text' with your actual data keys
+                    })
+                });
+            },
+            error: function(error) {
+                console.log('Error:', error);
+            }
+        }); *@
     }
 
     //call this function if the update filter is empty
@@ -411,6 +427,13 @@
         populateCourseSelect(selectedValue, "create");
         checkSelectInputs();
     });
+
+    //get the subjectSelect action when selecting an option
+    @* $("#subjectSelect").change(function(){
+        var select = document.getElementById('subjectSelect');
+        var selectedOptions = Array.from(select.selectedOptions).map(option => option.value);
+        console.log(selectedOptions.length);
+    }); *@
 
     @* $("#departmentinSelect").change(function(){
         //after selection, get the department ID and compare it to existing course list
@@ -569,11 +592,11 @@
     //get the select action when selecting an option
     $("#courseSelect").change(function(){
         $("#yearLevelPicker").val([]);
-        const actionSelect = document.getElementById("sectionSelect");
+        @* const actionSelect = document.getElementById("sectionSelect");
         // Remove all options from the select element
         while (actionSelect.options.length > 0) {
             actionSelect.remove(0);
-        }
+        } *@
         
         checkSelectInputs();
     });
@@ -581,11 +604,11 @@
     //get the select action when selecting an option (UPDATE)
     $("#courseSelectUpdate").change(function(){
         $("#yearLevelPickerUpdate").val([]);
-        const actionSelect = document.getElementById("sectionSelectUpdate");
+        @* const actionSelect = document.getElementById("sectionSelectUpdate");
         // Remove all options from the select element
         while (actionSelect.options.length > 0) {
             actionSelect.remove(0);
-        }
+        } *@
         
         checkSelectInputs();
     });
@@ -640,11 +663,11 @@
 
             $("#yearLevelPickerUpdate").val([]);
 
-            const actionSelectSection = document.getElementById("sectionSelectUpdate");
+            @* const actionSelectSection = document.getElementById("sectionSelectUpdate");
             // Remove all options from the select element
             while (actionSelectSection.options.length > 0) {
                 actionSelectSection.remove(0);
-            }
+            } *@
 
             //AJAX get course select dep by department ID
             $.ajax({
@@ -760,7 +783,7 @@
         const selectedIndexCourse = actionSelectCourse.selectedIndex;
         const selectedValueCourse = actionSelectCourse.options[selectedIndexCourse].value;
 
-        populateSectionSelect(selectedValue, selectedValueCourse, "create");
+        @* populateSectionSelect(selectedValue, selectedValueCourse, "create"); *@
         checkSelectInputs();
     });
 
@@ -778,16 +801,16 @@
         const selectedIndexCourse = actionSelectCourse.selectedIndex;
         const selectedValueCourse = actionSelectCourse.options[selectedIndexCourse].value;
 
-        populateSectionSelect(selectedValue, selectedValueCourse, "update");
+        @* populateSectionSelect(selectedValue, selectedValueCourse, "update"); *@
         checkSelectInputs();
     });
 
     //to populate the class selection option
-    function populateSectionSelect(yearLevel, courseId, status)
+    @* function populateSectionSelect(yearLevel, courseId, status)
     {
         if(status == "create")
         {
-            const actionSelect = document.getElementById("sectionSelect");
+            @* const actionSelect = document.getElementById("sectionSelect");
             // Remove all options from the select element
             while (actionSelect.options.length > 0) {
                 actionSelect.remove(0);
@@ -911,7 +934,7 @@
                 }
             })
         }
-    }
+    } *@
 
 
     //assign an instructor [create]
@@ -923,7 +946,7 @@
         var formelements = $("#createAssignInstructorForm .form-group");
 
         //initialize the student count
-        let studCount = document.getElementById('studCount');
+        //let studCount = document.getElementById('studCount');
 
         //initialize the filter input 
         let filterBox = document.getElementById('filterSub');
@@ -945,7 +968,7 @@
 
         let emptyEl = new Boolean(false);
         //alternative of bool
-        if(studCount.value === '')
+        @* if(studCount.value === '')
         {
             //if the student count is empty return true 
             emptyEl = Boolean(true);
@@ -953,10 +976,10 @@
         else{
             //if the student count is not empty then return false
             emptyEl = Boolean(false);
-        }
+        } *@
 
         //if all elements are not empty
-        if(formInputs.length === formelements.length && emptyEl ===  Boolean(false) && emptyFilter === Boolean(false))
+        if(formInputs.length === formelements.length && emptyFilter === Boolean(false))
         {
 
             //check the data if there is an identical data
@@ -970,7 +993,7 @@
             })
             .done(function(result){
 
-                //false means there is no existing subject in the section
+                //false means there is no existing subject in the course
                 if(result == null)
                 {
                     //check if the data has already an existing subject in the particular section
@@ -1006,7 +1029,7 @@
                         }
                         else
                         {
-                            alertError("There is already a subject registered in this section.");
+                            alertError("There is already a subject registered in this program.");
                         }
                     });
                 }
@@ -1033,7 +1056,7 @@
         var arrData = {};
 
         //GET YOUR ORIGINAL DATA FROM THE SELECTED CELL
-        var oClassID = selectedAssignInstructor.sectionId;
+        var oClassID = selectedAssignInstructor.courseId;
         var oSemester = selectedAssignInstructor.semester;
         var oSubjectID = selectedAssignInstructor.subjectId;
         var oInstructorID = selectedAssignInstructor.instructorId;
@@ -1067,7 +1090,7 @@
 
         let emptyEl = new Boolean(false);
         //alternative of bool
-        if(studCount.value === '')
+        @* if(studCount.value === '')
         {
             //if the student count is empty then return true
             emptyEl = Boolean(true);
@@ -1075,10 +1098,10 @@
         else{
             //if the student count is not empty then return false
             emptyEl = Boolean(false);
-        }
+        } *@
 
         //if all elements are not empty
-        if(formInputs.length === formelements.length && emptyEl ===  Boolean(false) && emptyFilter === Boolean(false))
+        if(formInputs.length === formelements.length && emptyFilter === Boolean(false))
         {
 
             //check if there is an identical data
@@ -1126,7 +1149,7 @@
                         }
                         else
                         {
-                            if(oClassID == result.sectionId && oSubjectID == result.subjectId)
+                            if(oClassID == result.courseId && oSubjectID == result.subjectId)
                             {
                                 //If it's because of the selected cell, you can proceed to update
                                 //Call API to assign an instructor
@@ -1139,7 +1162,7 @@
                                     },
                                 })
                                 .done(function(){
-                                    $("#createAssignInstructorForm")[0].reset();
+                                    //$("#createAssignInstructorForm")[0].reset(); //back
                                     $("#updateAssignInstructorForm")[0].reset();
                                     $("#modalAssignInstructorUpdate").modal("toggle");
                                     alertSuccess();
@@ -1158,7 +1181,7 @@
                     //alertError("There is an already existing data!");
                     //If there is an existing data, check if it's because of your selected cell
 
-                    if(oClassID == result.sectionId && oSemester == result.semester && oSubjectID == result.subjectId)
+                    if(oClassID == result.courseId && oSemester == result.semester && oSubjectID == result.subjectId)
                     {
                         //If it's because of the selected cell
                         //check if the data has already an existing subject in the particular section
@@ -1196,7 +1219,7 @@
                             else
                             {
                                 //If there's an existing subject, check if it's because of the selected cell
-                                if(oClassID == result.sectionId && oSubjectID == result.subjectId)
+                                if(oClassID == result.courseId && oSubjectID == result.subjectId)
                                 {
                                     //If it's because of the selected cell, you can proceed to update
                                     //Call API to assign an instructor
@@ -1319,8 +1342,8 @@
         const selectedValueYear = actionSelectYear.options[selectedIndexYear].value;
 
         //populate the data of the section
-        populateSectionSelect(selectedValueYear, updateCourseId, "populate");
-        updateSectionId = data.sectionId;
+        @* populateSectionSelect(selectedValueYear, updateCourseId, "populate");
+        updateSectionId = data.sectionId; *@
 
         //subject
         $('#subjectSelectUpdate').val(data.subjectId);
@@ -1329,7 +1352,7 @@
         $('#semesterSelectUpdate').val(data.semester);
 
         //number of students
-        $('#studCountUpdate').val(data.studentCount);
+        @* $('#studCountUpdate').val(data.studentCount); *@
 
         //for the instructor : the goal is to get the department id of the particular instructor
         //the data of the department of the instructor is already stored when doing the inner join
@@ -1459,7 +1482,7 @@
 
     function defaultClear()
     {
-        $("#createAssignInstructorForm")[0].reset();
+        //$("#createAssignInstructorForm")[0].reset(); //back
         $("#updateAssignInstructorForm")[0].reset();
         defaultUnselect();
         $("select").val([]);

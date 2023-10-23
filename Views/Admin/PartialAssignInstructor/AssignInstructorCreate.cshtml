@@ -1,3 +1,4 @@
+<script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/js/multi-select-tag.js"></script>
 <template id="departmentOptionTemplate">
   <option value=""></option>
 </template>
@@ -54,10 +55,10 @@
               <option value="4th Year">4th Year</option>
               </select>
             </div>
-            <div class="form-group">
+            @* <div class="form-group">
                 <label name="" class="control-label">Section</label>
                 <select id="sectionSelect" name="SectionId" class="form-select"></select>
-            </div>
+            </div> *@
             <div class="form-group">
               <label name="" class="control-label">Subject</label>
               <input type="text" name="filterSubject" id="filterSub" class="form-control" placeholder="Filter : Input course / subject name"/>
@@ -70,14 +71,14 @@
                 <label name="" class="control-label">Semester</label>
                 <select id="semesterSelect" name="Semester" class="form-select">
                 <option value="1st Semester">1st Semester</option>
-                <option value="2nd Semester">2nd Semester</option>
-                <option value="Summer">Summer</option>
+                @* <option value="2nd Semester">2nd Semester</option>
+                <option value="Summer">Summer</option> *@
                 </select>
             </div>
-            <div class="form-group">
+            @* <div class="form-group">
                 <label name="" class="control-label">Number of students</label>
                 <input type="number" name="StudentCount" id="studCount" class="form-control" placeholder="Enter number of students" required/>
-            </div>
+            </div> *@
             </form>
             <hr/>
       </div>
@@ -90,3 +91,7 @@
     </div>
   </div>
 </div>
+
+<script>
+    @* new MultiSelectTag('departmentSelect')  // id *@
+</script>

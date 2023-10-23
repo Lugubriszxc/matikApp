@@ -79,22 +79,19 @@ namespace matikApp.Models
                     .HasColumnType("int(11)")
                     .HasColumnName("departmentID");
 
-                entity.Property(e => e.SectionId)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("sectionID");
-
                 entity.Property(e => e.Semester)
                     .IsRequired()
                     .HasMaxLength(250)
                     .HasColumnName("semester");
 
-                entity.Property(e => e.StudentCount)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("studentCount");
-
                 entity.Property(e => e.SubjectId)
                     .HasColumnType("int(11)")
                     .HasColumnName("subjectID");
+
+                entity.Property(e => e.YearLevel)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("yearLevel");
             });
 
             modelBuilder.Entity<Authorization>(entity =>

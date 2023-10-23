@@ -726,21 +726,17 @@ namespace matikApp.Controllers
                     from asi in _context.Assignsubjects
                     join dep in _context.Departments on asi.DepartmentId equals dep.DepartmentId
                     join cor in _context.Courses on asi.CourseId equals cor.CourseId
-                    join sec in _context.Sections on asi.SectionId equals sec.SectionId
                     join sub in _context.Subjects on asi.SubjectId equals sub.SubjectId
                     
                     select new DetailedAssignInstructor
                     {
                         AId = asi.AId,
                         Semester = asi.Semester,
-                        StudentCount = asi.StudentCount,
                         DepartmentId = dep.DepartmentId,
                         CourseId = cor.CourseId,
                         DepartmentName = dep.DepartmentName,
                         CourseName = cor.CourseName,
-                        SectionId = sec.SectionId,
-                        SectionName = sec.SectionName,
-                        YearLevel = sec.YearLevel,
+                        YearLevel = asi.YearLevel,
                         SubjectId = sub.SubjectId,
                         SubjectCode = sub.SubjectCode,
                         SubjectName = sub.SubjectName,
@@ -771,7 +767,7 @@ namespace matikApp.Controllers
 
             //if the row has already the existing datas and subject then this will return true
             var resExistingData = _context.Assignsubjects.Where(
-                element => element.SectionId == asi.SectionId
+                element => element.YearLevel == asi.YearLevel
                 && element.Semester == asi.Semester
                 && element.SubjectId == asi.SubjectId).FirstOrDefault();
 
@@ -799,7 +795,7 @@ namespace matikApp.Controllers
             bool isThereExistingSubject = false;
 
             var resExistingSubject = _context.Assignsubjects.Where(
-                element => element.SectionId == asi.SectionId
+                element => element.CourseId == asi.CourseId
                 && element.SubjectId == asi.SubjectId
             ).FirstOrDefault();
 
