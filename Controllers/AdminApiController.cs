@@ -767,7 +767,7 @@ namespace matikApp.Controllers
 
             //if the row has already the existing datas and subject then this will return true
             var resExistingData = _context.Assignsubjects.Where(
-                element => element.YearLevel == asi.YearLevel
+                element => element. CourseId == asi.CourseId
                 && element.Semester == asi.Semester
                 && element.SubjectId == asi.SubjectId).FirstOrDefault();
 

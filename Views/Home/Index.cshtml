@@ -5,6 +5,7 @@
 <div class="text-center bg-warning text-dark">
     <h1 class="display-4"><b>Automated Class Scheduling System</b></h1>
     <p>A capstone project of the Bachelor of Science in Information Technology from the College of Computer Studies.</p>
+    <button class="btn btn-primary" id="testGenerate">TEST GENERATE SCHEDULE</button>
 </div>
 
 @* <!DOCTYPE html>
@@ -32,3 +33,15 @@
     <!-- /#page-content-wrapper -->
 </body>
 </html> *@
+
+<script>
+    $(document).ready(function(){
+
+        $('#testGenerate').click(function(){
+            $.ajax("../api/generatescheduleapi/startGenerate").done(function(result){
+                console.log(result);
+            });
+        });
+
+    }); // end of document.ready
+</script>

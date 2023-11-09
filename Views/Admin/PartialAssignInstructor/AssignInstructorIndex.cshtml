@@ -1021,7 +1021,7 @@
                                 },
                             })
                             .done(function(){
-                                $("#createAssignInstructorForm")[0].reset();
+                                //$("#createAssignInstructorForm")[0].reset(); //back
                                 $("#modalAssignInstructorCreate").modal("toggle");
                                 alertSuccess();
                                 populateInstructorTable();
@@ -1483,9 +1483,9 @@
     function defaultClear()
     {
         //$("#createAssignInstructorForm")[0].reset(); //back
-        $("#updateAssignInstructorForm")[0].reset();
-        defaultUnselect();
-        $("select").val([]);
+        //$("#updateAssignInstructorForm")[0].reset();
+        //defaultUnselect();
+        //$("select").val([]);
     }
 
     //sweet alert
