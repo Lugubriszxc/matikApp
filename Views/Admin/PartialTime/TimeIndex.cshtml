@@ -28,7 +28,7 @@
     $(document).ready(function(){
     //call the functions by default
     populateTimeTable();
-    clearForm();
+    //clearForm();
 
     function clearForm()
     {
@@ -49,7 +49,6 @@
             columns:
             [
                 {data: 'timeId'},
-                {data: 'day'},
                 {
                     data: 'timeId',
                     render : function (data, type, row)
@@ -189,7 +188,7 @@
             });
 
             let emptyEl = new Boolean(false);
-            if(formInputs[1].value === '' || formInputs[2].value === '')
+            if(formInputs[0].value === '' || formInputs[1].value === '')
             {
                 emptyEl = Boolean(true);
             }
@@ -226,7 +225,7 @@
                     },
                     })
                     .done(function(){
-                        clearForm();
+                        //clearForm();
                         $("#modalTimeCreate").modal("toggle");
                         alertSuccess();
                         populateTimeTable();
@@ -325,7 +324,7 @@
         arrData.timeId = selectedTimeId;
 
         let emptyEl = new Boolean(false);
-        if(formInputs[1].value === '' || formInputs[2].value === '')
+        if(formInputs[0].value === '' || formInputs[1].value === '')
         {
             emptyEl = Boolean(true);
         }
@@ -359,7 +358,7 @@
                 },
                 })
                 .done(function(){
-                    clearForm();
+                    //clearForm();
                     $("#modalTimeUpdate").modal("toggle");
                     alertSuccess();
                     populateTimeTable();
@@ -378,12 +377,12 @@
 
     //upon closing the modal create
     $("#modalTimeCreateClose").click(function(){
-        defaultClear();
+        //defaultClear();
     });
 
     //upon opening of create modal
     $("#createTimebtn").click((e) => {
-        defaultClear();
+        //defaultClear();
     });
 
     function defaultClear()
@@ -456,7 +455,7 @@
     }
 
     $("#modalTimeCreateClose").click(function(){
-        clearForm();
+        //clearForm();
     });
 
     }); //end of document.ready

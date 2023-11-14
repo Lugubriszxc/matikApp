@@ -83,7 +83,7 @@
           result.forEach(function (item){
             var cloned = template.content.cloneNode(true);
             cloned.querySelector("option").value = item.timeId;
-            cloned.querySelector("option").innerText = item.day + ", " + item.startTime + " : " + item.endTime;
+            cloned.querySelector("option").innerText = item.startTime + " : " + item.endTime;
 
             parent[i].prepend(cloned);
           });
@@ -601,6 +601,7 @@
 
         arrData.InstructorId = selectedInstructorId;
 
+        console.log(formelements.length);
         if(formInputs.length === formelements.length)
         {
             console.log(arrData);

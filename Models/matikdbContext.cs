@@ -364,11 +364,6 @@ namespace matikApp.Models
                     .HasColumnType("int(11)")
                     .HasColumnName("timeID");
 
-                entity.Property(e => e.Day)
-                    .IsRequired()
-                    .HasMaxLength(250)
-                    .HasColumnName("day");
-
                 entity.Property(e => e.EndTime)
                     .IsRequired()
                     .HasMaxLength(250)
@@ -390,6 +385,11 @@ namespace matikApp.Models
                 entity.Property(e => e.UaId)
                     .HasColumnType("int(11)")
                     .HasColumnName("uaID");
+
+                entity.Property(e => e.Day)
+                    .IsRequired()
+                    .HasMaxLength(250)
+                    .HasColumnName("day");
 
                 entity.Property(e => e.InstructorId)
                     .HasColumnType("int(11)")

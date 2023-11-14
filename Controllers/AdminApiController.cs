@@ -258,7 +258,7 @@ namespace matikApp.Controllers
                     UaId = up.UaId,
                     InstructorId = i.InstructorId,
                     TimeId = ts.TimeId,
-                    Day = ts.Day,
+                    Day = up.Day,
                     StartTime = ts.StartTime,
                     EndTime = ts.EndTime
                 }

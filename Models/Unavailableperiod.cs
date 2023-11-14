@@ -7,6 +7,7 @@ namespace matikApp.Models
     {
         public int UaId { get; set; }
         public int InstructorId { get; set; }
+        public string Day { get; set; }
         public int TimeId { get; set; }
     }
 }
