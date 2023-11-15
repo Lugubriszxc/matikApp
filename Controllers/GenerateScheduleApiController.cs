@@ -276,6 +276,11 @@ namespace matikApp.Controllers
                                                         dayConvert = "Sunday";
                                                         break;
                                                 }
+
+                                                //make a condition based on their units
+                                                int subjectUnits = subName.SubjectUnit;
+                                                int subjectUnitCounter = 0;
+
                                                 foreach(var time in Timeslots)
                                                 {
                                                     // //this skips the time and increment it
@@ -297,26 +302,36 @@ namespace matikApp.Controllers
                                                             //second condition : the room should not be conflicted with the time
                                                             if(resRoomSched == null || roomSchedule.Count == 0)
                                                             {
-                                                                //condition : if the subject code is NSTP 1 and it's not saturday
-                                                                if(subName.SubjectCode == "NSTP 1" && day != 6) //6 means Saturday
+                                                                //condition : if the subject code is NSTP 1 and it's not Sunday
+                                                                if(subName.SubjectCode == "NSTP 1" && day != 7) //7 means Sunday
                                                                 {
                                                                     //increment the time until it reaches Saturday
                                                                     goto outTimeLoop;
                                                                 }
 
-                                                                //condition : if the subject code is NSTP 1 and it's not saturday
-                                                                if(subName.SubjectCode == "NSTP 1" && day == 6)
+                                                                //condition : if the subject code is NSTP 1 and it's Sunday
+                                                                if(subName.SubjectCode == "NSTP 1" && day == 7)
                                                                 {
                                                                     roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));
-                                                                    //roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId));
-                                                                    if(assignSubjectCounter + 0 >= assignSubjectCount) //if the assign subject counts go out of bounds
+                                                                    subjectUnitCounter++; //increment the subject unit counter
+
+                                                                    //while the incrementation is not equal, the time will be on a loop to add more time slot based on their units
+                                                                    if(subjectUnitCounter != subjectUnits)
                                                                     {
-                                                                        goto outerLoop;
+                                                                        goto outTimeLoop;
                                                                     }
                                                                     else
                                                                     {
-                                                                        //increment the assign subject
-                                                                        goto outSubjectLoop;
+                                                                        //roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId));
+                                                                        if(assignSubjectCounter + 0 >= assignSubjectCount) //if the assign subject counts go out of bounds
+                                                                        {
+                                                                            goto outerLoop;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            //increment the assign subject
+                                                                            goto outSubjectLoop;
+                                                                        }
                                                                     }
                                                                 }
 
@@ -325,14 +340,25 @@ namespace matikApp.Controllers
                                                                 {
                                                                     roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));
                                                                     //roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId));
-                                                                    if(assignSubjectCounter + 0 >= assignSubjectCount) //if the assign subject counts go out of bounds
+                                                                    subjectUnitCounter++; //increment the subject unit counter
+
+                                                                    //while the incrementation is not equal, the time will be on a loop to add more time slot based on their units
+                                                                    if(subjectUnitCounter != subjectUnits)
                                                                     {
-                                                                        goto outerLoop;
+                                                                        goto outTimeLoop;
                                                                     }
                                                                     else
                                                                     {
-                                                                        //increment the assign subject
-                                                                        goto outSubjectLoop;
+                                                                        //roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId));
+                                                                        if(assignSubjectCounter + 0 >= assignSubjectCount) //if the assign subject counts go out of bounds
+                                                                        {
+                                                                            goto outerLoop;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            //increment the assign subject
+                                                                            goto outSubjectLoop;
+                                                                        }
                                                                     }
                                                                 }
                                                                 
@@ -362,16 +388,21 @@ namespace matikApp.Controllers
             }
 
             outerLoop:
+            
             if(roomSchedule != null)
             {
-                foreach(var roomSched in roomSchedule)
+                var uniqueRoomSchedules = roomSchedule
+                .GroupBy(rs => new { rs.SectionId, rs.SubjectId, rs.InstructorId, rs.RoomId})
+                .Select(group => group.First())
+                .ToList();
+
+                foreach(var roomSched in uniqueRoomSchedules)
                 {
                     var resSection = Sections.Where(sec => sec.SectionId == roomSched.SectionId).FirstOrDefault();
                     var resSubject = Subjects.Where(sub => sub.SubjectId == roomSched.SubjectId).FirstOrDefault();
                     var resInstructor = Instructors.Where(ins => ins.InstructorId == roomSched.InstructorId).FirstOrDefault();
                     var resRoom = Rooms.Where(rom => rom.RoomId == roomSched.RoomId).FirstOrDefault();
-                    var resTime = Timeslots.Where(ts => ts.TimeId == roomSched.TimeId).FirstOrDefault();
-                    
+
                     string dayConvert = "";
                     //Day converter
                     switch(roomSched.Day)
@@ -403,8 +434,31 @@ namespace matikApp.Controllers
                     Console.WriteLine(resSubject.SubjectName);
                     Console.WriteLine(resInstructor.InstructorFname);
                     Console.WriteLine(resRoom.RoomName);
-                    Console.WriteLine(dayConvert + " " + resTime.StartTime + " " + resTime.EndTime);
-                    Console.WriteLine();
+                    
+                    //convert the looped attributes to get the list of the time
+                    var toPrintTime = roomSchedule.Where(rs => rs.InstructorId == roomSched.InstructorId && rs.SectionId == roomSched.SectionId && rs.SubjectId == roomSched.SubjectId && rs.RoomId == roomSched.RoomId).ToList();
+                    //printing the time
+                    int timeCount = toPrintTime.Count();
+                    int timeCounter = 0;
+                    foreach(var timePrint in toPrintTime)
+                    {
+                        timeCounter++;
+
+                        var resTime = Timeslots.Where(ts => ts.TimeId == timePrint.TimeId).FirstOrDefault();
+                        //Console.WriteLine(dayConvert + " " + resTime.StartTime + " " + resTime.EndTime);
+
+                        if(timeCounter == 1)
+                        {   
+                            //only print the first start time
+                            Console.Write(dayConvert + " " + resTime.StartTime);
+                        }
+                        else if(timeCounter == timeCount)
+                        {
+                            // if the time counter meets the end
+                            Console.Write(" " + resTime.EndTime);
+                        }
+                    }
+                    Console.WriteLine("\n");
                     //Console.ReadKey();
                 }
             }
