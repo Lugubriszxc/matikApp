@@ -281,13 +281,59 @@ namespace matikApp.Controllers
                                                 int subjectUnits = subName.SubjectUnit;
                                                 int subjectUnitCounter = 0;
 
-                                                foreach(var time in Timeslots)
+                                                //boolean timeSkipped, if adding the time detected a skip, this becomes true.
+                                                bool timeSkipped = false;
+                                                bool skipTime = false;
+
+                                                //sort the time slots first
+                                                var sortedTimeslots = Timeslots.OrderBy(ts => ts.StartTime);
+                                                foreach(var time in sortedTimeslots)
                                                 {
+                                                    if(roomSchedule.Count != 0)
+                                                    {
+                                                        //check if the roomschedule with section id and subject id where day != day
+                                                        if(subjectUnitCounter >= 1)
+                                                        {
+                                                            var checkDay = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && rs.Day != day).FirstOrDefault();
+                                                            if(checkDay != null)
+                                                            {
+                                                                timeSkipped = true;
+                                                            }
+                                                        }
+                                                    }
+
+                                                    if(time.StartTime == "12:00" && time.EndTime == "13:00")
+                                                    {
+                                                        timeSkipped = true;
+                                                        skipTime = true;
+                                                    }
+
+                                                    if(timeSkipped == true)
+                                                    {
+                                                        eraseList:
+                                                        //if time skipped is true then reset the values in list.
+                                                        //remove the array where section id, subject id
+                                                        roomSchedule.RemoveAll(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId);
+
+                                                        //reset all the counter to 0
+                                                        subjectUnitCounter = 0;
+                                                        //assignSubjectCounter = 0;
+
+                                                        //make the time skipped false right after
+                                                        timeSkipped = false;
+                                                        if(skipTime == true)
+                                                        {
+                                                            skipTime = false;
+                                                            goto outTimeLoop;
+                                                        }
+                                                    }
+
                                                     // //this skips the time and increment it
                                                     // if(boolRoomTime == true)
                                                     // {
                                                     //     goto outTimeLoop;
                                                     // }
+
                                                     //replace 12 with instructor.InstructorId
                                                     var resUnavailablePeriod = Unavailableperiods.Where(up => up.TimeId == time.TimeId && up.Day == dayConvert && up.InstructorId == instructor.InstructorId).FirstOrDefault();
                                                     if(resUnavailablePeriod == null) //null means the instructor is free
@@ -302,7 +348,10 @@ namespace matikApp.Controllers
                                                             //second condition : the room should not be conflicted with the time
                                                             if(resRoomSched == null || roomSchedule.Count == 0)
                                                             {
-                                                                //condition : if the subject code is NSTP 1 and it's not Sunday
+                                                                //check a condition here if it skips break time
+
+
+                                                                //condition : if the subjct code is NeSTP 1 and it's not Sunday
                                                                 if(subName.SubjectCode == "NSTP 1" && day != 7) //7 means Sunday
                                                                 {
                                                                     //increment the time until it reaches Saturday
@@ -339,6 +388,7 @@ namespace matikApp.Controllers
                                                                 if(subName.SubjectCode != "NSTP 1")
                                                                 {
                                                                     roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));
+                                                                    //roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day + 2));
                                                                     //roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId));
                                                                     subjectUnitCounter++; //increment the subject unit counter
 
@@ -367,11 +417,30 @@ namespace matikApp.Controllers
                                                                 //Console.ReadKey();
 
                                                             }
+                                                            else if(resRoomSched != null)
+                                                            {
+                                                                //time skipped detected
+                                                                timeSkipped = true;
+                                                            }
                                                         }
+                                                        else if(sectionSched != null)
+                                                        {
+                                                            //time skipped detected
+                                                            timeSkipped = true;
+                                                        }
+                                                    }
+                                                    else if(resUnavailablePeriod != null)
+                                                    {
+                                                        //time skipped detected
+                                                        timeSkipped = true;
                                                     }
                                                     outTimeLoop:
                                                     Console.Write("");
                                                 }
+
+                                                //timeSkipped = true;
+                                                //timeSkipped = true;
+                                                //end of day loop
                                             }
                                         
                                         }
@@ -461,6 +530,8 @@ namespace matikApp.Controllers
                     Console.WriteLine("\n");
                     //Console.ReadKey();
                 }
+
+                Console.WriteLine(roomSchedule);
             }
             // Console.WriteLine(secName);
             // Console.WriteLine(subjectN);
