@@ -304,16 +304,19 @@ namespace matikApp.Controllers
                                                 int subjectUnitCounter = 0;
 
                                                 // if it's the rotc subject then multiply the subject unit by 2
+                                                bool bypassCheck = false;
                                                 if(subName.SubjectId == 17)
                                                 {
                                                     subjectUnits *= 2;
+                                                    //goto byPassROTC;
                                                 }
 
                                                 //boolean timeSkipped, if adding the time detected a skip, this becomes true.
                                                 bool timeSkipped = false;
                                                 bool skipTime = false;
-                                                bool bypassCheck = false;
+                                                
                                                 bool changeInstructor = false;
+                                                bool byPassROTC = false;
 
                                                 //sort the time slots first
                                                 var sortedTimeslots = Timeslots.OrderBy(ts => ts.StartTime);
@@ -323,6 +326,15 @@ namespace matikApp.Controllers
                                                     //count how many time slots
                                                     var countTime = Timeslots.OrderBy(ts => ts.StartTime).Count();
                                                     timeCounter++;
+
+                                                    //if the subject id is ROTC, it will skip the conditions here
+                                                    if(subName.SubjectId == 17)
+                                                    {
+                                                        byPassROTC = true;
+                                                        goto skipCondition;
+                                                    }
+
+
                                                     if(roomSchedule.Count != 0)
                                                     {
                                                         //check if the roomschedule with section id and subject id where day != day
@@ -417,9 +429,10 @@ namespace matikApp.Controllers
                                                     //     goto outTimeLoop;
                                                     // }
 
+                                                    skipCondition:
                                                     //replace 12 with instructor.InstructorId
                                                     var resUnavailablePeriod = Unavailableperiods.Where(up => up.TimeId == time.TimeId && up.Day == dayConvert && up.InstructorId == instructor.InstructorId).FirstOrDefault();
-                                                    if(resUnavailablePeriod == null) //null means the instructor is free
+                                                    if(resUnavailablePeriod == null || byPassROTC == true) //null means the instructor is free
                                                     {
                                                         //here, check if the room is available and if the section will not be conflicted with the sched
                                                         var resRoomSched = roomSchedule.Where(rs => rs.RoomId == fRoom.RoomId && rs.TimeId == time.TimeId && rs.Day == day).FirstOrDefault();
@@ -427,18 +440,19 @@ namespace matikApp.Controllers
 
                                                         //check if the teacher already has a schedule for teaching
                                                         var instructorSched = roomSchedule.Where(rs => rs.InstructorId == instructor.InstructorId && rs.TimeId == time.TimeId && rs.Day == day).FirstOrDefault();
-                                                        if(instructorSched == null || roomSchedule.Count == 0)
+                                                        if(instructorSched == null || roomSchedule.Count == 0 || byPassROTC == true)
                                                         {
                                                             // add a condition that if the subject id is ROTC then the quadrangle is okay
                                                             //first condition : the section should not be conflicted with the time
-                                                            if(sectionSched == null || roomSchedule.Count == 0)
+                                                            if(sectionSched == null || roomSchedule.Count == 0 || byPassROTC == true)
                                                             {
                                                                 bypassCondition:
                                                                 //second condition : the room should not be conflicted with the time
-                                                                if(resRoomSched == null || roomSchedule.Count == 0 || bypassCheck == true)
+                                                                if(resRoomSched == null || roomSchedule.Count == 0 || bypassCheck == true || byPassROTC == true)
                                                                 {
                                                                     //return it back to normal
                                                                     bypassCheck = false;
+                                                                    byPassROTC = false;
                                                                     //check a condition here if it skips break time
                                                                     //condition : if the subjct id is ROTC and it's not Sunday
                                                                     if(subName.SubjectId == 17 && day != 7) //7 means Sunday
@@ -447,6 +461,9 @@ namespace matikApp.Controllers
                                                                         goto outTimeLoop;
                                                                     }
 
+                                                                    //jump statement
+
+                                                                    //byPassROTC:
                                                                     //condition : if the subject code is ROTC and it's Sunday
                                                                     if(subName.SubjectId == 17 && day == 7)
                                                                     {
