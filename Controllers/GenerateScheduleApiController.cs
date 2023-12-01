@@ -207,10 +207,11 @@ namespace matikApp.Controllers
             //bool boolRoomTime = false; //if this becomes true then increment the time
 
             int sectionCounter = 0;
-            var filterSections = Sections.Where(s =>s.CourseId == 39).ToList();
+            // var filterSections = Sections.Where(s =>s.CourseId == 26).ToList();
+            //var filterSections = Sections.ToList();
 
             //you can replace filterSections with Sections
-            foreach(var section in filterSections)
+            foreach(var section in Sections)
             {
                 //counting the section;
                 sectionCounter++;
@@ -218,20 +219,21 @@ namespace matikApp.Controllers
 
                 //filter the assign subject based on section's year level and course id
                 var filterAssignsubjects = Assignsubjects.Where(aSub => aSub.YearLevel == section.YearLevel && aSub.CourseId == section.CourseId).ToList();
-
                 foreach (var assignSubject in filterAssignsubjects)
                 {
                     //replace the 39 with section.courseid and 1st year with section.yearlevel
-                    int assignSubjectCount = Assignsubjects.Where(aSub => aSub.CourseId == 39 && aSub.YearLevel == section.YearLevel).Count();
+                    int assignSubjectCount = Assignsubjects.Where(aSub => aSub.CourseId == section.CourseId && aSub.YearLevel == section.YearLevel).Count();
                     assignSubjectCounter++;
 
                     //you can replace this to count all of the sections combined
-                    int sectionCount = Sections.Where(s => s.CourseId == 39).Count();
-                    Console.WriteLine(sectionCounter);
+                    int sectionCount = Sections.Where(s => s.CourseId == section.CourseId).Count();
+                    //int sectionCount = Sections.Count(); //December 01, 2023 : switch to this if you want to generate all section's schedule
+
+                    //Console.WriteLine(sectionCounter);
 
                     //replace the "1st Year" and 39 with section.YearLevel and section.CourseId
                     //remove section.sectionId
-                    if(assignSubject.YearLevel == section.YearLevel && assignSubject.CourseId == 39)
+                    if(assignSubject.YearLevel == section.YearLevel && assignSubject.CourseId == section.CourseId)
                     {
                         //get the room type
                         var resultSubject = Subjects.Where(sub => sub.SubjectId == assignSubject.SubjectId).FirstOrDefault();
@@ -255,7 +257,7 @@ namespace matikApp.Controllers
                                 join ins in Instructors on rs.InstructorId equals ins.InstructorId
                                 join sub in Subjects on rs.SubjectId equals sub.SubjectId
                                 join sec in Sections on rs.SectionId equals sec.SectionId
-                                where sub.SubjectId == rs.SubjectId && ins.InstructorId == 12 && sec.SectionId == rs.SectionId
+                                where sub.SubjectId == rs.SubjectId && ins.InstructorId == instructor.InstructorId && sec.SectionId == rs.SectionId
                                 select new
                                 {
                                     sectionName = sec.SectionName,
@@ -274,7 +276,7 @@ namespace matikApp.Controllers
                             //CONDITION : if the total unit + the subject unit exceeds, it will find another instructor instead.
                             if(totalInstructorUnit + resultSubject.SubjectUnit > 24)
                             {
-                                //CONDITION : if the last instructor reached the limit, it will attempt an overload and bypass the condition
+                                //CONDITION : if the last instructor reached the limit, it will attempt an overload and bypass the
                                 if(instructorCounter != countInstructor)
                                 {
                                     //find another instructor instead
