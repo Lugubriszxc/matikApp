@@ -155,6 +155,7 @@ namespace matikApp.Controllers
                                                 break;
                                             }
                                         }
+
                                         //make a condition if the instructor.id instructor unavailable time period. should it be looped or not?
                                         //var timeId = time.TimeId;
                                         /*
@@ -246,6 +247,40 @@ namespace matikApp.Controllers
                             //count the number of instructors who handles the subject
                             int countInstructor = Subjecthandleds.Where(x => x.SubjectId == resultSubject.SubjectId).Count();
                             instructorCounter++;
+
+                            //Get the total units of each teacher based on their handled subjects
+                            //MAX UNIT = 24
+                            var getSubInstructor = 
+                                (from rs in roomSchedule
+                                join ins in Instructors on rs.InstructorId equals ins.InstructorId
+                                join sub in Subjects on rs.SubjectId equals sub.SubjectId
+                                join sec in Sections on rs.SectionId equals sec.SectionId
+                                where sub.SubjectId == rs.SubjectId && ins.InstructorId == 12 && sec.SectionId == rs.SectionId
+                                select new
+                                {
+                                    sectionName = sec.SectionName,
+                                    instructorN = ins.InstructorFname,
+                                    subjectN = sub.SubjectName,
+                                    subUnit = sub.SubjectUnit
+                                })
+                                .Distinct();
+
+                            int totalInstructorUnit = 0;
+                            foreach(var result in getSubInstructor)
+                            {
+                                totalInstructorUnit += result.subUnit;
+                            }
+
+                            //CONDITION : if the total unit + the subject unit exceeds, it will find another instructor instead.
+                            if(totalInstructorUnit + resultSubject.SubjectUnit > 24)
+                            {
+                                //CONDITION : if the last instructor reached the limit, it will attempt an overload and bypass the condition
+                                if(instructorCounter != countInstructor)
+                                {
+                                    //find another instructor instead
+                                    goto outInstructorLoop;
+                                }
+                            }
 
                             //replace 12 with instructor.InstructorId
                             var resultSubHandle = Subjecthandleds.Where(sh => sh.InstructorId == instructor.InstructorId && sh.SubjectId == resultSubject.SubjectId).FirstOrDefault();
@@ -742,6 +777,38 @@ namespace matikApp.Controllers
                 }
 
                 Console.WriteLine(roomSchedule);
+
+
+                //Get the total units of each teacher based on their handled subjects
+                //MAX UNIT = 24
+                var getSubInstructor = 
+                    (from rs in roomSchedule
+                    join ins in Instructors on rs.InstructorId equals ins.InstructorId
+                    join sub in Subjects on rs.SubjectId equals sub.SubjectId
+                    join sec in Sections on rs.SectionId equals sec.SectionId
+                    where sub.SubjectId == rs.SubjectId && ins.InstructorId == 12 && sec.SectionId == rs.SectionId
+                    select new
+                    {
+                        sectionName = sec.SectionName,
+                        instructorN = ins.InstructorFname,
+                        subjectN = sub.SubjectName,
+                        subUnit = sub.SubjectUnit
+                    })
+                    .Distinct();
+
+                int totalUnit = 0;
+                foreach(var result in getSubInstructor)
+                {
+                    totalUnit += result.subUnit;
+                    Console.WriteLine();
+                    Console.WriteLine(result.sectionName);
+                    Console.WriteLine(result.instructorN);
+                    Console.WriteLine(result.subjectN);
+                    Console.WriteLine(result.subUnit);
+                }
+
+                Console.WriteLine("Total Unit : " + totalUnit);
+
             }
             // Console.WriteLine(secName);
             // Console.WriteLine(subjectN);
