@@ -550,6 +550,10 @@ namespace matikApp.Controllers
         }
 
         //query to create an unavailable time slot
+        public ActionResult<List<Unavailableperiod>> getUnavailableperiods(){
+            return  _context.Unavailableperiods.ToList();
+        }
+
         public IActionResult createUnavailablePeriod(Unavailableperiod up)
         {
             if(up.InstructorId == 0 || up.InstructorId == null)
@@ -560,6 +564,11 @@ namespace matikApp.Controllers
             _context.SaveChanges();
 
             return Ok();
+        }
+
+        //fetch subject handleds
+        public ActionResult<List<Subjecthandled>> getSubjecthandleds(){
+            return  _context.Subjecthandleds.ToList();
         }
 
         //query to create subject handled
@@ -688,6 +697,10 @@ namespace matikApp.Controllers
         public ActionResult<List<Section>> getSectionYearrCor(string yearLevel, int courseId){
             //return  _context.Courses.Where(e => e.DepartmentId == departmentId).ToList();
             return _context.Sections.Where(e => e.YearLevel == yearLevel && e.CourseId == courseId).ToList();
+        }
+
+        public ActionResult<List<Assignsubject>> getAssignsubjects(){
+            return  _context.Assignsubjects.ToList();
         }
 
         //query to assign an instructor
@@ -860,6 +873,10 @@ namespace matikApp.Controllers
         }
 
         //Regis Section Academic Details API
+
+        public ActionResult<List<Regissection>> getRegissections(){
+            return  _context.Regissections.ToList();
+        }
 
         //to fetch the subjects handled of the instructor
         public IActionResult getRegisSection(int sectionID)

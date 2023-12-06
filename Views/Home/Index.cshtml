@@ -2,11 +2,15 @@
     ViewData["Title"] = "Home Page";
 }
 
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <div class="text-center bg-warning text-dark">
     <h1 class="display-4"><b>Automated Class Scheduling System</b></h1>
     <p>A capstone project of the Bachelor of Science in Information Technology from the College of Computer Studies.</p>
     <button class="btn btn-primary" id="testGenerate">TEST GENERATE SCHEDULE</button>
+    <button id="sheetjsexport"><b>Export as XLSX</b></button>
 </div>
+
+<table id="TableToExport">
 
 @* <!DOCTYPE html>
 <html lang="en">
@@ -35,13 +39,333 @@
 </html> *@
 
 <script>
+
+    var Rooms = {};
+    var Courses = {};
+    var Instructors = {};
+    var Unavailableperiods = {};
+    var Assignsubjects = {};
+    var Subjects = {};
+    var Subjecthandleds = {};
+    var Sections = {};
+    var Regissections = {};
+    var Timeslots = {};
+
+    var GeneratedSched = {};
+
     $(document).ready(function(){
+
+
+        getData();
+        function getData()
+        {
+            $.ajax("../api/adminapi/getRooms").done(function(result){
+                Rooms = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getCourse").done(function(result){
+                Courses = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getInstructors").done(function(result){
+                Instructors = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getUnavailableperiods").done(function(result){
+                Unavailableperiods = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getAssignsubjects").done(function(result){
+                Assignsubjects = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getSubjects").done(function(result){
+                Subjects = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getSubjecthandleds").done(function(result){
+                Subjecthandleds = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getSections").done(function(result){
+                Sections = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getRegissections").done(function(result){
+                Regissections = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getTimeSlots").done(function(result){
+                Timeslots = result;
+                console.log(result);
+            });
+        }
 
         $('#testGenerate').click(function(){
             $.ajax("../api/generatescheduleapi/startGenerate").done(function(result){
+                GeneratedSched = result;
                 console.log(result);
             });
         });
+
+        // Your schedule data for First Year A
+        const firstYearASchedule = [
+            {
+                "Subject No.": "CC 100",
+                "Descriptive Title": "Introduction to Computing",
+                "Units": 5,
+                "Offer Code": "",
+                "Days": "MW",
+                "Time": "2:30-5:00 PM",
+                "Room": "CL 4",
+                "Instructor": "Reso, Marjorie"
+            },
+            {
+                "Subject No.": "CC 101",
+                "Descriptive Title": "Computer Programming 1",
+                "Units": 5,
+                "Offer Code": "",
+                "Days": "MW",
+                "Time": "9:00-11:30 AM",
+                "Room": "CL 1",
+                "Instructor": "Gelig, Jonel"
+            },
+            // Add more schedule entries for First Year A as needed
+        ];
+
+        // Separator row to add indentation
+        const separatorRow = {
+            "Subject No.": "",
+            "Descriptive Title": "",
+            "Units": "",
+            "Offer Code": "",
+            "Days": "",
+            "Time": "",
+            "Room": "",
+            "Instructor": ""
+        };
+
+        const headerRowB = {
+            "Subject No.": "Subject No.",
+            "Descriptive Title": "Descriptive Title",
+            "Units": "Units",
+            "Offer Code": "Offer Code",
+            "Days": "Days",
+            "Time": "Time",
+            "Room": "Room",
+            "Instructor": "Instructor"
+        };
+
+        // Your schedule data for First Year B
+        const firstYearBSchedule = [
+            separatorRow,
+            separatorRow,
+            headerRowB,
+            {
+                "Subject No.": "CC 100",
+                "Descriptive Title": "Introduction to Computing",
+                "Units": 5,
+                "Offer Code": "",
+                "Days": "MW",
+                "Time": "3:30-6:00 PM",
+                "Room": "CL 1",
+                "Instructor": "Raganas, Hilarion"
+            },
+            {
+                "Subject No.": "CC 101",
+                "Descriptive Title": "Computer Programming 1",
+                "Units": 5,
+                "Offer Code": "",
+                "Days": "MW",
+                "Time": "6:00-8:30 PM",
+                "Room": "CL 1",
+                "Instructor": "Raganas, Hilarion"
+            },
+            // Add more schedule entries for First Year B as needed
+        ];
+
+        
+
+        const combinedSchedule = firstYearASchedule.concat(firstYearBSchedule);
+
+        //for header
+        const headerData = {
+            "Section ID": "Section ID",
+            "Subject ID": "Subject ID",
+            "Instructor ID": "Instructor ID",
+            "Room ID": "Room ID",
+            "Time ID": "Time ID",
+            "Day": "Day",
+        };
+
+        document.getElementById("sheetjsexport").addEventListener('click', function() {
+        @* /* Create worksheet from HTML DOM TABLE */
+        var wb = XLSX.utils.table_to_book(document.getElementById("TableToExport"));
+        /* Export to file (start a download) */
+        XLSX.writeFile(wb, "SheetJSTable.xlsx"); *@
+
+        // Create a new workbook
+            @* const workbook = XLSX.utils.book_new();
+
+            // Iterate through each section
+            for (const section in sectionSchedules) {
+                if (sectionSchedules.hasOwnProperty(section)) {
+                    // Create a new worksheet for each section
+                    const worksheet = XLSX.utils.json_to_sheet(sectionSchedules[section]);
+
+                    // Add the worksheet to the workbook
+                    XLSX.utils.book_append_sheet(workbook, worksheet, section);
+                }
+            } *@
+
+            @* const workbook = XLSX.utils.book_new();
+
+            // Create a new worksheet for First Year A
+            const worksheet = XLSX.utils.json_to_sheet(firstYearASchedule);
+
+            // Add the worksheet to the workbook
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'First Year A Schedule');
+
+            // Save the workbook as an Excel file
+            XLSX.writeFile(workbook, 'schedule.xlsx'); *@
+
+            @* // Create a new workbook
+            const workbook = XLSX.utils.book_new();
+
+            // Create worksheets for First Year A and First Year B
+            const worksheet = XLSX.utils.json_to_sheet(combinedSchedule);
+            //const worksheetB = XLSX.utils.json_to_sheet(firstYearBSchedule);
+
+            // Add the worksheets to the workbook
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'BSIT Schedule');
+            //XLSX.utils.book_append_sheet(workbook, worksheetB, 'First Year B Schedule');
+
+            // Save the workbook as an Excel file
+            XLSX.writeFile(workbook, 'schedule.xlsx'); *@
+
+
+            //new
+            /* create workbook & add worksheet */
+            var wb = XLSX.utils.book_new();
+            var wsData = [];
+
+            // Adding header row
+            @* // Adding header row
+                wsData.push(Object.keys(GeneratedSched[0])); *@
+            // Auto-size column 1
+            wsData.push(Object.keys(headerData));
+
+            var uniqueSectionIds = [];
+
+            // Filter out duplicates based on sectionId
+            @* var uniqueDataList = GeneratedSched.filter((item, index, self) => 
+                index === self.findIndex((t) => t.sectionId === item.sectionId)
+            ); *@
+
+            // Define defaultValue
+            var defaultValue = "Undefined";
+
+            // Adding data rows
+            GeneratedSched.forEach(item => {
+                //wsData.push(Object.values(item));
+                //for section pani diri bords
+                var resSection = Sections.find(sec => sec.sectionId == item.sectionId) ?? defaultValue;
+                var resSubject = Subjects.find(sub => sub.subjectId == item.subjectId) ?? defaultValue;
+                var resInstructor = Instructors.find(ins => ins.instructorId == item.instructorId) ?? defaultValue;
+                var resRoom = Rooms.find(rom => rom.roomId == item.roomId) ?? defaultValue;
+                var resTime = Timeslots.find(tm => tm.timeId == item.timeId) ?? defaultValue;
+                
+                var timeRange = resTime.startTime + " - " + resTime.endTime;
+                var dayConvert = "";
+                switch(item.day)
+                {
+                    case 1:
+                        dayConvert = "Monday";
+                        break;
+                    case 2:
+                        dayConvert = "Tuesday";
+                        break;
+                    case 3:
+                        dayConvert = "Wednesday";
+                        break;
+                    case 4:
+                        dayConvert = "Thursday";
+                        break;
+                    case 5:
+                        dayConvert = "Friday";
+                        break;
+                    case 6:
+                        dayConvert = "Saturday";
+                        break;
+                    case 7:
+                        dayConvert = "Sunday";
+                        break;
+                }
+
+                wsData.push([resSection.sectionName, resSubject.subjectName, resInstructor.instructorFname, resRoom.roomName, timeRange, dayConvert]);
+                //wsData.push([resSubject.subjectName].concat(Object.values(item).slice(1)));
+                //wsData.push([resInstructor.instructorFname].concat(Object.values(item).slice(3)));
+                //wsData.push([resRoom.roomName].concat(Object.values(item).slice(4)));
+                //wsData.push([timeRange].concat(Object.values(item).slice(5)));
+                //wsData.push([dayConvert].concat(Object.values(item).slice(6)));
+
+            });
+
+            var ws = XLSX.utils.aoa_to_sheet(wsData);
+            
+            //auto size feature
+            ws['!cols'] = fitToColumn(wsData);
+            function fitToColumn(wsData) {
+                // get maximum character of each column
+                return wsData[0].map((a, i) => ({ wch: Math.max(...wsData.map(a2 => a2[i] ? a2[i].toString().length : 0)) }));
+            }
+
+            /* add worksheet to workbook */
+            XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+            // Auto-size columns
+            // Auto-size columns
+            @* var range = XLSX.utils.decode_range(ws['!ref']);
+            for (var C = range.s.c; C <= range.e.c; ++C) {
+                var max_width = 0;
+                for (var R = range.s.r; R <= range.e.r; ++R) {
+                var cell_address = { c: C, r: R };
+                if (!ws[cell_address]) continue;
+                var cell_value = ws[cell_address].w || '';
+                var cell_width = XLSX.get_width(cell_value);
+                max_width = Math.max(max_width, cell_width);
+                }
+                var extra = 0;
+                if (C == 0) {
+                extra = 2; // Add extra width for the "Time Range" column
+                }
+                ws['!cols'] = ws['!cols'] || [];
+                ws['!cols'][C] = { w: max_width + extra };
+            } *@
+
+            @* var wscols = [
+                {wch:6},
+                {wch:7},
+                {wch:10},
+                {wch:20}
+            ];
+
+            ws['!cols'] = wscols; *@
+
+            /* write workbook */
+            var filename = "exported_data.xlsx";
+            XLSX.writeFile(wb, filename);
+        });
+
 
     }); // end of document.ready
 </script>

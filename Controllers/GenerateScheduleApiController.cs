@@ -227,7 +227,7 @@ namespace matikApp.Controllers
 
                     //you can replace this to count all of the sections combined
                     int sectionCount = Sections.Where(s => s.CourseId == section.CourseId).Count();
-                    //int sectionCount = Sections.Count(); //December 01, 2023 : switch to this if you want to generate all section's schedule
+                    // int sectionCount = Sections.Count(); //December 01, 2023 : switch to this if you want to generate all section's schedule
 
                     //Console.WriteLine(sectionCounter);
 
@@ -400,7 +400,6 @@ namespace matikApp.Controllers
                                                                     {
                                                                         Console.WriteLine("I was skipped day: " + checkRecord.Day + "Section ID: " + checkRecord.SectionId + "Subject ID: " + checkRecord.SubjectId);
                                                                         timeSkipped = true;
-
                                                                     }
                                                                     else
                                                                     {
@@ -546,21 +545,25 @@ namespace matikApp.Controllers
                                                                             {
                                                                                 if(day == 5)
                                                                                 {
+                                                                                    //LACK OF CONDITIONS : IT MUST CHECK FIRST IF THE INSTRUCTOR IS ALREADY TEACHING OR UNAVAILABLE WITHIN THAT TIME PERIOD BEFORE ADDING THIS TO ROOM SCHEDULE
                                                                                     roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day + 1));
                                                                                 }
-                                                                                //then try + 1 instead
-                                                                                // if(day + 1 >= 7)
-                                                                                // {
-                                                                                //     //Code that continues the schedule in the same day
-                                                                                // }
-                                                                                // else
-                                                                                // {
-                                                                                //     roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day + 1));
-                                                                                // }
                                                                             } 
                                                                             else
                                                                             {
-                                                                                roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day + 2));
+
+                                                                                //LACK OF CONDITIONS : IT MUST CHECK FIRST IF THE INSTRUCTOR IS ALREADY TEACHING OR UNAVAILABLE WITHIN THAT TIME PERIOD BEFORE ADDING THIS TO ROOM SCHEDULE
+                                                                                string dayCons = dayConvertFunc(day+2).ToString();
+                                                                                Console.WriteLine(dayCons);
+                                                                                var resUnavailablePeriod2 = Unavailableperiods.Where(up => up.TimeId == time.TimeId && up.Day == dayCons && up.InstructorId == instructor.InstructorId).FirstOrDefault();
+                                                                                if(resUnavailablePeriod2 == null)
+                                                                                {
+                                                                                    roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day + 2));
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    timeSkipped = true;
+                                                                                }
                                                                             }
 
                                                                             subjectUnitCounter++; //increment the subject unit counter
@@ -820,5 +823,37 @@ namespace matikApp.Controllers
 
             return Ok();
         }
+
+        public string dayConvertFunc(int day)
+        {
+            string dayConvert = "";
+            //Day converter
+            switch(day)
+            {
+                case 1:
+                    dayConvert = "Monday";
+                    break;
+                case 2:
+                    dayConvert = "Tuesday";
+                    break;
+                case 3:
+                    dayConvert = "Wednesday";
+                    break;
+                case 4:
+                    dayConvert = "Thursday";
+                    break;
+                case 5:
+                    dayConvert = "Friday";
+                    break;
+                case 6:
+                    dayConvert = "Saturday";
+                    break;
+                case 7:
+                    dayConvert = "Sunday";
+                    break;
+            }
+
+            return dayConvert;
+        } 
     }
 }
