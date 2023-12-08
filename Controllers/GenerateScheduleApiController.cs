@@ -34,9 +34,16 @@ namespace matikApp.Controllers
 
         //private List<string> mergedVal = new List<string>();
 
-        public IActionResult startGenerate()
+        private int acadValz = 0;
+        private string semesterValz = "";
+
+        public IActionResult startGenerate(int acadVal, string semesterVal)
         {
             getAllData();
+
+            acadValz = acadVal;
+            semesterValz = semesterVal;
+
             algorithmSchedule2();
             return Ok(roomSchedule);
         }
@@ -208,10 +215,30 @@ namespace matikApp.Controllers
 
             int sectionCounter = 0;
             var filterSections = Sections.Where(s =>s.CourseId == 39 || s.CourseId == 40).ToList();
-            //var filterSections = Sections.ToList();
+
+            //Since we received the academic year id and the semester. We are going to add that to the condition
+
+            //check if the section is registered for the academic year and semester
+            var resAcadSec = Regissections.Where(rs => rs.AcadYearId == acadValz && rs.Semester == semesterValz).ToList();
+            //Console.WriteLine(resAcadSec);
+
+            var resSecJoin = (from sec in Sections
+                join rs in resAcadSec on sec.SectionId equals rs.SectionId
+                join cor in Courses on sec.CourseId equals cor.CourseId
+                where cor.CourseId == 39 || cor.CourseId == 40
+
+                select new
+                {
+                    SectionId = sec.SectionId,
+                    SectionName = sec.SectionName,
+                    YearLevel = sec.YearLevel,
+                    DepartmentId = sec.DepartmentId,
+                    CourseId = sec.CourseId,
+                }).ToList();
+            //var filterSections = Sections.Where(s =>s.CourseId == 39 || s.CourseId == 40).ToList();
 
             //you can replace filterSections with Sections
-            foreach(var section in Sections)
+            foreach(var section in resSecJoin)
             {
                 //counting the section;
                 sectionCounter++;

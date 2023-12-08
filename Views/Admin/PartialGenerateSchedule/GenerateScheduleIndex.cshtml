@@ -33,61 +33,79 @@
 </html>
 
 <script>
-    //this is just for testing the button
+    var GeneratedSched = {};
 
-    //every 500 milliseconds it will check the function
-    t1=window.setInterval(function(){foo()},500);
-    function foo()
-    {
-        // write function definition here
-        if($('#acadYearSelect').val() == null || $('#semesterSelect').val() == null)
+    $(document).ready(function(){
+        //this is just for testing the button
+        activateButton();
+        populateAcademicYear();
+
+        //every 500 milliseconds it will check the function
+        t1=window.setInterval(function(){foo()},500);
+        function foo()
         {
-            document.getElementById('generateSchedBtn').disabled = true;
+            // write function definition here
+            if($('#acadYearSelect').val() == null || $('#semesterSelect').val() == null)
+            {
+                document.getElementById('generateSchedBtn').disabled = true;
+            }
+            else
+            {
+                document.getElementById('generateSchedBtn').disabled = false;
+            }
         }
-        else
+
+        document.getElementById('generateSchedBtn').addEventListener('click', function() {
+            // Disable the button
+            var acadVal = $('#acadYearSelect').val();
+            var semesterVal = $('#semesterSelect').val();
+
+            //Call API to generate a schedule
+            $.ajax({
+            url: "../api/generatescheduleapi/startGenerate",
+            type: "POST",
+            data:
+            {
+                acadVal : acadVal,
+                semesterVal : semesterVal,
+            },
+            })
+            .done(function(result){
+                GeneratedSched = result;
+                console.log(result);
+            });
+
+            //this.disabled = true;
+        });
+
+        function activateButton()
         {
             document.getElementById('generateSchedBtn').disabled = false;
         }
-    }
 
-    activateButton();
-    populateAcademicYear();
-    document.getElementById('generateSchedBtn').addEventListener('click', function() {
-        // Disable the button
-        var acadVal = $('#acadYearSelect').val();
-        var semesterVal = $('#semesterSelect').val();
-        
-        
-        //this.disabled = true;
-    });
+        //to populate the academic year
+        function populateAcademicYear()
+        {
+            $.ajax("../api/adminapi/getAcademicYear")
+            .done(function(result){
+            var template = document.querySelector("template#academicYearTemplate");
+            var parent = document.querySelectorAll("#acadYearSelect");
+            
+            for(i = 0; i < parent.length; i++){
+            result.forEach(function (item){
+                var cloned = template.content.cloneNode(true);
+                cloned.querySelector("option").value = item.acadYearId;
+                cloned.querySelector("option").innerText = item.acadYearName;
 
-    function activateButton()
-    {
-        document.getElementById('generateSchedBtn').disabled = false;
-    }
+                parent[i].prepend(cloned);
+            });
+            }
 
-    //to populate the academic year
-    function populateAcademicYear()
-    {
-        $.ajax("../api/adminapi/getAcademicYear")
-        .done(function(result){
-        var template = document.querySelector("template#academicYearTemplate");
-        var parent = document.querySelectorAll("#acadYearSelect");
-        
-        for(i = 0; i < parent.length; i++){
-          result.forEach(function (item){
-            var cloned = template.content.cloneNode(true);
-            cloned.querySelector("option").value = item.acadYearId;
-            cloned.querySelector("option").innerText = item.acadYearName;
-
-            parent[i].prepend(cloned);
-          });
+            //to deselect a selected option
+            $("select").val([]);
+            });
         }
-
-        //to deselect a selected option
-        $("select").val([]);
-        });
-    }
+    });
 </script>
 
 <style>
