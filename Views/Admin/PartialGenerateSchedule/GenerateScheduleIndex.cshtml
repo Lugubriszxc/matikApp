@@ -10,7 +10,7 @@
     <template id="academicYearTemplate">
         <option value=""></option>
     </template>
-    <center><h1>GENERATING CLASS SCHEDULES</h1></center>
+    <center><h1>Generate Class Schedules</h1></center>
     <center>
         <div id="formDiv">
             <form id="createRegisSectionForm">
@@ -414,7 +414,14 @@
             
             var convertAcad = AcadYears.find(ay => ay.acadYearId == acadVal);
             var filename = convertAcad.acadYearName + " - " + semesterVal + ".xlsx";
-            XLSX.writeFile(wb, filename);
+
+            if (wb.SheetNames.length === 0) {
+                // Workbook is empty, handle it as needed
+                alertError("Cannot open the file because it's empty. Closely check your data before generating.")
+            } else {
+                // Workbook is not empty, proceed with writing to file
+                XLSX.writeFile(wb, filename);
+            }
         }
 
         //SWEET ALERT FUNCTIONS
@@ -449,6 +456,16 @@
                 //Call the generating of sched to excel
                 generateExcel();
             });
+        }
+
+        //display error alert
+        function alertError(message)
+        {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error occured',
+                text: message,
+            })
         }
 
         //document.ready don't touch

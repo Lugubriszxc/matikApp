@@ -235,7 +235,7 @@ namespace matikApp.Controllers
                     DepartmentId = sec.DepartmentId,
                     CourseId = sec.CourseId,
                 }).ToList();
-                
+
             //var filterSections = Sections.Where(s =>s.CourseId == 39 || s.CourseId == 40).ToList();
 
             //you can replace filterSections with Sections
@@ -246,11 +246,11 @@ namespace matikApp.Controllers
                 assignSubjectCounter = 0; //starting count
 
                 //filter the assign subject based on section's year level and course id
-                var filterAssignsubjects = Assignsubjects.Where(aSub => aSub.YearLevel == section.YearLevel && aSub.CourseId == section.CourseId).ToList();
+                var filterAssignsubjects = Assignsubjects.Where(aSub => aSub.YearLevel == section.YearLevel && aSub.CourseId == section.CourseId && aSub.Semester == semesterValz).ToList();
                 foreach (var assignSubject in filterAssignsubjects)
                 {
                     //replace the 39 with section.courseid and 1st year with section.yearlevel
-                    int assignSubjectCount = Assignsubjects.Where(aSub => aSub.CourseId == section.CourseId && aSub.YearLevel == section.YearLevel).Count();
+                    int assignSubjectCount = Assignsubjects.Where(aSub => aSub.CourseId == section.CourseId && aSub.YearLevel == section.YearLevel && aSub.Semester == semesterValz).Count();
                     assignSubjectCounter++;
 
                     //you can replace this to count all of the sections combined
