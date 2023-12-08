@@ -77,6 +77,11 @@ namespace matikApp.Controllers
             return View("PartialAcademicYear/AcademicYearIndex");
         }
 
+        public IActionResult GenerateScheduleIndex()
+        {
+            return View("PartialGenerateSchedule/GenerateScheduleIndex");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

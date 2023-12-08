@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <template id="academicYearTemplate">
+        <option value=""></option>
+    </template>
+    <center><h1>GENERATING CLASS SCHEDULES</h1></center>
+    <center>
+        <div id="formDiv">
+            <form id="createRegisSectionForm">
+            <div class="form-group">
+              <label name="" class="control-label">Academic Year</label>
+              <select id="acadYearSelect" name="AcadYearID" class="form-select"></select>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Semester</label>
+                <select id="semesterSelect" name="Semester" class="form-select">
+                <option value="1st Semester">1st Semester</option>
+                <option value="2nd Semester">2nd Semester</option>
+                <option value="Summer">Summer</option>
+                </select>
+            </div>
+            </form>
+            <button type="button" class="btn btn-success" id="generateSchedBtn" disabled>Generate Schedule</button>
+        </div>
+    </center>
+</body>
+</html>
+
+<script>
+    //this is just for testing the button
+
+    //every 500 milliseconds it will check the function
+    t1=window.setInterval(function(){foo()},500);
+    function foo()
+    {
+        // write function definition here
+        if($('#acadYearSelect').val() == null || $('#semesterSelect').val() == null)
+        {
+            document.getElementById('generateSchedBtn').disabled = true;
+        }
+        else
+        {
+            document.getElementById('generateSchedBtn').disabled = false;
+        }
+    }
+
+    activateButton();
+    populateAcademicYear();
+    document.getElementById('generateSchedBtn').addEventListener('click', function() {
+        // Disable the button
+        var acadVal = $('#acadYearSelect').val();
+        var semesterVal = $('#semesterSelect').val();
+        
+        
+        //this.disabled = true;
+    });
+
+    function activateButton()
+    {
+        document.getElementById('generateSchedBtn').disabled = false;
+    }
+
+    //to populate the academic year
+    function populateAcademicYear()
+    {
+        $.ajax("../api/adminapi/getAcademicYear")
+        .done(function(result){
+        var template = document.querySelector("template#academicYearTemplate");
+        var parent = document.querySelectorAll("#acadYearSelect");
+        
+        for(i = 0; i < parent.length; i++){
+          result.forEach(function (item){
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.acadYearId;
+            cloned.querySelector("option").innerText = item.acadYearName;
+
+            parent[i].prepend(cloned);
+          });
+        }
+
+        //to deselect a selected option
+        $("select").val([]);
+        });
+    }
+</script>
+
+<style>
+    #formDiv
+    {
+        padding: 5%;
+    }
+</style>

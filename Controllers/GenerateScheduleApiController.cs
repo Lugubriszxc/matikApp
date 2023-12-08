@@ -207,7 +207,7 @@ namespace matikApp.Controllers
             //bool boolRoomTime = false; //if this becomes true then increment the time
 
             int sectionCounter = 0;
-            // var filterSections = Sections.Where(s =>s.CourseId == 26).ToList();
+            var filterSections = Sections.Where(s =>s.CourseId == 39 || s.CourseId == 40).ToList();
             //var filterSections = Sections.ToList();
 
             //you can replace filterSections with Sections
@@ -226,8 +226,8 @@ namespace matikApp.Controllers
                     assignSubjectCounter++;
 
                     //you can replace this to count all of the sections combined
-                    int sectionCount = Sections.Where(s => s.CourseId == section.CourseId).Count();
-                    // int sectionCount = Sections.Count(); //December 01, 2023 : switch to this if you want to generate all section's schedule
+                    //int sectionCount = Sections.Where(s => s.CourseId == section.CourseId).Count();
+                    int sectionCount = Sections.Count(); //December 01, 2023 : switch to this if you want to generate all section's schedule
 
                     //Console.WriteLine(sectionCounter);
 
