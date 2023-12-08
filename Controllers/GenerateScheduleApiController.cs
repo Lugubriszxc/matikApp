@@ -235,6 +235,7 @@ namespace matikApp.Controllers
                     DepartmentId = sec.DepartmentId,
                     CourseId = sec.CourseId,
                 }).ToList();
+                
             //var filterSections = Sections.Where(s =>s.CourseId == 39 || s.CourseId == 40).ToList();
 
             //you can replace filterSections with Sections

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
     <template id="academicYearTemplate">
@@ -34,11 +35,28 @@
 
 <script>
     var GeneratedSched = {};
+    
+    var Departments = {};
+    var Rooms = {};
+    var Courses = {};
+    var Instructors = {};
+    var Unavailableperiods = {};
+    var Assignsubjects = {};
+    var Subjects = {};
+    var Subjecthandleds = {};
+    var Sections = {};
+    var Regissections = {};
+    var Timeslots = {};
+    var AcadYears = {};
+    
+    var acadVal = "";
+    var semesterVal = "";
 
     $(document).ready(function(){
         //this is just for testing the button
         activateButton();
         populateAcademicYear();
+        getData();
 
         //every 500 milliseconds it will check the function
         t1=window.setInterval(function(){foo()},500);
@@ -55,11 +73,86 @@
             }
         }
 
+        function getData()
+        {
+            $.ajax("../api/adminapi/getDepartment").done(function(result){
+                Departments = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getRooms").done(function(result){
+                Rooms = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getCourse").done(function(result){
+                Courses = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getInstructors").done(function(result){
+                Instructors = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getUnavailableperiods").done(function(result){
+                Unavailableperiods = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getAssignsubjects").done(function(result){
+                Assignsubjects = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getSubjects").done(function(result){
+                Subjects = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getSubjecthandleds").done(function(result){
+                Subjecthandleds = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getSections").done(function(result){
+                Sections = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getRegissections").done(function(result){
+                Regissections = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getTimeSlots").done(function(result){
+                Timeslots = result;
+                console.log(result);
+            });
+
+            $.ajax("../api/adminapi/getAcademicYear").done(function(result){
+                AcadYears = result;
+                console.log(result);
+            });
+        }
+
+        //for header
+        const headerData = {
+            "COURSE NO." : "COURSE NO.",
+            "DESCRIPTIVE TITLE": "DESCRIPTIVE TITLE",
+            "UNITS" : "UNITS",
+            "DAY": "DAY",
+            "TIME": "TIME",
+            "ROOM": "ROOM",
+            "INSTRUCTOR": "INSTRUCTOR",
+        };
+
         document.getElementById('generateSchedBtn').addEventListener('click', function() {
             // Disable the button
-            var acadVal = $('#acadYearSelect').val();
-            var semesterVal = $('#semesterSelect').val();
+            acadVal = $('#acadYearSelect').val();
+            semesterVal = $('#semesterSelect').val();
 
+            showLoading();
             //Call API to generate a schedule
             $.ajax({
             url: "../api/generatescheduleapi/startGenerate",
@@ -72,6 +165,7 @@
             })
             .done(function(result){
                 GeneratedSched = result;
+                closeSwalWhilePageLoaded();
                 console.log(result);
             });
 
@@ -105,6 +199,259 @@
             $("select").val([]);
             });
         }
+
+
+        function generateExcel()
+        {
+            /* create workbook & add worksheet */
+            var wb = XLSX.utils.book_new();
+
+            var uniqueSectionIds = [];
+
+            // Define defaultValue
+            var defaultValue = "Undefined";
+
+            // Grouping and selecting the first item from each group
+            const uniqueSections = new Map();
+            // Iterate through the array and add objects to the map based on sectionId
+            GeneratedSched.forEach((obj) => {
+                uniqueSections.set(obj.sectionId, obj);
+            });
+
+            // Convert the map values back to an array
+            const distinctData = Array.from(uniqueSections.values());
+
+            //From the distinctData, get the Department ID of each sectionID and store it to array
+            // Inner join based on both departmentId and sectionId
+            var resultSection = distinctData.map(dd => {
+                var matchingSection = Sections.find(sec => sec.sectionId === dd.sectionId);
+
+                if (matchingSection) {
+                    // Merge the properties from all three objects
+                    return {...dd, ...matchingSection };
+                }
+                return null; // No match found
+            }).filter(result => result !== null);
+
+            //Inner join the section with the department
+            var resultDepartment = resultSection.map(rs => {
+                var matchingDepartment = Departments.find(dep => dep.departmentId === rs.departmentId);
+                if(matchingDepartment)
+                {
+                    return {...rs, ...matchingDepartment};
+                }
+            }).filter(result => result !== null)
+
+            //Now, make the department distinct
+            const uniqueDepartments = new Map();
+            resultDepartment.forEach((obj) => {
+                uniqueDepartments.set(obj.departmentId, obj);
+            });
+            // Convert the map values back to an array
+            const distinctDepartment = Array.from(uniqueDepartments.values());
+
+            //Loop the department
+            distinctDepartment.forEach(item => {
+                /* create workbook & add worksheet */
+                var wsData = [];
+
+                //Filter the results of sections first
+                var resultToLoop = resultDepartment.filter(gs => gs.departmentId === item.departmentId);
+
+                // Convert the map values back to an array
+                //const distinctSections = Array.from(uniqueSect.values());
+
+                // Adding data rows
+                wsData.push(["","", "", "", "", "", ""]);
+                wsData.push(["", "                                                           " + item.departmentName.toUpperCase(), "", "", "", "", ""]);
+
+
+                resultToLoop.forEach(item => {
+
+                    var resSection = Sections.find(sec => sec.sectionId == item.sectionId) ?? defaultValue;
+
+                    wsData.push(["","", "", "", "", "", ""]);
+                    wsData.push([resSection.sectionName, "", "", "", "", "", ""]);
+                    wsData.push(Object.keys(headerData));
+
+                    //make a loop depends on the item.sectionId from the mother loop
+                    // Grouping and selecting the first item from each group
+                    const uniqueHolderLoadSchedule = new Map();
+
+                    var uniqueLoadSchedules = Array.from(new Set(
+                    GeneratedSched
+                        .filter(rs => rs.sectionId == item.sectionId)
+                    ));
+
+                    uniqueLoadSchedules.forEach((obj) => {
+                        uniqueHolderLoadSchedule.set(obj.subjectId, obj);
+                    });
+
+                    //loop the result from the distinct values
+                    uniqueHolderLoadSchedule.forEach(item => {
+
+                        var resSubject = Subjects.find(sub => sub.subjectId == item.subjectId) ?? defaultValue;
+                        var resInstructor = Instructors.find(ins => ins.instructorId == item.instructorId) ?? defaultValue;
+                        var resRoom = Rooms.find(rom => rom.roomId == item.roomId) ?? defaultValue;
+
+                        // Assuming GeneratedSched is an array of objects with properties like SectionId, SubjectId, InstructorId, RoomId, and Day
+                        var uniqueDayRoomSchedules = GeneratedSched
+                        .filter(rs =>
+                            rs.sectionId === item.sectionId &&
+                            rs.subjectId === item.subjectId &&
+                            rs.instructorId === item.instructorId &&
+                            rs.roomId === item.roomId
+                        )
+                        .map(rs => rs.day)
+                        .filter((value, index, self) => self.indexOf(value) === index);
+
+                        var dayConvert = "";
+                        var dayCombined = "";
+
+                        uniqueDayRoomSchedules.forEach(item => {
+                            switch(item)
+                            {
+                                case 1:
+                                    dayConvert = "M";
+                                    break;
+                                case 2:
+                                    dayConvert = "T";
+                                    break;
+                                case 3:
+                                    dayConvert = "W";
+                                    break;
+                                case 4:
+                                    dayConvert = "TH";
+                                    break;
+                                case 5:
+                                    dayConvert = "F";
+                                    break;
+                                case 6:
+                                    dayConvert = "S";
+                                    break;
+                                case 7:
+                                    dayConvert = "SUN";
+                                    break;
+                            }
+                            dayCombined += dayConvert;
+                        });
+
+                        //convert the looped attributes to get the list of the time
+                        var toPrintTime = GeneratedSched.filter(rs =>
+                            rs.instructorId === item.instructorId &&
+                            rs.sectionId === item.sectionId &&
+                            rs.subjectId === item.subjectId &&
+                            rs.roomId === item.roomId
+                        );
+
+                        //printing the time
+                        var timeCount = toPrintTime.length;
+                        var timeCounter = 0;
+
+                        var startTime = "";
+                        var endTime = "";
+
+                        toPrintTime.forEach(item => {
+
+                            timeCounter++;
+                            var resTime = Timeslots.find(tm => tm.timeId == item.timeId) ?? defaultValue;
+
+                            if(timeCounter == 1)
+                            {
+                                //Convert 24 hour format to 12 hour format
+                                // Parse the input time in HH:mm format
+                                var [hours, minutes] = resTime.startTime.split(':');
+                                // Convert to 12-hour format
+                                var period = hours >= 12 ? 'PM' : 'AM';
+                                hours = hours % 12 || 12; // If hours is 0, set it to 12 for 12-hour format
+
+                                // Format the result as HH:mm AM/PM
+                                var time12 = hours + ':' + minutes + ' ' + period;
+
+                                //STORE IT
+                                startTime = time12;
+
+                            }
+                            else if(timeCounter == timeCount)
+                            {
+                                //Convert 24 hour format to 12 hour format
+                                // Parse the input time in HH:mm format
+                                var [hours, minutes] = resTime.endTime.split(':');
+                                // Convert to 12-hour format
+                                var period = hours >= 12 ? 'PM' : 'AM';
+                                hours = hours % 12 || 12; // If hours is 0, set it to 12 for 12-hour format
+
+                                // Format the result as HH:mm AM/PM
+                                var time12 = hours + ':' + minutes + ' ' + period;
+
+                                //STORE IT
+                                endTime = time12;
+                            }
+                        });
+
+                        //combine the time
+                        var timeRange = startTime + " - " + endTime;
+
+                        wsData.push([resSubject.subjectCode, resSubject.subjectName, resSubject.subjectUnit,dayCombined, timeRange, resRoom.roomName, resInstructor.instructorFname]);
+                    });
+
+                });
+
+                var ws = XLSX.utils.aoa_to_sheet(wsData);
+                
+                //auto size feature
+                ws['!cols'] = fitToColumn(wsData);
+                function fitToColumn(wsData) {
+                    // get maximum character of each column
+                    return wsData[0].map((a, i) => ({ wch: Math.max(...wsData.map(a2 => a2[i] ? a2[i].toString().length : 0)) }));
+                }
+
+                /* add worksheet to workbook */
+                XLSX.utils.book_append_sheet(wb, ws, item.departmentName.toUpperCase());
+            });
+
+            /* write workbook */
+            
+            var convertAcad = AcadYears.find(ay => ay.acadYearId == acadVal);
+            var filename = convertAcad.acadYearName + " - " + semesterVal + ".xlsx";
+            XLSX.writeFile(wb, filename);
+        }
+
+        //SWEET ALERT FUNCTIONS
+        const showLoading = function() {
+            Swal.fire({
+                title: 'Processing',
+                html: '<b>Generating Class Schedules...<b/>',// add html attribute if you want or remove
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading()
+                },
+            })
+        }
+
+        function closeSwalWhilePageLoaded(){
+            setTimeout(() => {
+                Swal.close();
+                alertSuccess();
+            }, 500);
+        }
+
+        //display success action
+        function alertSuccess()
+        {
+            Swal.fire({
+                icon: 'success',
+                title: 'Done Generating', 
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                //Call the generating of sched to excel
+                generateExcel();
+            });
+        }
+
+        //document.ready don't touch
     });
 </script>
 
