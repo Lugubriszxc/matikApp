@@ -6,8 +6,8 @@
 <div class="text-center bg-warning text-dark">
     <h1 class="display-4"><b>Automated Class Scheduling System</b></h1>
     <p>A capstone project of the Bachelor of Science in Information Technology from the College of Computer Studies.</p>
-    <button class="btn btn-primary" id="testGenerate">TEST GENERATE SCHEDULE</button>
-    <button id="sheetjsexport"><b>Export as XLSX</b></button>
+    @* <button class="btn btn-primary" id="testGenerate">TEST GENERATE SCHEDULE</button>
+    <button id="sheetjsexport"><b>Export as XLSX</b></button> *@
 </div>
 
 <table id="TableToExport">
@@ -57,7 +57,7 @@
     $(document).ready(function(){
 
 
-        getData();
+        //getData();
         function getData()
         {
             $.ajax("../api/adminapi/getDepartment").done(function(result){
