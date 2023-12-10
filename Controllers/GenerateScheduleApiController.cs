@@ -209,12 +209,13 @@ namespace matikApp.Controllers
             var timeN = "";
 
             int assignSubjectCounter = 0;
+            int dump = 0;
             //int filterRoomCounter = 0;
 
             //bool boolRoomTime = false; //if this becomes true then increment the time
 
             int sectionCounter = 0;
-            var filterSections = Sections.Where(s =>s.CourseId == 39 || s.CourseId == 40).ToList();
+            var filterSections = Sections.Where(s =>s.CourseId == 39).ToList();
 
             //Since we received the academic year id and the semester. We are going to add that to the condition
 
@@ -225,7 +226,7 @@ namespace matikApp.Controllers
             var resSecJoin = (from sec in Sections
                 join rs in resAcadSec on sec.SectionId equals rs.SectionId
                 join cor in Courses on sec.CourseId equals cor.CourseId
-                where cor.CourseId == 39 || cor.CourseId == 40
+                //where cor.CourseId == 39
 
                 select new
                 {
@@ -334,9 +335,101 @@ namespace matikApp.Controllers
                                         //don't forget to add a condition to check if the room is available
                                         if(fRoom.RoomCapacity >= 60)
                                         {
+                                            //December 10, 2023 : Get the data of the room schedule and filter with the current section and subject. If the last result is Monday then +1
+                                            //to get tuesday
+                                            //If it's tuesday, then -1 to get monday.
+                                            int daySet = 0;
+                                            bool setDayCondition = false;
+
+                                            var getLastDay = roomSchedule.Where(rs => rs.SectionId == section.SectionId).LastOrDefault();
+                                            // if(getLastDay != null)
+                                            // {
+                                            //     Console.WriteLine(getLastDay.Day);
+                                            //     if(getLastDay.Day == 3 && getLastDay.SubjectId != subName.SubjectId)
+                                            //     {
+                                            //         daySet = 2;
+                                            //         Console.WriteLine(dump++);
+                                            //         setDayCondition = true;
+                                            //     }
+                                            //     else if(getLastDay.Day == 6 && getLastDay.SubjectId != subName.SubjectId)
+                                            //     {
+                                            //         daySet = 2;
+                                            //         Console.WriteLine(dump++);
+                                            //         setDayCondition = true;
+                                            //     }
+                                            // }
+
+
+                                            //ANOTHER STYLE : randomize a number between 1 to 3
+                                            //If 1 then change the day into Tuesday
+                                            //If 2 then change the day into Friday
+                                            //If 3 then change the day into Monday
+                                            if(getLastDay != null)
+                                            {
+                                                // if(getLastDay.SubjectId != subName.SubjectId)
+                                                // {
+                                                    
+                                                // }
+                                                //Randomize it back
+                                                randomBack:
+                                                // Create a Random object
+                                                Random random = new Random();
+
+                                                // Generate a random number between 1 and 3 (inclusive)
+                                                int randomNumber = random.Next(1, 4);
+
+                                                int numberOfDays = 0;
+
+                                                switch(randomNumber)
+                                                {
+                                                    case 1:
+                                                        daySet = 2;
+                                                        break;
+                                                    case 2:
+                                                        daySet = 5;
+                                                        break;
+                                                    case 3:
+                                                        daySet = 1;
+                                                        break;
+                                                }
+
+                                                //call the function that if the number of specific day within that section exceeds or equal to 3 then it will randomize another day
+                                                numberOfDays = countDaysMeeting(section.SectionId, daySet);
+                                                //countDaysMeeting(section.SectionId, daySet);
+                                                Console.WriteLine("Number of days : " + numberOfDays);
+
+                                                int dayCountCondition = 0;
+                                                
+                                                //If the subject count per section exceeds 9 then the count condition is more than 3. It means the section can meet more than three times
+                                                if(assignSubjectCount > 9)
+                                                {
+                                                    dayCountCondition = 3;
+                                                }
+                                                else
+                                                {
+                                                    dayCountCondition = 2;
+                                                }
+
+                                                if(numberOfDays > dayCountCondition)
+                                                {
+                                                    Console.WriteLine("Number of Days within the section : " + section.SectionId + "Days : " + numberOfDays + " Subject ID :" + subName.SubjectId);
+                                                    goto randomBack;
+                                                }
+                                                else
+                                                {
+                                                    setDayCondition = true;
+                                                }
+                                            }
+
                                             //it will loop for 7 days 1 = Monday : 7 = Sunday
                                             for(int day = 1; day <= 7; day++)
                                             {
+                                                if(setDayCondition == true)
+                                                {
+                                                    day = daySet;
+                                                    setDayCondition = false;
+                                                }
+
                                                 string dayConvert = "";
                                                 //Day converter
                                                 switch(day)
@@ -413,17 +506,6 @@ namespace matikApp.Controllers
                                                                 var checkRecord = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && checkDay.Day-2 != day).FirstOrDefault();
                                                                 if(checkRecord != null)
                                                                 {
-                                                                    //if the day is saturday
-                                                                    // if(checkRecord.Day == 6)
-                                                                    // {
-                                                                    //     //Code that will extend the time schedule but within the same time
-                                                                    // }
-                                                                    // else
-                                                                    // {
-
-                                                                    //     timeSkipped = true;
-                                                                    // }
-
                                                                     if(day != 5)
                                                                     {
                                                                         Console.WriteLine("I was skipped day: " + checkRecord.Day + "Section ID: " + checkRecord.SectionId + "Subject ID: " + checkRecord.SubjectId);
@@ -439,16 +521,6 @@ namespace matikApp.Controllers
                                                                             timeSkipped = true;
                                                                         }
                                                                     }
-
-                                                                    // //check if that day - 1 has a record of more than 1 already in the roomSchedule so it would not be skipped
-                                                                    // var checkRecord2 = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && checkDay.Day-1 != day).ToList();
-                                                                    // if(checkRecord2 != null)
-                                                                    // {
-                                                                    //     if(checkRecord2.Count() == 1)
-                                                                    //     {
-                                                                    //         timeSkipped = true;
-                                                                    //     }
-                                                                    // }
                                                                 }
                                                             }
                                                         }
@@ -582,7 +654,7 @@ namespace matikApp.Controllers
 
                                                                                 //LACK OF CONDITIONS : IT MUST CHECK FIRST IF THE INSTRUCTOR IS ALREADY TEACHING OR UNAVAILABLE WITHIN THAT TIME PERIOD BEFORE ADDING THIS TO ROOM SCHEDULE
                                                                                 string dayCons = dayConvertFunc(day+2).ToString();
-                                                                                Console.WriteLine(dayCons);
+                                                                                Console.WriteLine("DayConvertFunc Section ID : " + section.SectionId + " Subject ID : " + subName.SubjectId + " Instructor : " + instructor.InstructorId + " Day: " + dayCons);
                                                                                 var resUnavailablePeriod2 = Unavailableperiods.Where(up => up.TimeId == time.TimeId && up.Day == dayCons && up.InstructorId == instructor.InstructorId).FirstOrDefault();
                                                                                 if(resUnavailablePeriod2 == null)
                                                                                 {
@@ -617,8 +689,35 @@ namespace matikApp.Controllers
                                                                                 }
                                                                                 else
                                                                                 {
-                                                                                    //increment the assign subject
-                                                                                    goto outSubjectLoop;
+                                                                                    //December 11, 2023 : CONDITION : If the item count of the array is equal to the number of units. Add another set of unit to extend the time
+                                                                                    // REASON : The number of items must be x2 from the original total unit of the subject
+                                                                                    var countItemUnits = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && rs.InstructorId == instructor.InstructorId).ToList();
+                                                                                    if(countItemUnits.Count() == subjectUnits)
+                                                                                    {
+                                                                                        bool foundSaturday = false;
+                                                                                        foreach(var item in countItemUnits)
+                                                                                        {
+                                                                                            if(item.Day == 6)
+                                                                                            {
+                                                                                                foundSaturday = true;
+                                                                                            }
+                                                                                        }
+
+                                                                                        if(foundSaturday == true)
+                                                                                        {
+                                                                                            foundSaturday = false;
+                                                                                            //subjectUnits *= 2;
+
+                                                                                            //go back and find another room instead
+                                                                                            timeSkipped = true;
+                                                                                            goto outRoomLoop;
+                                                                                        }
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        //increment the assign subject
+                                                                                        goto outSubjectLoop;
+                                                                                    }
                                                                                 }
                                                                             }
                                                                         }
@@ -883,5 +982,22 @@ namespace matikApp.Controllers
 
             return dayConvert;
         } 
+
+        public int countDaysMeeting(int sectionID, int day)
+        {
+            //var result = roomSchedule.Where(rs => rs.SectionId == sectionID && rs.Day == day).Select(rs => new {rs.Day, rs.SubjectId }).Distinct().ToList();
+            var result = roomSchedule.Where(rs => rs.SectionId == sectionID && rs.Day == day).Select(rs => new {rs.SubjectId }).Distinct().ToList();
+            if(result != null)
+            {
+                foreach(var res in result)
+                {
+                    Console.WriteLine("Section ID: " + sectionID + " Subject ID : " + res.SubjectId + " Day : " + day);
+                    Console.WriteLine();
+                }
+            }
+            //var result = roomSchedule.Where(rs => rs.SectionId == sectionID && rs.Day == day).Distinct().Count();
+            return result.Count();
+            //return result;
+        }
     }
 }

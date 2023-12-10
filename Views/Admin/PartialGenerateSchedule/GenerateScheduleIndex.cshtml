@@ -426,13 +426,30 @@
 
         //SWEET ALERT FUNCTIONS
         const showLoading = function() {
+            let timerValue = 0; // Initial timer value in seconds
+            let timerMinute = 0;
+
+            const timerInterval = setInterval(() => {
+                timerValue++;
+                if(timerValue == 60)
+                {
+                    timerMinute++;
+                    timerValue = 0;
+                }
+                document.getElementById('timerSeconds').innerText = timerValue; // Update the timer value in the modal
+                document.getElementById('timerMinutes').innerText = timerMinute; // Update the timer value in the modal
+            }, 1000);
+
             Swal.fire({
                 title: 'Processing',
-                html: '<b>Generating Class Schedules...<b/>',// add html attribute if you want or remove
+                html: '<b>Generating Class Schedules...<br><span id="timerMinutes">0</span> minutes : <span id="timerSeconds">0</span> seconds</b>',// add html attribute if you want or remove
                 allowOutsideClick: false,
                 showConfirmButton: false,
                 willOpen: () => {
                     Swal.showLoading()
+                },
+                willClose: () => {
+                    clearInterval(timerInterval); // Clear the timer interval when the modal is closed
                 },
             })
         }
