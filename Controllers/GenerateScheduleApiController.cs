@@ -340,6 +340,7 @@ namespace matikApp.Controllers
                                             //December 10, 2023 : Get the data of the room schedule and filter with the current section and subject. If the last result is Monday then +1
                                             //to get tuesday
                                             //If it's tuesday, then -1 to get monday.
+                                            randomBack:
                                             int daySet = 0;
                                             bool setDayCondition = false;
 
@@ -366,7 +367,7 @@ namespace matikApp.Controllers
                                             //If 1 then change the day into Tuesday
                                             //If 2 then change the day into Friday
                                             //If 3 then change the day into Monday
-                                            randomBack:
+                                            
                                             if(getLastDay != null)
                                             {
                                                 // if(getLastDay.SubjectId != subName.SubjectId)
@@ -424,14 +425,68 @@ namespace matikApp.Controllers
 
                                             }
 
+                                            bool dayRandomAgain = false;
+
                                             //it will loop for 7 days 1 = Monday : 7 = Sunday
                                             for(int day = 1; day <= 7; day++)
                                             {
+                                                setConditionDayJump:
                                                 if(setDayCondition == true)
                                                 {
                                                     day = daySet;
                                                     setDayCondition = false;
                                                 }
+                                                // else if(dayRandomAgain == true)
+                                                // {
+                                                //     dayRandomAgain = false;
+                                                //     randomBackV2:
+                                                //     // Create a Random object
+                                                //     Random random = new Random();
+
+                                                //     // Generate a random number between 1 and 3 (inclusive)
+                                                //     int randomNumber = random.Next(1, 4);
+
+                                                //     //If the set day condition = false then another condition is set for double checking
+                                                //     int numberOfDaysv2 = 0;
+                                                //     switch(randomNumber)
+                                                //     {
+                                                //         case 1:
+                                                //             daySet = 2;
+                                                //             break;
+                                                //         case 2:
+                                                //             daySet = 5;
+                                                //             break;
+                                                //         case 3:
+                                                //             daySet = 1;
+                                                //             break;
+                                                //     }
+                                                //     numberOfDaysv2 = countDaysMeeting(section.SectionId, daySet);
+                                                //     Console.WriteLine("Number of days : " + numberOfDaysv2);
+
+                                                //     int dayCountConditionv2 = 0;
+
+                                                //     //If the subject count per section exceeds 9 then the count condition is more than 3. It means the section can meet more than three times
+                                                //     if(assignSubjectCount > 9)
+                                                //     {
+                                                //         dayCountConditionv2 = 3;
+                                                //     }
+                                                //     else
+                                                //     {
+                                                //         dayCountConditionv2 = 2;
+                                                //     }
+
+                                                //     if(numberOfDaysv2 > dayCountConditionv2)
+                                                //     {
+                                                //         Console.WriteLine("Number of Days within the section : " + section.SectionId + "Days : " + numberOfDaysv2 + " Subject ID :" + subName.SubjectId);
+                                                //         goto randomBackV2;
+                                                //     }
+                                                //     else
+                                                //     {
+                                                //         setDayCondition = true;
+                                                //         goto setConditionDayJump;
+                                                //     }
+                                                // }
+
 
                                                 string dayConvert = "";
                                                 //Day converter
@@ -666,8 +721,44 @@ namespace matikApp.Controllers
                                                                             //     roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));    
                                                                             // }
 
-                                                                            roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));
-                                                            
+                                                                            // int countDaysMeeting = 0;
+                                                                            // countDaysMeeting = 
+
+                                                                            int numberOfDays = 0;
+                                                                            numberOfDays = countDaysMeeting(section.SectionId, day);
+
+                                                                            //back here
+                                                                            int dayCountCondition = 0;
+
+                                                                            if(numberOfDays > 4)
+                                                                            {
+                                                                                goto outTimeLoop;
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));
+                                                                            }
+                                                
+                                                                            //If the subject count per section exceeds 9 then the count condition is more than 3. It means the section can meet more than three times
+                                                                            // if(assignSubjectCount > 9)
+                                                                            // {
+                                                                            //     dayCountCondition = 3;
+                                                                            // }
+                                                                            // else
+                                                                            // {
+                                                                            //     dayCountCondition = 2;
+                                                                            // }
+
+                                                                            // if(numberOfDays > dayCountCondition)
+                                                                            // {
+                                                                            //     Console.WriteLine("Number of Days within the section : " + section.SectionId + "Days : " + numberOfDays + " Subject ID :" + subName.SubjectId);
+                                                                            //     goto randomBack;
+                                                                            // }
+                                                                            // else
+                                                                            // {
+                                                                            //     roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));
+                                                                            // }
+
                                                                             if(day + 2 >= 7)
                                                                             {
                                                                                 if(day == 5)
