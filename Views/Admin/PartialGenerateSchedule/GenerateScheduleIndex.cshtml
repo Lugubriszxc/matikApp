@@ -450,6 +450,28 @@
                     uniqueHolderRoomSchedule.set(obj.subjectId, obj);
                 });
 
+                // Sorting by day and startTime
+                const sortedRoomSchedules = Array.from(uniqueHolderRoomSchedule.values())
+                .sort((a, b) => {
+                    // First, compare by day
+                    const dayComparison = a.day.propertyName - b.day.propertyName;
+                    if (dayComparison !== 0) {
+                        return dayComparison;
+                    }
+
+                    //return a.day.localeCompare(b.day);
+
+                    // If days are the same, compare by startTime
+                    return a.timeId.localeCompare(b.timeId);
+                });
+
+                // Clear the original Map
+                uniqueHolderRoomSchedule.clear();
+
+                // Repopulate the Map with sorted values
+                sortedRoomSchedules.forEach((obj) => {
+                    uniqueHolderRoomSchedule.set(obj.subjectId, obj);
+                });
 
                 uniqueHolderRoomSchedule.forEach(item => {
                     var resSection = Sections.find(sub => sub.sectionId == item.sectionId) ?? defaultValue;
