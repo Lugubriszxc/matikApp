@@ -1,0 +1,46 @@
+<template id="academicYearTemplate">
+  <option value=""></option>
+</template>
+
+<div class="modal fade" id="modalUnitLoadCreate" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-warning text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Set Unit Load</h5>
+        <button type="button" id="modalUnitLoadCreateClose" class="btn-close btn-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body unitLoadCreate d-flex justify-content-center">
+       <div>
+            <div class="cardInfo" style="width: 25rem;">
+            <h4><div class="info-title" id="info-title">
+            </div></h4>
+            <strong><div class="info-Stocks"></div></strong>
+            <hr/>
+            <form id="createUnitLoadForm">
+            <div class="form-group">
+              <label name="" class="control-label">Academic Year</label>
+              <select id="acadYearSelect" name="AcadYearID" class="form-select"></select>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Semester</label>
+                <select id="semesterSelect" name="Semester" class="form-select">
+                <option value="1st Semester">1st Semester</option>
+                <option value="2nd Semester">2nd Semester</option>
+                <option value="Summer">Summer</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Unit Load</label>
+                <input type="number" name="UnitLoad" id="loadUnit" class="form-control" placeholder="Unit load" required/>
+            </div>
+            </form>
+            <hr/>
+      </div>
+       </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="createUnitLoad">Set unit</button>
+      </div>
+    </div>
+  </div>
+</div>

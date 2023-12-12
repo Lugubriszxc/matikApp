@@ -119,6 +119,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEluc3RydWN0b3JcSW5zdHJ1Y3RvckFkZFN1YmplY3RIYW5kbGVkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialInstructor/InstructorAddUnitLoad.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEluc3RydWN0b3JcSW5zdHJ1Y3RvckFkZFVuaXRMb2FkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialInstructor/InstructorCreate.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEluc3RydWN0b3JcSW5zdHJ1Y3RvckNyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -141,6 +145,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialInstructor/InstructorTimePeriod.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEluc3RydWN0b3JcSW5zdHJ1Y3RvclRpbWVQZXJpb2QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialInstructor/InstructorUnitLoad.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEluc3RydWN0b3JcSW5zdHJ1Y3RvclVuaXRMb2FkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Admin/PartialInstructor/InstructorUpdate.cshtml]

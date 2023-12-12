@@ -1,0 +1,40 @@
+<div class="modal fade" id="modalAddUnitLoadTable" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content bg-warning text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Set Unit Load</h5>
+        <button type="button" id="modalAddUnitLoadClose" class="btn-close btn-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Document</title>
+        </head>
+        <body>
+          <button type="button" title="Set Unit Load" class="btn btn-success unitLoadAdd" id="unitLoadAdd" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalUnitLoadCreate">
+            <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Set Unit Load
+          </button>
+          <br/><br/>
+          <div class="container bg-dark text-light">
+            <table id="addUnitLoadTable" class="display table table-bordered table-hover text-light" width="100%">
+              <thead>
+                  <tr>
+                    <th>Academic Year</th>
+                    <th>Semester</th>
+                    <th>Unit Load</th>
+                    <th>Action</th>
+                  </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </body>
+        </html>
+       </div>
+      </div>
+    </div>
+  </div>
+</div>

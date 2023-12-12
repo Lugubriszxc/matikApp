@@ -903,6 +903,59 @@ namespace matikApp.Controllers
             return Ok(res);
         }
 
+        //to fetch the unit load of the instructor
+        public IActionResult getUnitLoad(int instructorId)
+        {
+            var res = 
+            (
+                from iau in _context.Instructorunitloads
+                join ins in _context.Instructors on iau.InstructorId equals ins.InstructorId
+                join acad in _context.Acadyears on iau.AcadYearId equals acad.AcadYearId
+                where ins.InstructorId == instructorId
+
+                select new InstructAcadUnit
+                {
+                    InstructorId = ins.InstructorId,
+                    InstructorFname = ins.InstructorFname,
+                    InstructorMname = ins.InstructorMname,
+                    InstructorLname = ins.InstructorLname,
+                    DepartmentId = ins.DepartmentId,
+                    AcadYearId = acad.AcadYearId,
+                    AcadYearName = acad.AcadYearName,
+                    UnitLoad = iau.UnitLoad,
+                    UnitLoadId = iau.UnitLoadId,
+                    Semester = iau.Semester
+                }
+
+            ).ToList();
+
+            return Ok(res);
+        }
+
+        public IActionResult createInstructorLoad(Instructorunitload iul)
+        {
+            _context.Instructorunitloads.Add(iul);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        //query to delete the selected instructor
+        public IActionResult deleteInstructorLoad(int IAUId)
+        {
+            var res = _context.Instructorunitloads.Where(element => element.UnitLoadId == IAUId).FirstOrDefault();
+            _context.Instructorunitloads.Remove(res);
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        public IActionResult checkInstructorLoad(Instructorunitload iul)
+        {
+            var res = _context.Instructorunitloads.Where(il => il.InstructorId == iul.InstructorId && il.AcadYearId == iul.AcadYearId && il.Semester == iul.Semester).FirstOrDefault();
+
+            return Ok(res);
+        }
+
         public IActionResult createRegisSection(Regissection rs)
         {
             _context.Regissections.Add(rs);

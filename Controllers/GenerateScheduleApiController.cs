@@ -29,6 +29,7 @@ namespace matikApp.Controllers
         private List<Section> Sections {get; set;}
         private List<Regissection> Regissections {get; set;}
         private List<Timeslot> Timeslots {get; set;}
+        private List<Instructorunitload> Instructorunitloads {get; set;}
 
         private List<RoomSchedule> roomSchedule = new List<RoomSchedule>();
 
@@ -44,6 +45,7 @@ namespace matikApp.Controllers
             acadValz = acadVal;
             semesterValz = semesterVal;
 
+            //Instructorunitloads.Where(rs.Instructorunitloa);
             algorithmSchedule2();
             return Ok(roomSchedule);
         }
@@ -60,6 +62,7 @@ namespace matikApp.Controllers
             Sections = _context.Sections.ToList();
             Regissections = _context.Regissections.ToList();
             Timeslots = _context.Timeslots.ToList();
+            Instructorunitloads = _context.Instructorunitloads.ToList();
 
             // mergedVal.AddRange(Rooms.Select(r => r.RoomName));
             // mergedVal.AddRange(Buildings.Select(r => r.BuildingName));
@@ -222,11 +225,15 @@ namespace matikApp.Controllers
 
             //check if the section is registered for the academic year and semester
             var resAcadSec = Regissections.Where(rs => rs.AcadYearId == acadValz && rs.Semester == semesterValz).ToList();
+
+            var resInstructorAvailable = Instructorunitloads.Where(rs => rs.AcadYearId == acadValz && rs.Semester == semesterValz).ToList();
             //Console.WriteLine(resAcadSec);
 
             var resSecJoin = (from sec in Sections
                 join rs in resAcadSec on sec.SectionId equals rs.SectionId
                 join cor in Courses on sec.CourseId equals cor.CourseId
+                join reg in Regissections on sec.SectionId equals reg.SectionId
+                where reg.AcadYearId == acadValz && reg.Semester == semesterValz
                 //where cor.CourseId == 39
 
                 select new
@@ -272,6 +279,49 @@ namespace matikApp.Controllers
                         //filter in the instructors who handled the subject and use it for looping
                         var filterIns = Subjecthandleds.Where(x => x.SubjectId == resultSubject.SubjectId).ToList();
 
+                        //Get the lowest unit among the filtered instructor so that it can be prioritized
+                        int prioInstructorId = 0;
+                        int totInstructor = 0;
+                        foreach(var instruct in filterIns)
+                        {
+                            var resInstructorPrio = 
+                                (from rs in roomSchedule
+                                join ins in Instructors on rs.InstructorId equals ins.InstructorId
+                                join sub in Subjects on rs.SubjectId equals sub.SubjectId
+                                join sec in Sections on rs.SectionId equals sec.SectionId
+                                where sub.SubjectId == rs.SubjectId && ins.InstructorId == instruct.InstructorId && sec.SectionId == rs.SectionId
+                                select new
+                                {
+                                    sectionName = sec.SectionName,
+                                    instructorN = ins.InstructorFname,
+                                    subjectN = sub.SubjectName,
+                                    subUnit = sub.SubjectUnit
+                                })
+                                .Distinct();
+
+                            int totalInstructorUnit = 0;
+                            foreach(var result in resInstructorPrio)
+                            {
+                                totalInstructorUnit += result.subUnit;
+                            }
+
+                            //Get the lowest total unit
+                            if(prioInstructorId == 0)
+                            {
+                                prioInstructorId = instruct.InstructorId;
+                                totInstructor = totalInstructorUnit;
+                            }
+                            else if(totalInstructorUnit < totInstructor)
+                            {
+                                prioInstructorId = instruct.InstructorId;
+                                totInstructor = totalInstructorUnit;
+                            }
+                        }
+
+                        int prioNumber = 0;
+                        bool bypassInstructorCondition = false;
+
+                        loopInstructorBack:
                         int instructorCounter = 0;
                         //looped instructor
                         foreach(var instructor in filterIns)
@@ -279,6 +329,26 @@ namespace matikApp.Controllers
                             //count the number of instructors who handles the subject
                             int countInstructor = Subjecthandleds.Where(x => x.SubjectId == resultSubject.SubjectId).Count();
                             instructorCounter++;
+
+                            //Priority checking only works in first loop
+                            if(prioNumber == 0)
+                            {
+                                if(prioInstructorId != instructor.InstructorId && bypassInstructorCondition == false)
+                                {
+                                    if(instructorCounter != countInstructor)
+                                    {
+                                        //find another instructor instead
+                                        goto outInstructorLoop;
+                                    }
+                                    else
+                                    {
+                                        //If it reached the limit. Loop the instructor again from the start and skipp the condition
+                                        bypassInstructorCondition = true;
+                                        prioNumber = 1;
+                                        goto loopInstructorBack;
+                                    }
+                                }
+                            }
 
                             //Get the total units of each teacher based on their handled subjects
                             //MAX UNIT = 24
@@ -303,14 +373,38 @@ namespace matikApp.Controllers
                                 totalInstructorUnit += result.subUnit;
                             }
 
+
+
+                            // get the unit load of the instructor
+                            var resUnitLoadInstructor = resInstructorAvailable.Where(il => il.InstructorId == instructor.InstructorId && il.AcadYearId == acadValz && il.Semester == semesterValz).FirstOrDefault();
+
                             //CONDITION : if the total unit + the subject unit exceeds, it will find another instructor instead.
-                            if(totalInstructorUnit + resultSubject.SubjectUnit > 24)
+                            if(resUnitLoadInstructor != null)
                             {
-                                //CONDITION : if the last instructor reached the limit, it will attempt an overload and bypass the
+                                if(totalInstructorUnit + resultSubject.SubjectUnit > resUnitLoadInstructor.UnitLoad)
+                                {
+                                    //CONDITION : if the last instructor reached the limit, it will attempt an overload and bypass the
+                                    if(instructorCounter != countInstructor)
+                                    {
+                                        //find another instructor instead
+                                        goto outInstructorLoop;
+                                    }
+                                }
+                            }
+                            else if(resUnitLoadInstructor == null)
+                            {
                                 if(instructorCounter != countInstructor)
                                 {
                                     //find another instructor instead
                                     goto outInstructorLoop;
+                                }
+                                else
+                                {
+                                    //If it reached the limit
+                                    //Loop it back
+                                    bypassInstructorCondition = true;
+                                    prioNumber = 1;
+                                    goto loopInstructorBack;
                                 }
                             }
 
@@ -328,462 +422,390 @@ namespace matikApp.Controllers
                                 //count the filteredRoom
                                 // loopRoomBack: //loop the room back
                                 int filterRoomCount = filterRoom.Count();
-                                filterRoomCounter = 0;
                                 if(filterRoom != null)
                                 {
+
+                                    //Prioritize the lesser count of room scheds
+                                    int roomId = 0;
+                                    int roomCount = 0;
+                                    foreach(var fRoomLow in filterRoom)
+                                    {
+                                        var resRoomPrio = roomSchedule.Where(rs => rs.RoomId == fRoomLow.RoomId).Distinct().Count();
+
+                                        if(roomId == 0)
+                                        {
+                                            roomCount = resRoomPrio;
+                                            roomId = fRoomLow.RoomId;
+                                        }
+                                        else if(resRoomPrio < roomCount)
+                                        {
+                                            roomCount = resRoomPrio;
+                                            roomId = fRoomLow.RoomId;
+                                        }
+                                    }
+
+                                    int prioNumberRoom = 0;
+                                    bool bypassRoomCondition = false;
+
+                                    loopRoomAgain:
+                                    filterRoomCounter = 0;
                                     foreach(var fRoom in filterRoom)
                                     {
-                                        //filterRoomCounter++;
-                                        //don't forget to add a condition to check if the room is available
-                                        if(fRoom.RoomCapacity >= 60)
+                                        filterRoomCounter++;
+
+                                        //Prioritize the room that was set
+                                        //Priority room only works in first loop
+                                        if(prioNumberRoom == 0)
                                         {
-                                            //December 10, 2023 : Get the data of the room schedule and filter with the current section and subject. If the last result is Monday then +1
-                                            //to get tuesday
-                                            //If it's tuesday, then -1 to get monday.
-                                            randomBack:
-                                            int daySet = 0;
-                                            bool setDayCondition = false;
-
-                                            var getLastDay = roomSchedule.Where(rs => rs.SectionId == section.SectionId).LastOrDefault();
-                                            // if(getLastDay != null)
-                                            // {
-                                            //     Console.WriteLine(getLastDay.Day);
-                                            //     if(getLastDay.Day == 3 && getLastDay.SubjectId != subName.SubjectId)
-                                            //     {
-                                            //         daySet = 2;
-                                            //         Console.WriteLine(dump++);
-                                            //         setDayCondition = true;
-                                            //     }
-                                            //     else if(getLastDay.Day == 6 && getLastDay.SubjectId != subName.SubjectId)
-                                            //     {
-                                            //         daySet = 2;
-                                            //         Console.WriteLine(dump++);
-                                            //         setDayCondition = true;
-                                            //     }
-                                            // }
-
-
-                                            //ANOTHER STYLE : randomize a number between 1 to 3
-                                            //If 1 then change the day into Tuesday
-                                            //If 2 then change the day into Friday
-                                            //If 3 then change the day into Monday
-                                            
-                                            if(getLastDay != null)
+                                            if(roomId != fRoom.RoomId && bypassRoomCondition == false)
                                             {
-                                                // if(getLastDay.SubjectId != subName.SubjectId)
-                                                // {
-                                                    
-                                                // }
-                                                //Randomize it back
-                                                // Create a Random object
-                                                Random random = new Random();
-
-                                                // Generate a random number between 1 and 3 (inclusive)
-                                                int randomNumber = random.Next(1, 4);
-
-                                                int numberOfDays = 0;
-
-                                                switch(randomNumber)
+                                                if(filterRoomCounter != filterRoomCount)
                                                 {
-                                                    case 1:
-                                                        daySet = 2;
-                                                        break;
-                                                    case 2:
-                                                        daySet = 5;
-                                                        break;
-                                                    case 3:
-                                                        daySet = 1;
-                                                        break;
+                                                    goto outRoomLoop;
                                                 }
-
-                                                //call the function that if the number of specific day within that section exceeds or equal to 3 then it will randomize another day
-                                                numberOfDays = countDaysMeeting(section.SectionId, daySet);
-                                                //countDaysMeeting(section.SectionId, daySet);
-                                                Console.WriteLine("Number of days : " + numberOfDays);
-
-                                                int dayCountCondition = 0;
-                                                
-                                                //If the subject count per section exceeds 9 then the count condition is more than 3. It means the section can meet more than three times
-                                                if(assignSubjectCount > 9)
-                                                {
-                                                    dayCountCondition = 3;
-                                                }
-                                                else
-                                                {
-                                                    dayCountCondition = 2;
-                                                }
-
-                                                if(numberOfDays > dayCountCondition)
-                                                {
-                                                    Console.WriteLine("Number of Days within the section : " + section.SectionId + "Days : " + numberOfDays + " Subject ID :" + subName.SubjectId);
-                                                    goto randomBack;
-                                                }
-                                                else
-                                                {
-                                                    setDayCondition = true;
-                                                }
-
                                             }
+                                        }
 
-                                            bool dayRandomAgain = false;
+                                        //DONE PRIORITIZING THE ROOM
+                                        prioNumberRoom = 1;
 
-                                            //it will loop for 7 days 1 = Monday : 7 = Sunday
-                                            for(int day = 1; day <= 7; day++)
+                                        var resRoomCapacity = Regissections.Where(rs => rs.SectionId == section.SectionId && rs.AcadYearId == acadValz && rs.Semester == semesterValz).FirstOrDefault();
+                                        if(resRoomCapacity != null)
+                                        {
+                                            //filterRoomCounter++;
+                                            //don't forget to add a condition to check if the room is available
+
+                                            //byPassRoomCapacity:
+                                            if(fRoom.RoomCapacity >= resRoomCapacity.TotalStudents || bypassRoomCondition == true)
                                             {
-                                                setConditionDayJump:
-                                                if(setDayCondition == true)
-                                                {
-                                                    day = daySet;
-                                                    setDayCondition = false;
-                                                }
-                                                // else if(dayRandomAgain == true)
+                                                bypassRoomCondition = false;
+                                                //December 10, 2023 : Get the data of the room schedule and filter with the current section and subject. If the last result is Monday then +1
+                                                //to get tuesday
+                                                //If it's tuesday, then -1 to get monday.
+                                                randomBack:
+                                                int daySet = 0;
+                                                bool setDayCondition = false;
+
+                                                var getLastDay = roomSchedule.Where(rs => rs.SectionId == section.SectionId).LastOrDefault();
+                                                // if(getLastDay != null)
                                                 // {
-                                                //     dayRandomAgain = false;
-                                                //     randomBackV2:
-                                                //     // Create a Random object
-                                                //     Random random = new Random();
-
-                                                //     // Generate a random number between 1 and 3 (inclusive)
-                                                //     int randomNumber = random.Next(1, 4);
-
-                                                //     //If the set day condition = false then another condition is set for double checking
-                                                //     int numberOfDaysv2 = 0;
-                                                //     switch(randomNumber)
+                                                //     Console.WriteLine(getLastDay.Day);
+                                                //     if(getLastDay.Day == 3 && getLastDay.SubjectId != subName.SubjectId)
                                                 //     {
-                                                //         case 1:
-                                                //             daySet = 2;
-                                                //             break;
-                                                //         case 2:
-                                                //             daySet = 5;
-                                                //             break;
-                                                //         case 3:
-                                                //             daySet = 1;
-                                                //             break;
-                                                //     }
-                                                //     numberOfDaysv2 = countDaysMeeting(section.SectionId, daySet);
-                                                //     Console.WriteLine("Number of days : " + numberOfDaysv2);
-
-                                                //     int dayCountConditionv2 = 0;
-
-                                                //     //If the subject count per section exceeds 9 then the count condition is more than 3. It means the section can meet more than three times
-                                                //     if(assignSubjectCount > 9)
-                                                //     {
-                                                //         dayCountConditionv2 = 3;
-                                                //     }
-                                                //     else
-                                                //     {
-                                                //         dayCountConditionv2 = 2;
-                                                //     }
-
-                                                //     if(numberOfDaysv2 > dayCountConditionv2)
-                                                //     {
-                                                //         Console.WriteLine("Number of Days within the section : " + section.SectionId + "Days : " + numberOfDaysv2 + " Subject ID :" + subName.SubjectId);
-                                                //         goto randomBackV2;
-                                                //     }
-                                                //     else
-                                                //     {
+                                                //         daySet = 2;
+                                                //         Console.WriteLine(dump++);
                                                 //         setDayCondition = true;
-                                                //         goto setConditionDayJump;
+                                                //     }
+                                                //     else if(getLastDay.Day == 6 && getLastDay.SubjectId != subName.SubjectId)
+                                                //     {
+                                                //         daySet = 2;
+                                                //         Console.WriteLine(dump++);
+                                                //         setDayCondition = true;
                                                 //     }
                                                 // }
 
 
-                                                string dayConvert = "";
-                                                //Day converter
-                                                switch(day)
-                                                {
-                                                    case 1:
-                                                        dayConvert = "Monday";
-                                                        break;
-                                                    case 2:
-                                                        dayConvert = "Tuesday";
-                                                        break;
-                                                    case 3:
-                                                        dayConvert = "Wednesday";
-                                                        break;
-                                                    case 4:
-                                                        dayConvert = "Thursday";
-                                                        break;
-                                                    case 5:
-                                                        dayConvert = "Friday";
-                                                        break;
-                                                    case 6:
-                                                        dayConvert = "Saturday";
-                                                        break;
-                                                    case 7:
-                                                        dayConvert = "Sunday";
-                                                        break;
-                                                }
-
-                                                //make a condition based on their units
-                                                int subjectUnits = subName.SubjectUnit;
-                                                int subjectUnitCounter = 0;
-
-                                                // if it's the rotc subject then multiply the subject unit by 2
-                                                bool bypassCheck = false;
-                                                if(subName.SubjectId == 17)
-                                                {
-                                                    subjectUnits *= 2;
-                                                    //goto byPassROTC;
-                                                }
-
-                                                //boolean timeSkipped, if adding the time detected a skip, this becomes true.
-                                                bool timeSkipped = false;
-                                                bool skipTime = false;
+                                                //ANOTHER STYLE : randomize a number between 1 to 3
+                                                //If 1 then change the day into Tuesday
+                                                //If 2 then change the day into Friday
+                                                //If 3 then change the day into Monday
                                                 
-                                                bool changeInstructor = false;
-                                                bool byPassROTC = false;
-
-                                                //sort the time slots first
-                                                var sortedTimeslots = Timeslots.OrderBy(ts => ts.StartTime);
-                                                int timeCounter = 0;
-                                                foreach(var time in sortedTimeslots)
+                                                if(getLastDay != null)
                                                 {
-                                                    //count how many time slots
-                                                    var countTime = Timeslots.OrderBy(ts => ts.StartTime).Count();
-                                                    timeCounter++;
+                                                    // if(getLastDay.SubjectId != subName.SubjectId)
+                                                    // {
+                                                        
+                                                    // }
+                                                    //Randomize it back
+                                                    // Create a Random object
+                                                    Random random = new Random();
 
-                                                    //if the subject id is ROTC, it will skip the conditions here
-                                                    if(subName.SubjectId == 17)
+                                                    // Generate a random number between 1 and 3 (inclusive)
+                                                    int randomNumber = random.Next(1, 4);
+
+                                                    int numberOfDays = 0;
+
+                                                    switch(randomNumber)
                                                     {
-                                                        byPassROTC = true;
-                                                        goto skipCondition;
+                                                        case 1:
+                                                            daySet = 2;
+                                                            break;
+                                                        case 2:
+                                                            daySet = 5;
+                                                            break;
+                                                        case 3:
+                                                            daySet = 1;
+                                                            break;
                                                     }
 
+                                                    //call the function that if the number of specific day within that section exceeds or equal to 3 then it will randomize another day
+                                                    numberOfDays = countDaysMeeting(section.SectionId, daySet);
+                                                    //countDaysMeeting(section.SectionId, daySet);
+                                                    Console.WriteLine("Number of days : " + numberOfDays);
 
-                                                    if(roomSchedule.Count != 0)
+                                                    int dayCountCondition = 0;
+                                                    
+                                                    //If the subject count per section exceeds 9 then the count condition is more than 3. It means the section can meet more than three times
+                                                    if(assignSubjectCount > 9)
                                                     {
-                                                        //check if the roomschedule with section id and subject id where day != day
-                                                        if(subjectUnitCounter >= 1)
+                                                        dayCountCondition = 3;
+                                                    }
+                                                    else
+                                                    {
+                                                        dayCountCondition = 2;
+                                                    }
+
+                                                    if(numberOfDays > dayCountCondition)
+                                                    {
+                                                        Console.WriteLine("Number of Days within the section : " + section.SectionId + "Days : " + numberOfDays + " Subject ID :" + subName.SubjectId);
+                                                        goto randomBack;
+                                                    }
+                                                    else
+                                                    {
+                                                        setDayCondition = true;
+                                                    }
+
+                                                }
+
+                                                bool dayRandomAgain = false;
+
+                                                //it will loop for 7 days 1 = Monday : 7 = Sunday
+                                                for(int day = 1; day <= 7; day++)
+                                                {
+                                                    setConditionDayJump:
+                                                    if(setDayCondition == true)
+                                                    {
+                                                        day = daySet;
+                                                        setDayCondition = false;
+                                                    }
+                                                    // else if(dayRandomAgain == true)
+                                                    // {
+                                                    //     dayRandomAgain = false;
+                                                    //     randomBackV2:
+                                                    //     // Create a Random object
+                                                    //     Random random = new Random();
+
+                                                    //     // Generate a random number between 1 and 3 (inclusive)
+                                                    //     int randomNumber = random.Next(1, 4);
+
+                                                    //     //If the set day condition = false then another condition is set for double checking
+                                                    //     int numberOfDaysv2 = 0;
+                                                    //     switch(randomNumber)
+                                                    //     {
+                                                    //         case 1:
+                                                    //             daySet = 2;
+                                                    //             break;
+                                                    //         case 2:
+                                                    //             daySet = 5;
+                                                    //             break;
+                                                    //         case 3:
+                                                    //             daySet = 1;
+                                                    //             break;
+                                                    //     }
+                                                    //     numberOfDaysv2 = countDaysMeeting(section.SectionId, daySet);
+                                                    //     Console.WriteLine("Number of days : " + numberOfDaysv2);
+
+                                                    //     int dayCountConditionv2 = 0;
+
+                                                    //     //If the subject count per section exceeds 9 then the count condition is more than 3. It means the section can meet more than three times
+                                                    //     if(assignSubjectCount > 9)
+                                                    //     {
+                                                    //         dayCountConditionv2 = 3;
+                                                    //     }
+                                                    //     else
+                                                    //     {
+                                                    //         dayCountConditionv2 = 2;
+                                                    //     }
+
+                                                    //     if(numberOfDaysv2 > dayCountConditionv2)
+                                                    //     {
+                                                    //         Console.WriteLine("Number of Days within the section : " + section.SectionId + "Days : " + numberOfDaysv2 + " Subject ID :" + subName.SubjectId);
+                                                    //         goto randomBackV2;
+                                                    //     }
+                                                    //     else
+                                                    //     {
+                                                    //         setDayCondition = true;
+                                                    //         goto setConditionDayJump;
+                                                    //     }
+                                                    // }
+
+
+                                                    string dayConvert = "";
+                                                    //Day converter
+                                                    switch(day)
+                                                    {
+                                                        case 1:
+                                                            dayConvert = "Monday";
+                                                            break;
+                                                        case 2:
+                                                            dayConvert = "Tuesday";
+                                                            break;
+                                                        case 3:
+                                                            dayConvert = "Wednesday";
+                                                            break;
+                                                        case 4:
+                                                            dayConvert = "Thursday";
+                                                            break;
+                                                        case 5:
+                                                            dayConvert = "Friday";
+                                                            break;
+                                                        case 6:
+                                                            dayConvert = "Saturday";
+                                                            break;
+                                                        case 7:
+                                                            dayConvert = "Sunday";
+                                                            break;
+                                                    }
+
+                                                    //make a condition based on their units
+                                                    int subjectUnits = subName.SubjectUnit;
+                                                    int subjectUnitCounter = 0;
+
+                                                    // if it's the rotc subject then multiply the subject unit by 2
+                                                    bool bypassCheck = false;
+                                                    if(subName.SubjectId == 17)
+                                                    {
+                                                        subjectUnits *= 2;
+                                                        //goto byPassROTC;
+                                                    }
+
+                                                    //boolean timeSkipped, if adding the time detected a skip, this becomes true.
+                                                    bool timeSkipped = false;
+                                                    bool skipTime = false;
+                                                    
+                                                    bool changeInstructor = false;
+                                                    bool byPassROTC = false;
+
+                                                    //sort the time slots first
+                                                    var sortedTimeslots = Timeslots.OrderBy(ts => ts.StartTime);
+                                                    int timeCounter = 0;
+                                                    foreach(var time in sortedTimeslots)
+                                                    {
+                                                        //count how many time slots
+                                                        var countTime = Timeslots.OrderBy(ts => ts.StartTime).Count();
+                                                        timeCounter++;
+
+                                                        //if the subject id is ROTC, it will skip the conditions here
+                                                        if(subName.SubjectId == 17)
                                                         {
-                                                            //Found the problem here
-                                                            var checkDay = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && rs.Day != day).FirstOrDefault();
-                                                            if(checkDay != null)
+                                                            byPassROTC = true;
+                                                            goto skipCondition;
+                                                        }
+
+
+                                                        if(roomSchedule.Count != 0)
+                                                        {
+                                                            //check if the roomschedule with section id and subject id where day != day
+                                                            if(subjectUnitCounter >= 1)
                                                             {
-                                                                //check if that day - 2 has a record already in the roomSchedule so it would not be skipped
-                                                                var checkRecord = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && checkDay.Day-2 != day).FirstOrDefault();
-                                                                if(checkRecord != null)
+                                                                //Found the problem here
+                                                                var checkDay = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && rs.Day != day).FirstOrDefault();
+                                                                if(checkDay != null)
                                                                 {
-                                                                    if(day != 5)
+                                                                    //check if that day - 2 has a record already in the roomSchedule so it would not be skipped
+                                                                    var checkRecord = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && checkDay.Day-2 != day).FirstOrDefault();
+                                                                    if(checkRecord != null)
                                                                     {
-                                                                        Console.WriteLine("I was skipped day: " + checkRecord.Day + "Section ID: " + checkRecord.SectionId + "Subject ID: " + checkRecord.SubjectId);
-                                                                        timeSkipped = true;
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        //check if there is thursday in friday - 1 in the recorded data
-                                                                        var checkDay2 = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && rs.Day == day - 1).FirstOrDefault();
-                                                                        if(checkDay2 != null)
+                                                                        if(day != 5)
                                                                         {
-                                                                            Console.WriteLine("Hello I was skipped Day: " + checkRecord.Day + "Section ID: " + checkRecord.SectionId + "Subject ID: " + checkRecord.SubjectId);
+                                                                            Console.WriteLine("I was skipped day: " + checkRecord.Day + "Section ID: " + checkRecord.SectionId + "Subject ID: " + checkRecord.SubjectId);
                                                                             timeSkipped = true;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            //check if there is thursday in friday - 1 in the recorded data
+                                                                            var checkDay2 = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && rs.Day == day - 1).FirstOrDefault();
+                                                                            if(checkDay2 != null)
+                                                                            {
+                                                                                Console.WriteLine("Hello I was skipped Day: " + checkRecord.Day + "Section ID: " + checkRecord.SectionId + "Subject ID: " + checkRecord.SubjectId);
+                                                                                timeSkipped = true;
+                                                                            }
                                                                         }
                                                                     }
                                                                 }
                                                             }
                                                         }
-                                                    }
 
-                                                    if(time.StartTime == "12:00" && time.EndTime == "13:00")
-                                                    {
-                                                        timeSkipped = true;
-                                                        skipTime = true;
-                                                    }
-
-                                                    if(timeSkipped == true || roomSkipped == true)
-                                                    {
-                                                        eraseList:
-                                                        //if time skipped is true then reset the values in list.
-                                                        //remove the array where section id, subject id
-                                                        roomSchedule.RemoveAll(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId);
-
-                                                        //reset all the counter to 0
-                                                        subjectUnitCounter = 0;
-                                                        //assignSubjectCounter = 0;
-
-                                                        //make the time skipped false right after
-                                                        timeSkipped = false;
-                                                        roomSkipped = false;
-                                                        if(skipTime == true)
+                                                        if(time.StartTime == "12:00" && time.EndTime == "13:00")
                                                         {
-                                                            skipTime = false;
-                                                            goto outTimeLoop;
+                                                            timeSkipped = true;
+                                                            skipTime = true;
                                                         }
-                                                    }
 
-                                                    if(changeInstructor == true)
-                                                    {
-                                                        roomSchedule.RemoveAll(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId);
-                                                        changeInstructor = false;
-                                                        goto outInstructorLoop;
-                                                    }
-
-                                                    // //this skips the time and increment it
-                                                    // if(boolRoomTime == true)
-                                                    // {
-                                                    //     goto outTimeLoop;
-                                                    // }
-
-                                                    skipCondition:
-                                                    //replace 12 with instructor.InstructorId
-                                                    var resUnavailablePeriod = Unavailableperiods.Where(up => up.TimeId == time.TimeId && up.Day == dayConvert && up.InstructorId == instructor.InstructorId).FirstOrDefault();
-                                                    if(resUnavailablePeriod == null || byPassROTC == true) //null means the instructor is free
-                                                    {
-                                                        //here, check if the room is available and if the section will not be conflicted with the sched
-                                                        var resRoomSched = roomSchedule.Where(rs => rs.RoomId == fRoom.RoomId && rs.TimeId == time.TimeId && rs.Day == day).FirstOrDefault();
-                                                        var sectionSched = roomSchedule.Where(rs => rs.TimeId == time.TimeId && rs.SectionId == section.SectionId && rs.Day == day).FirstOrDefault();
-
-                                                        //check if the teacher already has a schedule for teaching
-                                                        var instructorSched = roomSchedule.Where(rs => rs.InstructorId == instructor.InstructorId && rs.TimeId == time.TimeId && rs.Day == day).FirstOrDefault();
-                                                        if(instructorSched == null || roomSchedule.Count == 0 || byPassROTC == true)
+                                                        if(timeSkipped == true || roomSkipped == true)
                                                         {
-                                                            // add a condition that if the subject id is ROTC then the quadrangle is okay
-                                                            //first condition : the section should not be conflicted with the time
-                                                            if(sectionSched == null || roomSchedule.Count == 0 || byPassROTC == true)
+                                                            eraseList:
+                                                            //if time skipped is true then reset the values in list.
+                                                            //remove the array where section id, subject id
+                                                            roomSchedule.RemoveAll(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId);
+
+                                                            //reset all the counter to 0
+                                                            subjectUnitCounter = 0;
+                                                            //assignSubjectCounter = 0;
+
+                                                            //make the time skipped false right after
+                                                            timeSkipped = false;
+                                                            roomSkipped = false;
+                                                            if(skipTime == true)
                                                             {
-                                                                bypassCondition:
-                                                                //second condition : the room should not be conflicted with the time
-                                                                if(resRoomSched == null || roomSchedule.Count == 0 || bypassCheck == true || byPassROTC == true)
+                                                                skipTime = false;
+                                                                goto outTimeLoop;
+                                                            }
+                                                        }
+
+                                                        if(changeInstructor == true)
+                                                        {
+                                                            roomSchedule.RemoveAll(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId);
+                                                            changeInstructor = false;
+                                                            prioNumber = 1;
+                                                            goto outInstructorLoop;
+                                                        }
+
+                                                        // //this skips the time and increment it
+                                                        // if(boolRoomTime == true)
+                                                        // {
+                                                        //     goto outTimeLoop;
+                                                        // }
+
+                                                        skipCondition:
+                                                        //replace 12 with instructor.InstructorId
+                                                        var resUnavailablePeriod = Unavailableperiods.Where(up => up.TimeId == time.TimeId && up.Day == dayConvert && up.InstructorId == instructor.InstructorId).FirstOrDefault();
+                                                        if(resUnavailablePeriod == null || byPassROTC == true) //null means the instructor is free
+                                                        {
+                                                            //here, check if the room is available and if the section will not be conflicted with the sched
+                                                            var resRoomSched = roomSchedule.Where(rs => rs.RoomId == fRoom.RoomId && rs.TimeId == time.TimeId && rs.Day == day).FirstOrDefault();
+                                                            var sectionSched = roomSchedule.Where(rs => rs.TimeId == time.TimeId && rs.SectionId == section.SectionId && rs.Day == day).FirstOrDefault();
+
+                                                            //check if the teacher already has a schedule for teaching
+                                                            var instructorSched = roomSchedule.Where(rs => rs.InstructorId == instructor.InstructorId && rs.TimeId == time.TimeId && rs.Day == day).FirstOrDefault();
+                                                            if(instructorSched == null || roomSchedule.Count == 0 || byPassROTC == true)
+                                                            {
+                                                                // add a condition that if the subject id is ROTC then the quadrangle is okay
+                                                                //first condition : the section should not be conflicted with the time
+                                                                if(sectionSched == null || roomSchedule.Count == 0 || byPassROTC == true)
                                                                 {
-                                                                    //return it back to normal
-                                                                    bypassCheck = false;
-                                                                    byPassROTC = false;
-                                                                    //check a condition here if it skips break time
-                                                                    //condition : if the subjct id is ROTC and it's not Sunday
-                                                                    if(subName.SubjectId == 17 && day != 7) //7 means Sunday
+                                                                    bypassCondition:
+                                                                    //second condition : the room should not be conflicted with the time
+                                                                    if(resRoomSched == null || roomSchedule.Count == 0 || bypassCheck == true || byPassROTC == true)
                                                                     {
-                                                                        //increment the time until it reaches Saturday
-                                                                        goto outTimeLoop;
-                                                                    }
-
-                                                                    //jump statement
-
-                                                                    //byPassROTC:
-                                                                    //condition : if the subject code is ROTC and it's Sunday
-                                                                    if(subName.SubjectId == 17 && day == 7)
-                                                                    {
-                                                                        roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));
-                                                                        subjectUnitCounter++; //increment the subject unit counter
-
-                                                                        //while the incrementation is not equal, the time will be on a loop to add more time slot based on their units
-                                                                        if(subjectUnitCounter != subjectUnits)
+                                                                        //return it back to normal
+                                                                        bypassCheck = false;
+                                                                        byPassROTC = false;
+                                                                        //check a condition here if it skips break time
+                                                                        //condition : if the subjct id is ROTC and it's not Sunday
+                                                                        if(subName.SubjectId == 17 && day != 7) //7 means Sunday
                                                                         {
+                                                                            //increment the time until it reaches Saturday
                                                                             goto outTimeLoop;
                                                                         }
-                                                                        else
+
+                                                                        //jump statement
+
+                                                                        //byPassROTC:
+                                                                        //condition : if the subject code is ROTC and it's Sunday
+                                                                        if(subName.SubjectId == 17 && day == 7)
                                                                         {
-                                                                            //roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId));
-                                                                            if(assignSubjectCounter + 0 >= assignSubjectCount) //if the assign subject counts go out of bounds
-                                                                            {
-                                                                                if(sectionCounter + 0 >= sectionCount)
-                                                                                {
-                                                                                    goto outerLoop;
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    goto outSectionLoop;
-                                                                                }
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                //increment the assign subject
-                                                                                goto outSubjectLoop;
-                                                                            }
-                                                                        }
-                                                                    }
-
-                                                                    //another condition : if the subject id is not ROTC then proceed
-                                                                    if(subName.SubjectId != 17)
-                                                                    {
-                                                                        //if the day is sunday, find another room instead
-                                                                        if(day != 7)
-                                                                        {
-                                                                            // if(day == 6)
-                                                                            // {
-                                                                            //     // //Check if saturday is the first record for the section and subject.
-                                                                            //     // var findClassSat = roomSchedule.Where(rs => rs.SubjectId == subName.SubjectId && rs.SectionId == section.SectionId).FirstOrDefault();
-                                                                            //     // if(findClassSat == null)
-                                                                            //     // {
-                                                                            //     //     //If it's the first record. Go back and find another day instead.
-                                                                            //     //     if(assignSubjectCounter + 0 >= assignSubjectCount)
-                                                                            //     //     {
-                                                                            //     //         goto randomBack;
-                                                                            //     //     }
-                                                                            //     // }
-                                                                            //     // else
-                                                                            //     // {
-                                                                            //     //     roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));
-                                                                            //     // }
-                                                                                
-                                                                            // }
-                                                                            // else
-                                                                            // {
-                                                                            //     roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));    
-                                                                            // }
-
-                                                                            // int countDaysMeeting = 0;
-                                                                            // countDaysMeeting = 
-
-                                                                            int numberOfDays = 0;
-                                                                            numberOfDays = countDaysMeeting(section.SectionId, day);
-
-                                                                            //back here
-                                                                            int dayCountCondition = 0;
-
-                                                                            if(numberOfDays > 4)
-                                                                            {
-                                                                                goto outTimeLoop;
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));
-                                                                            }
-                                                
-                                                                            //If the subject count per section exceeds 9 then the count condition is more than 3. It means the section can meet more than three times
-                                                                            // if(assignSubjectCount > 9)
-                                                                            // {
-                                                                            //     dayCountCondition = 3;
-                                                                            // }
-                                                                            // else
-                                                                            // {
-                                                                            //     dayCountCondition = 2;
-                                                                            // }
-
-                                                                            // if(numberOfDays > dayCountCondition)
-                                                                            // {
-                                                                            //     Console.WriteLine("Number of Days within the section : " + section.SectionId + "Days : " + numberOfDays + " Subject ID :" + subName.SubjectId);
-                                                                            //     goto randomBack;
-                                                                            // }
-                                                                            // else
-                                                                            // {
-                                                                            //     roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));
-                                                                            // }
-
-                                                                            if(day + 2 >= 7)
-                                                                            {
-                                                                                if(day == 5)
-                                                                                {
-                                                                                    //LACK OF CONDITIONS : IT MUST CHECK FIRST IF THE INSTRUCTOR IS ALREADY TEACHING OR UNAVAILABLE WITHIN THAT TIME PERIOD BEFORE ADDING THIS TO ROOM SCHEDULE
-                                                                                    roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day + 1));
-                                                                                }
-                                                                            } 
-                                                                            else
-                                                                            {
-
-                                                                                //LACK OF CONDITIONS : IT MUST CHECK FIRST IF THE INSTRUCTOR IS ALREADY TEACHING OR UNAVAILABLE WITHIN THAT TIME PERIOD BEFORE ADDING THIS TO ROOM SCHEDULE
-                                                                                string dayCons = dayConvertFunc(day+2).ToString();
-                                                                                Console.WriteLine("DayConvertFunc Section ID : " + section.SectionId + " Subject ID : " + subName.SubjectId + " Instructor : " + instructor.InstructorId + " Day: " + dayCons);
-                                                                                var resUnavailablePeriod2 = Unavailableperiods.Where(up => up.TimeId == time.TimeId && up.Day == dayCons && up.InstructorId == instructor.InstructorId).FirstOrDefault();
-                                                                                if(resUnavailablePeriod2 == null)
-                                                                                {
-                                                                                    roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day + 2));
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    timeSkipped = true;
-                                                                                }
-                                                                            }
-
+                                                                            roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));
                                                                             subjectUnitCounter++; //increment the subject unit counter
 
                                                                             //while the incrementation is not equal, the time will be on a loop to add more time slot based on their units
@@ -796,192 +818,331 @@ namespace matikApp.Controllers
                                                                                 //roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId));
                                                                                 if(assignSubjectCounter + 0 >= assignSubjectCount) //if the assign subject counts go out of bounds
                                                                                 {
-                                                                                    //December 11, 2023 : CONDITION : If the item count of the array is equal to the number of units. Add another set of unit to extend the time
-                                                                                    // REASON : The number of items must be x2 from the original total unit of the subject
-                                                                                    var countItemUnits = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && day == 6).ToList();
-                                                                                    if(countItemUnits.Count() >= subjectUnits)
+                                                                                    if(sectionCounter + 0 >= sectionCount)
                                                                                     {
-                                                                                        //Console.ReadKey();
-                                                                                        bool foundSaturday = false;
-                                                                                        foreach(var item in countItemUnits)
-                                                                                        {
-                                                                                            if(item.Day == 6)
-                                                                                            {
-                                                                                                //Console.ReadKey();
-                                                                                                foundSaturday = true;
-                                                                                            }
-                                                                                        }
-
-                                                                                        if(foundSaturday == true)
-                                                                                        {
-                                                                                            foundSaturday = false;
-                                                                                            //subjectUnits *= 2;
-
-                                                                                            //go back and find another room instead
-                                                                                            roomSkipped = true;
-
-                                                                                            if(filterRoomCounter == filterRoomCount)
-                                                                                            {
-                                                                                                //loop the room back to 1
-                                                                                                goto loopRoomBack;
-
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                goto outRoomLoop;
-                                                                                            }
-                                                                                        }
+                                                                                        goto outerLoop;
                                                                                     }
                                                                                     else
                                                                                     {
-                                                                                        if(sectionCounter + 0 >= sectionCount)
-                                                                                        {
-                                                                                            goto outerLoop;
-                                                                                        }
-                                                                                        else
-                                                                                        {
-                                                                                            goto outSectionLoop;
-                                                                                        }
+                                                                                        goto outSectionLoop;
                                                                                     }
-
                                                                                 }
                                                                                 else
                                                                                 {
-                                                                                    // December 11, 2023 : CONDITION : If the item count of the array is equal to the number of units. Add another set of unit to extend the time
-                                                                                    // REASON : The number of items must be x2 from the original total unit of the subject
-                                                                                    var countItemUnits = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && day == 6).ToList();
-                                                                                    if(countItemUnits.Count() >= subjectUnits)
-                                                                                    {
-                                                                                        //Console.ReadKey();
-                                                                                        //bool foundSaturday = false;
-                                                                                        // foreach(var item in countItemUnits)
-                                                                                        // {
-                                                                                        //     if(item.Day == 6)
-                                                                                        //     {
-                                                                                        //         foundSaturday = true;
-                                                                                        //     }
-                                                                                        // }
-
-                                                                                        // if(foundSaturday == true)
-                                                                                        // {
-                                                                                            //foundSaturday = false;
-                                                                                            ////subjectUnits *= 2;
-
-                                                                                            //go back and find another room instead
-                                                                                            roomSkipped = true;
-
-                                                                                            if(filterRoomCounter == filterRoomCount)
-                                                                                            {
-                                                                                                //loop the room back to 1
-                                                                                                goto loopRoomBack;
-
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                goto outRoomLoop;
-                                                                                            }
-                                                                                        //}
-                                                                                    }
-                                                                                    else
-                                                                                    {
-                                                                                        // //FORCED : Now the conditions is added with 6
-                                                                                        // int countItemUnitsSecondTry = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && day == 6).Count();
-                                                                                        // if(countItemUnitsSecondTry >= subjectUnits)
-                                                                                        // {
-                                                                                        //     //go back and find another room instead
-                                                                                        //     roomSkipped = true;
-
-                                                                                        //     if(filterRoomCounter == filterRoomCount)
-                                                                                        //     {
-                                                                                        //         //loop the room back to 1
-                                                                                        //         goto loopRoomBack;
-
-                                                                                        //     }
-                                                                                        //     else
-                                                                                        //     {
-                                                                                        //         goto outRoomLoop;
-                                                                                        //     }
-                                                                                        // }
-                                                                                        // else
-                                                                                        // {
-                                                                                        //     //increment the assign subject
-                                                                                        //     goto outSubjectLoop;
-                                                                                        // }
-
-                                                                                        goto outSubjectLoop;
-                                                                                    }
-                                                                                    //goto outSubjectLoop;
+                                                                                    //increment the assign subject
+                                                                                    goto outSubjectLoop;
                                                                                 }
                                                                             }
                                                                         }
+
+                                                                        //another condition : if the subject id is not ROTC then proceed
+                                                                        if(subName.SubjectId != 17)
+                                                                        {
+                                                                            //if the day is sunday, find another room instead
+                                                                            if(day != 7)
+                                                                            {
+                                                                                // if(day == 6)
+                                                                                // {
+                                                                                //     // //Check if saturday is the first record for the section and subject.
+                                                                                //     // var findClassSat = roomSchedule.Where(rs => rs.SubjectId == subName.SubjectId && rs.SectionId == section.SectionId).FirstOrDefault();
+                                                                                //     // if(findClassSat == null)
+                                                                                //     // {
+                                                                                //     //     //If it's the first record. Go back and find another day instead.
+                                                                                //     //     if(assignSubjectCounter + 0 >= assignSubjectCount)
+                                                                                //     //     {
+                                                                                //     //         goto randomBack;
+                                                                                //     //     }
+                                                                                //     // }
+                                                                                //     // else
+                                                                                //     // {
+                                                                                //     //     roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));
+                                                                                //     // }
+                                                                                    
+                                                                                // }
+                                                                                // else
+                                                                                // {
+                                                                                //     roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));    
+                                                                                // }
+
+                                                                                // int countDaysMeeting = 0;
+                                                                                // countDaysMeeting = 
+
+                                                                                int numberOfDays = 0;
+                                                                                numberOfDays = countDaysMeeting(section.SectionId, day);
+
+                                                                                //back here
+                                                                                int dayCountCondition = 0;
+
+                                                                                if(numberOfDays > 4)
+                                                                                {
+                                                                                    goto outTimeLoop;
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));
+                                                                                }
+                                                    
+                                                                                //If the subject count per section exceeds 9 then the count condition is more than 3. It means the section can meet more than three times
+                                                                                // if(assignSubjectCount > 9)
+                                                                                // {
+                                                                                //     dayCountCondition = 3;
+                                                                                // }
+                                                                                // else
+                                                                                // {
+                                                                                //     dayCountCondition = 2;
+                                                                                // }
+
+                                                                                // if(numberOfDays > dayCountCondition)
+                                                                                // {
+                                                                                //     Console.WriteLine("Number of Days within the section : " + section.SectionId + "Days : " + numberOfDays + " Subject ID :" + subName.SubjectId);
+                                                                                //     goto randomBack;
+                                                                                // }
+                                                                                // else
+                                                                                // {
+                                                                                //     roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day));
+                                                                                // }
+
+                                                                                if(day + 2 >= 7)
+                                                                                {
+                                                                                    if(day == 5)
+                                                                                    {
+                                                                                        //LACK OF CONDITIONS : IT MUST CHECK FIRST IF THE INSTRUCTOR IS ALREADY TEACHING OR UNAVAILABLE WITHIN THAT TIME PERIOD BEFORE ADDING THIS TO ROOM SCHEDULE
+                                                                                        roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day + 1));
+                                                                                    }
+                                                                                } 
+                                                                                else
+                                                                                {
+
+                                                                                    //LACK OF CONDITIONS : IT MUST CHECK FIRST IF THE INSTRUCTOR IS ALREADY TEACHING OR UNAVAILABLE WITHIN THAT TIME PERIOD BEFORE ADDING THIS TO ROOM SCHEDULE
+                                                                                    string dayCons = dayConvertFunc(day+2).ToString();
+                                                                                    Console.WriteLine("DayConvertFunc Section ID : " + section.SectionId + " Subject ID : " + subName.SubjectId + " Instructor : " + instructor.InstructorId + " Day: " + dayCons);
+                                                                                    var resUnavailablePeriod2 = Unavailableperiods.Where(up => up.TimeId == time.TimeId && up.Day == dayCons && up.InstructorId == instructor.InstructorId).FirstOrDefault();
+                                                                                    if(resUnavailablePeriod2 == null)
+                                                                                    {
+                                                                                        roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day + 2));
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        timeSkipped = true;
+                                                                                    }
+                                                                                }
+
+                                                                                subjectUnitCounter++; //increment the subject unit counter
+
+                                                                                //while the incrementation is not equal, the time will be on a loop to add more time slot based on their units
+                                                                                if(subjectUnitCounter != subjectUnits)
+                                                                                {
+                                                                                    goto outTimeLoop;
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    //roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId));
+                                                                                    if(assignSubjectCounter + 0 >= assignSubjectCount) //if the assign subject counts go out of bounds
+                                                                                    {
+                                                                                        //December 11, 2023 : CONDITION : If the item count of the array is equal to the number of units. Add another set of unit to extend the time
+                                                                                        // REASON : The number of items must be x2 from the original total unit of the subject
+                                                                                        var countItemUnits = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && day == 6).ToList();
+                                                                                        if(countItemUnits.Count() >= subjectUnits)
+                                                                                        {
+                                                                                            //Console.ReadKey();
+                                                                                            bool foundSaturday = false;
+                                                                                            foreach(var item in countItemUnits)
+                                                                                            {
+                                                                                                if(item.Day == 6)
+                                                                                                {
+                                                                                                    //Console.ReadKey();
+                                                                                                    foundSaturday = true;
+                                                                                                }
+                                                                                            }
+
+                                                                                            if(foundSaturday == true)
+                                                                                            {
+                                                                                                foundSaturday = false;
+                                                                                                //subjectUnits *= 2;
+
+                                                                                                //go back and find another room instead
+                                                                                                roomSkipped = true;
+
+                                                                                                if(filterRoomCounter == filterRoomCount)
+                                                                                                {
+                                                                                                    //loop the room back to 1
+                                                                                                    goto loopRoomBack;
+
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    goto outRoomLoop;
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            if(sectionCounter + 0 >= sectionCount)
+                                                                                            {
+                                                                                                goto outerLoop;
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                goto outSectionLoop;
+                                                                                            }
+                                                                                        }
+
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        // December 11, 2023 : CONDITION : If the item count of the array is equal to the number of units. Add another set of unit to extend the time
+                                                                                        // REASON : The number of items must be x2 from the original total unit of the subject
+                                                                                        var countItemUnits = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && day == 6).ToList();
+                                                                                        if(countItemUnits.Count() >= subjectUnits)
+                                                                                        {
+                                                                                            //Console.ReadKey();
+                                                                                            //bool foundSaturday = false;
+                                                                                            // foreach(var item in countItemUnits)
+                                                                                            // {
+                                                                                            //     if(item.Day == 6)
+                                                                                            //     {
+                                                                                            //         foundSaturday = true;
+                                                                                            //     }
+                                                                                            // }
+
+                                                                                            // if(foundSaturday == true)
+                                                                                            // {
+                                                                                                //foundSaturday = false;
+                                                                                                ////subjectUnits *= 2;
+
+                                                                                                //go back and find another room instead
+                                                                                                roomSkipped = true;
+
+                                                                                                if(filterRoomCounter == filterRoomCount)
+                                                                                                {
+                                                                                                    //loop the room back to 1
+                                                                                                    goto loopRoomBack;
+
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    goto outRoomLoop;
+                                                                                                }
+                                                                                            //}
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            // //FORCED : Now the conditions is added with 6
+                                                                                            // int countItemUnitsSecondTry = roomSchedule.Where(rs => rs.SectionId == section.SectionId && rs.SubjectId == subName.SubjectId && day == 6).Count();
+                                                                                            // if(countItemUnitsSecondTry >= subjectUnits)
+                                                                                            // {
+                                                                                            //     //go back and find another room instead
+                                                                                            //     roomSkipped = true;
+
+                                                                                            //     if(filterRoomCounter == filterRoomCount)
+                                                                                            //     {
+                                                                                            //         //loop the room back to 1
+                                                                                            //         goto loopRoomBack;
+
+                                                                                            //     }
+                                                                                            //     else
+                                                                                            //     {
+                                                                                            //         goto outRoomLoop;
+                                                                                            //     }
+                                                                                            // }
+                                                                                            // else
+                                                                                            // {
+                                                                                            //     //increment the assign subject
+                                                                                            //     goto outSubjectLoop;
+                                                                                            // }
+
+                                                                                            goto outSubjectLoop;
+                                                                                        }
+                                                                                        //goto outSubjectLoop;
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                goto outRoomLoop;
+                                                                            }
+                                            
+                                                                        }
+                                                                        
+                                                                        //boolRoomTime = false;
+                                                                        //Console.WriteLine("HELLO THIS IS NEIL");
+                                                                        //Console.ReadKey();
+
+                                                                    }
+                                                                    else if(resRoomSched != null)
+                                                                    {
+                                                                        //if the subject is ROTC then bypass the mother if condition
+                                                                        if(subName.SubjectId == 17)
+                                                                        {
+                                                                            bypassCheck = true;
+                                                                            goto bypassCondition;
+                                                                        }
                                                                         else
                                                                         {
-                                                                            goto outRoomLoop;
+                                                                            //time skipped detected
+                                                                            timeSkipped = true;
                                                                         }
-                                        
+                                                                        
                                                                     }
-                                                                    
-                                                                    //boolRoomTime = false;
-                                                                    //Console.WriteLine("HELLO THIS IS NEIL");
-                                                                    //Console.ReadKey();
-
                                                                 }
-                                                                else if(resRoomSched != null)
+                                                                else if(sectionSched != null)
                                                                 {
-                                                                    //if the subject is ROTC then bypass the mother if condition
-                                                                    if(subName.SubjectId == 17)
+                                                                    //time skipped detected
+                                                                    timeSkipped = true;
+                                                                }
+                                                            }
+                                                            else if(instructorSched != null)
+                                                            {
+                                                                if(timeCounter == countTime)
+                                                                {
+                                                                    if(instructorCounter + 1 >= countInstructor)
                                                                     {
-                                                                        bypassCheck = true;
-                                                                        goto bypassCondition;
+                                                                        timeSkipped = true;
                                                                     }
                                                                     else
                                                                     {
-                                                                        //time skipped detected
-                                                                        timeSkipped = true;
+                                                                        changeInstructor = true;
                                                                     }
-                                                                    
-                                                                }
-                                                            }
-                                                            else if(sectionSched != null)
-                                                            {
-                                                                //time skipped detected
-                                                                timeSkipped = true;
-                                                            }
-                                                        }
-                                                        else if(instructorSched != null)
-                                                        {
-                                                            if(timeCounter == countTime)
-                                                            {
-                                                                if(instructorCounter + 1 >= countInstructor)
-                                                                {
-                                                                    timeSkipped = true;
                                                                 }
                                                                 else
                                                                 {
-                                                                    changeInstructor = true;
+                                                                    timeSkipped = true;
                                                                 }
                                                             }
-                                                            else
-                                                            {
-                                                                timeSkipped = true;
-                                                            }
+                                                            
                                                         }
-                                                        
+                                                        else if(resUnavailablePeriod != null)
+                                                        {
+                                                            //time skipped detected
+                                                            timeSkipped = true;
+                                                        }
+                                                        outTimeLoop:
+                                                        Console.Write("");
                                                     }
-                                                    else if(resUnavailablePeriod != null)
-                                                    {
-                                                        //time skipped detected
-                                                        timeSkipped = true;
-                                                    }
-                                                    outTimeLoop:
-                                                    Console.Write("");
-                                                }
 
-                                                //timeSkipped = true;
-                                                //timeSkipped = true;
-                                                //end of day loop
+                                                    //timeSkipped = true;
+                                                    //timeSkipped = true;
+                                                    //end of day loop
+                                                }
+                                            
                                             }
-                                        
+                                            else
+                                            {
+                                                // if(filterRoomCounter == filterRoomCount)
+                                                // {
+                                                //     byPassRoomCapacity = true;
+                                                //     goto loopRoomAgain;
+                                                // }
+                                                if(filterRoomCounter != filterRoomCount)
+                                                {
+                                                    goto outRoomLoop;
+                                                }
+                                                else
+                                                {
+                                                    bypassRoomCondition = true;
+                                                    goto loopRoomAgain;
+                                                }
+                                            }
                                         }
                                         outRoomLoop:
                                         Console.Write(""); //this is temp

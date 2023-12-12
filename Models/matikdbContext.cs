@@ -24,6 +24,7 @@ namespace matikApp.Models
         public virtual DbSet<Dean> Deans { get; set; }
         public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<Instructor> Instructors { get; set; }
+        public virtual DbSet<Instructorunitload> Instructorunitloads { get; set; }
         public virtual DbSet<Regissection> Regissections { get; set; }
         public virtual DbSet<Room> Rooms { get; set; }
         public virtual DbSet<Section> Sections { get; set; }
@@ -219,6 +220,35 @@ namespace matikApp.Models
                     .IsRequired()
                     .HasMaxLength(250)
                     .HasColumnName("instructor_mname");
+            });
+
+            modelBuilder.Entity<Instructorunitload>(entity =>
+            {
+                entity.HasKey(e => e.UnitLoadId)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("instructorunitload");
+
+                entity.Property(e => e.UnitLoadId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("unitLoadID");
+
+                entity.Property(e => e.AcadYearId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("acadYearID");
+
+                entity.Property(e => e.InstructorId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("instructorID");
+
+                entity.Property(e => e.Semester)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("semester");
+
+                entity.Property(e => e.UnitLoad)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("unitLoad");
             });
 
             modelBuilder.Entity<Regissection>(entity =>

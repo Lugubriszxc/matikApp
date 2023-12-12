@@ -25,6 +25,8 @@
     @Html.Partial("PartialInstructor/InstructorTableUAPeriod")
     @Html.Partial("PartialInstructor/InstructorSHTable")
     @Html.Partial("PartialInstructor/InstructorAddSubjectHandled")
+    @Html.Partial("PartialInstructor/InstructorUnitLoad")
+    @Html.Partial("PartialInstructor/InstructorAddUnitLoad")
 </body>
 </html>
 
@@ -36,6 +38,7 @@
     var selectedInstructor;
     var instructorList = {};
 
+    var selectedIAUId;
     var selectedUAId;
     var selectedSubjectId;
     var selectedSubjectHandledId;
@@ -46,6 +49,7 @@
     populateDepartment();
     populateInstructorTable();
     populateTimePeriod();
+    populateAcademicYear();
 
     //to populate the department option 
     function populateDepartment()
@@ -179,7 +183,7 @@
     //to render buttons in action index
     function btnInstructor(instructorId)
     {
-        return "<center> <a class='btn btn-warning subjectHandled' title='Subjects handled' data-instructorId=" + instructorId + "><i class='fa-solid fa-book-open' style='color : #213454;'></i></a> | <a class='btn btn-warning unavailablePeriod' title='Unavailable time period' data-instructorId=" + instructorId + "><i class='fa-solid fa-business-time' style='color : #213454;'></i></a> | <a class='btn btn-success instructorUpdate' data-instructorId=" + instructorId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger instructorDelete' data-instructorId=" + instructorId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+        return "<center> <a class='btn btn-primary unitLoad' title='Unit Load' data-instructorId=" + instructorId + "><i class='fa-solid fa-book-open-reader'></i></a> | <a class='btn btn-warning subjectHandled' title='Subjects handled' data-instructorId=" + instructorId + "><i class='fa-solid fa-book-open' style='color : #213454;'></i></a> | <a class='btn btn-warning unavailablePeriod' title='Unavailable time period' data-instructorId=" + instructorId + "><i class='fa-solid fa-business-time' style='color : #213454;'></i></a> | <a class='btn btn-success instructorUpdate' data-instructorId=" + instructorId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger instructorDelete' data-instructorId=" + instructorId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
     }
 
     //get the data of the instructor and store it to array
@@ -386,6 +390,95 @@
     $("#sHAdd").click(function(){
         populateSubjectTable();
     });
+
+    //UNIT LOAD
+    //when clicking the subjects handled button it will open the table
+    $("tbody").delegate(".unitLoad", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-instructorId");
+        if(i != null)
+        {
+            $("#modalAddUnitLoadTable").modal("toggle");
+            selectedInstructorId = i;
+            populateUnitLoadTable(selectedInstructorId);
+            //populateSubjectHandled(selectedInstructorId);
+            //console.log(selectedInstructorId);
+        }
+    });
+
+
+    //populate subject table
+    function populateUnitLoadTable()
+    {
+        $('#addUnitLoadTable').DataTable().destroy();
+        if(!$.fn.DataTable.isDataTable('#addUnitLoadTable'))
+        {
+            $('#addUnitLoadTable').DataTable({
+                responsive: true,
+                ajax:
+                {
+                    url: '../api/adminapi/getUnitLoad',
+                    data:
+                    {
+                        instructorId : selectedInstructorId,
+                    },
+                    dataSrc: ''
+                },
+                columns:
+                [
+                    {data: 'acadYearName'},
+                    {data: 'semester'},
+                    {data: 'unitLoad'},
+                    {   //actions
+                        data: 'unitLoadId',
+                        render : function (data, type, row)
+                        {
+                            return btnUnitLoad(data);
+                        }
+                    },
+                ]
+            });
+        }
+    }
+
+    function btnUnitLoad(unitLoadId)
+    {
+        return "<center><a class='btn btn-danger unitLoadDelete' data-iauId=" + unitLoadId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+    }
+
+    //to populate the academic year
+    function populateAcademicYear()
+    {
+        $.ajax("../api/adminapi/getAcademicYear")
+        .done(function(result){
+        var template = document.querySelector("template#academicYearTemplate");
+        var parent = document.querySelectorAll("#acadYearSelect");
+        
+        for(i = 0; i < parent.length; i++){
+          result.forEach(function (item){
+            var cloned = template.content.cloneNode(true);
+            cloned.querySelector("option").value = item.acadYearId;
+            cloned.querySelector("option").innerText = item.acadYearName;
+
+            parent[i].prepend(cloned);
+          });
+        }
+
+        //to deselect a selected option
+        $("select").val([]);
+        });
+    }
+
+    //this for deleting the unit load
+    $("tbody").delegate(".unitLoadDelete", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-iauId");
+        if(i != null)
+        {
+            //Code here for deleting the time slot
+            selectedIAUId = i;
+            console.log(selectedIAUId);
+            alertInstructorUnitLoadDelete(selectedIAUId);
+        }
+    });
     
 
     //populate subject table
@@ -575,6 +668,25 @@
         })
     }
 
+    //after confirming deleting the unit load, call this function
+    function deleteInstructorLoad(selectedIAUId)
+    {
+        //ajax delete instructor load 
+        $.ajax({
+            url: "../api/adminapi/deleteInstructorLoad",
+            type: "POST",
+            data:
+            {
+                IAUId : selectedIAUId,
+            },
+        }).done(function(){ 
+            alertSuccess();
+            //populateInstructorTable();
+           //$("#modalUnavailablePeriodTable").modal("toggle");
+            populateUnitLoadTable(selectedInstructorId);
+        })
+    }
+
     //when clicking add unavailable time period
     $("#uPAdd").click(function(){
         $("#modalUnavailablePeriodTable").modal("toggle");
@@ -585,6 +697,72 @@
     $("#createTimePeriod").click(function(){
         addTimePeriod();
     });
+
+    //after clicking create time period
+    $("#createUnitLoad").click(function(){
+        addUnitLoad();
+    });
+    
+    function addUnitLoad()
+    {
+        //count the number of elements inside  the form
+        var formelements = $("#createUnitLoadForm .form-group");
+
+        var arrData = {};
+        //getting the data from the form
+        var formInputs = $("#createUnitLoadForm").serializeArray();
+        formInputs.forEach(function(item){
+            arrData[item.name] = item.value;
+        });
+
+        arrData.InstructorId = selectedInstructorId;
+
+        let valUnitLoad = document.getElementById('loadUnit');
+
+        console.log(formelements.length);
+        if(formInputs.length === formelements.length && valUnitLoad !== '')
+        {
+            //Call API to add unit load
+            $.ajax({
+                url: "../api/adminapi/checkInstructorLoad",
+                type: "POST",
+                data:
+                {
+                    iul : arrData,
+                },
+            })
+            .done(function(result){
+                if(result == null)
+                {
+                    $.ajax({
+                        url: "../api/adminapi/createInstructorLoad",
+                        type: "POST",
+                        data:
+                        {
+                            iul : arrData,
+                        },
+                    })
+                    .done(function(){
+                        //$("#createUnitLoadForm")[0].reset();
+                        $("#modalUnitLoadCreate").modal("toggle");
+                        alertSuccess();
+                        populateUnitLoadTable(selectedInstructorId);
+                        //populateInstructorTable();
+                    });
+                }
+                else
+                {
+                    alertError("Instructor is already registered.");
+                }
+            });
+
+            
+        }
+        else
+        {
+            alertError("Select a time period!");
+        }
+    }
 
     //adding a time period to the unavailableperiod table with the instructor id
     function addTimePeriod()
@@ -810,6 +988,24 @@
         }).then((result) => {
             if(result.isConfirmed){
                 deleteUATime(selectedUAId);
+            }
+        })
+    }
+
+    //display delete confirmation of unavailable time slot
+    function alertInstructorUnitLoadDelete(selectedIAUId)
+    {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if(result.isConfirmed){
+                deleteInstructorLoad(selectedIAUId);
             }
         })
     }
