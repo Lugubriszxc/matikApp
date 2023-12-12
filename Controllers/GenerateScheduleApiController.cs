@@ -778,11 +778,11 @@ namespace matikApp.Controllers
 
                                                             //check if the teacher already has a schedule for teaching
                                                             var instructorSched = roomSchedule.Where(rs => rs.InstructorId == instructor.InstructorId && rs.TimeId == time.TimeId && rs.Day == day).FirstOrDefault();
-                                                            if(instructorSched == null || roomSchedule.Count == 0 || byPassROTC == true)
+                                                            if(instructorSched == null || byPassROTC == true)
                                                             {
                                                                 // add a condition that if the subject id is ROTC then the quadrangle is okay
                                                                 //first condition : the section should not be conflicted with the time
-                                                                if(sectionSched == null || roomSchedule.Count == 0 || byPassROTC == true)
+                                                                if(sectionSched == null || byPassROTC == true)
                                                                 {
                                                                     bypassCondition:
                                                                     //second condition : the room should not be conflicted with the time
