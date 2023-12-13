@@ -19,7 +19,7 @@
     <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">-->
     @* <link rel="stylesheet" href="~/lib/bootstrapdatepicker/css/bootstrap-datepicker.min.css" /> *@
 </head>
-<body class="bg-warning text-dark">
+<body class="bods bg-warning text-dark">
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid bg-dark">
@@ -110,7 +110,7 @@
                             </ul>
                         </div>
                     </ul>
-                    <div class="col-md-8 offset-md-5">
+                    <div class="col-md-8 offset-md-4">
                         <span class="btn btn-dark" id="span"></span>
                         <br>
                         <span class="btn btn-dark" id="spanDate"></span>
@@ -126,6 +126,7 @@
                                 setTimeout(displayClock, 1000); 
                             }
                         </script>
+                        <a class='btn btn-danger logoutBtn' id="logoutBtn"><i class="fa-solid fa-power-off"></i></a>
                     </div>
                 </div>
             </div>
@@ -271,4 +272,49 @@
         -webkit-backdrop-filter: blur(15px);
 
     }
+
+    @* .btn a:hover
+    {
+        color : yellow;
+    } *@
+
+    .logoutBtn
+    {
+        position: absolute;
+        left: 180px;
+        bottom: 20px;
+        border-radius: 100%;
+    }
 </style>
+
+<script>
+    $(() => {
+
+        $("#logoutBtn").click((e) =>{
+            confirmLogout();
+        });
+
+        function proceedLogout()
+        {
+            window.location.href = "/Authorization/Signin";
+        }
+
+
+        //display update confirmation
+        function confirmLogout()
+        {
+            Swal.fire({
+                title: 'Are you sure you want to logout?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                confirmButtonColor: '#3085d6'
+            }).then((result) => {
+                if(result.isConfirmed){
+                    proceedLogout();
+                }
+            })
+        }
+        //End of document
+    });
+</script>

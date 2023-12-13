@@ -106,13 +106,18 @@ namespace matikApp.Models
                     .HasColumnType("int(11)")
                     .HasColumnName("userID");
 
+                entity.Property(e => e.Id)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("ID");
+
                 entity.Property(e => e.Password)
                     .IsRequired()
                     .HasMaxLength(250)
                     .HasColumnName("password");
 
                 entity.Property(e => e.UserType)
-                    .HasColumnType("int(11)")
+                    .IsRequired()
+                    .HasMaxLength(255)
                     .HasColumnName("userType");
 
                 entity.Property(e => e.Username)
