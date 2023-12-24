@@ -1,0 +1,354 @@
+<center><h1>Student Profile</h1></center>
+
+<button type="button" title="Create Student" id="createStudentbtn" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalStudentCreate">
+  <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Create Student
+</button>
+
+<br><br>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="~/css/tableCss/tableStyle.css" asp-append-version="true"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <!--Import the partials here-->
+    @Html.Partial("PartialStudent/StudentTable")
+    @Html.Partial("PartialStudent/StudentCreate")
+    @Html.Partial("PartialStudent/StudentUpdate")
+</body>
+</html>
+
+<script>
+    var selectedStudentId;
+    var selectedStudent;
+    var studentList = {};
+
+    $(document).ready(function(){
+
+    populateStudentTable();
+
+    //to populate the student table
+    function populateStudentTable()
+    {
+        $('#studentData').DataTable().destroy();
+        if(!$.fn.DataTable.isDataTable('#studentData'))
+        {
+            $('#studentData').DataTable({
+                responsive: true,
+                ajax:
+                {
+                    url: '../api/adminapi/getStudents',
+                    dataSrc: '',
+                },
+                columns:
+                [
+                    {data: 'studentId'},
+                    {data: 'schoolId'},
+                    {
+                        data: 'studentId',
+                        render : function(data, type, row)
+                        {
+                            var firstname = row['studentFname'];
+                            var middlename = row['studentMname'];
+                            var lastname = row['studentLname'];
+
+                            var combined;
+
+                            if(middlename.value === "")
+                            {
+                                combined = firstname + ' ' + lastname;
+                            }
+                            else
+                            {
+                                combined = firstname + ' ' + middlename + ' ' + lastname; 
+                            }
+
+                            return combined;
+                        }
+                    },
+                    {
+                        data: 'studentId',
+                        render : function (data, type, row)
+                        {
+                            return btnStudent(data);
+                        }
+                    },
+                ]
+            });
+        }
+        getStudent();
+    }
+
+    //to render buttons in action index
+    function btnStudent(studentId)
+    {
+        return "<center> <a class='btn btn-success studentUpdate' data-studentId=" + studentId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger studentDelete' data-studentId=" + studentId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+    }
+
+    //to get the list of student list
+    function getStudent()
+    {
+        $.ajax("../api/adminapi/getStudents")
+        .done(function(result){
+            studentList = result;
+        });
+    }
+
+    //this is to create a student and save it to the database
+    $("#createStudent").click((e) => {
+        var arrData = {};
+
+        //count the number of element inside the form
+        var formelements = $("#createStudentForm .form-group");
+
+        //getting the data from the form
+        var formInputs = $("#createStudentForm").serializeArray();
+        formInputs.forEach(function(item){
+            arrData[item.name] = item.value;
+        });
+
+        let emptyEl = new Boolean(false);
+        //alternative of bool
+        if(formInputs[0].value === '' || formInputs[2].value === '')
+        {
+            //if the firstname or lastname are empty then return true or 0
+            emptyEl = Boolean(true);
+        }
+        else{
+            //if the firstname and lastname are not empty then return false or 1
+            emptyEl = Boolean(false);
+        }
+
+        //if all elements are not empty
+        if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
+        {
+
+            //Call API to add Student
+            $.ajax({
+                url: "../api/adminapi/createStudent",
+                type: "POST",
+                data:
+                {
+                    stud : arrData,
+                },
+            })
+            .done(function(){
+                $("#createStudentForm")[0].reset();
+                $("#modalStudentCreate").modal("toggle");
+                alertSuccess();
+                populateStudentTable();
+            });
+        }
+        else   
+        {
+            alertError("Input the necessary elements!");
+        }
+
+    });
+
+
+    //when clicking the update button
+    $("tbody").delegate(".studentUpdate", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-studentId");
+        if(i != null)
+        {
+            $("#createStudentForm")[0].reset();
+            $("#modalStudentUpdate").modal("toggle");
+
+            selectedStudentId = i;
+            selectedStudent = studentList.find(element => element.studentId == i);
+
+            oFormObject = document.forms["updateStudentForm"];
+            initForm(oFormObject, selectedStudent);
+        }
+    });
+
+
+    //to populate the selected element to the form
+    function initForm(form, data){
+        Object.getOwnPropertyNames(data).forEach(function(item){
+        var currentElem = form.elements[item.charAt(0).toUpperCase() + item.slice(1)];
+        //console.log(currentElem);
+        //console.log(currentElem);
+
+        if( currentElem == null ){return;}
+
+        if(currentElem.tagName == "SELECT"){
+            var selectChildren = Array.from(currentElem.children);
+            var matchedOpt = selectChildren.find(opt => opt.value == selectedStudent.departmentId);
+        if(matchedOpt){
+            matchedOpt.selected = true;
+        }
+        }else{
+            form.elements[item.charAt(0).toUpperCase() + item.slice(1)].setAttribute("value",data[item]); 
+        }
+        });
+    }
+
+    //after clicking update
+    $("#updateStudent").click(function(){
+        alertSaveChanges();
+    });
+
+
+    function proceedUpdate()
+    {
+        var arrData = {};
+
+        //count the number of elements inside  the form
+        var formelements = $("#updateStudentForm .form-group");
+
+        //getting the data from the form
+        var formInputs = $("#updateStudentForm").serializeArray();
+        formInputs.forEach(function(item){
+            arrData[item.name] = item.value;
+        });
+
+        arrData.studentId = selectedStudentId;
+
+        let emptyEl = new Boolean(false);
+        //alternative of bool
+        if(formInputs[0].value === '' || formInputs[2].value === '')
+        {
+            //if the firstname or lastname are empty then return true or 0
+            emptyEl = Boolean(true);
+        }
+        else{
+            //if the firstname and lastname are not empty then return false or 1
+            emptyEl = Boolean(false);
+        }
+
+        //if all elements are not empty
+        if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
+        {
+            //Call API to add Student
+            $.ajax({
+                url: "../api/adminapi/updateStudent",
+                type: "POST",
+                data:
+                {
+                    stud : arrData,
+                },
+            })
+            .done(function(){
+                $("#updateStudentForm")[0].reset();
+                $("#modalStudentUpdate").modal("toggle");
+                alertSuccess();
+                populateStudentTable();
+            });
+        }
+        else   
+        {
+            alertError("Input the necessary elements!");
+        }
+    }
+
+    //when clicking the delete button
+    $("tbody").delegate(".studentDelete", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-studentId");
+        if(i != null)
+        {
+            //Insert code here for delete
+            selectedStudentId = i;
+            alertDeleteConfirmation(selectedStudentId);
+        }
+    });
+
+    //after confirming delete, call this function
+    function deleteStudent(selectedStudentId)
+    {
+        //AJAX delete student
+        $.ajax({
+            url: "../api/adminapi/deleteStudent",
+            type: "POST",
+            data:
+            {
+                studentId : selectedStudentId,
+            },
+        }).done(function(){
+            alertSuccess();
+            populateStudentTable();
+        })
+    }
+
+
+    //upon closing the modal create
+    $("#modalStudentCreateClose").click(function(){
+        defaultClear();
+    });
+
+    $("#createStudentbtn").click((e) => {
+        defaultClear();
+    });
+
+    function defaultClear()
+    {
+        $("#createStudentForm")[0].reset();
+        $("#updateStudentForm")[0].reset();
+        $("select").val([]);
+    }
+
+
+    //Sweet alert zone 
+    //display success action
+    function alertSuccess()
+    {
+        Swal.fire({
+            icon: 'success',
+            title: 'Your work has been saved', 
+            showConfirmButton: false,
+            timer: 1500
+        })
+    }
+
+     //display error alert
+    function alertError(message)
+    {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error occured',
+            text: message,
+        })
+    }
+
+     //display update confirmation
+    function alertSaveChanges()
+    {
+        Swal.fire({
+            title: 'Do you want to save the changes?',
+            showCancelButton: true,
+            confirmButtonText: 'Save',
+        }).then((result) => {
+            if(result.isConfirmed){
+                proceedUpdate();
+            }
+        })
+    }
+
+    //display delete confirmation
+    function alertDeleteConfirmation(selectedStudentId)
+    {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if(result.isConfirmed){
+                deleteStudent(selectedStudentId);
+            }
+        })
+    }
+
+
+    }); // end of document. ready
+</script>

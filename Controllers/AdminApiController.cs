@@ -299,7 +299,7 @@ namespace matikApp.Controllers
             return  _context.Instructors.ToList();
         }
 
-        //query to create a dean
+        //query to create an instructor
         public IActionResult createInstructor(Instructor i)
         {
             if(i.InstructorMname == null)
@@ -982,6 +982,48 @@ namespace matikApp.Controllers
             var res = _context.Regissections.Where(element => element.RegisSectionId == regisSectionId).FirstOrDefault();
             _context.Regissections.Remove(res);
             _context.SaveChanges();
+            return Ok();
+        }
+
+        
+        //STUDENT API ZONE
+        public ActionResult<List<Studentprofile>> getStudents(){
+            return  _context.Studentprofiles.ToList();
+        }
+
+        //query to create a student
+        public IActionResult createStudent(Studentprofile stud)
+        {
+            if(stud.StudentMname == null)
+            {
+                stud.StudentMname = "";
+            }
+            _context.Studentprofiles.Add(stud);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        //query to update the student
+        public IActionResult updateStudent(Studentprofile stud)
+        {
+            if(stud.StudentMname == null)
+            {
+                stud.StudentMname = "";
+            }
+            _context.Studentprofiles.Update(stud);
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        //query to delete the selected student
+        public IActionResult deleteStudent(int studentId)
+        {
+            _context.Studentprofiles.Remove(_context.Studentprofiles.Find(studentId));
+            _context.SaveChanges();
+
+            //_context.Database.ExecuteSqlRaw(deletecommand);
+
             return Ok();
         }
     }

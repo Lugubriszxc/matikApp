@@ -28,6 +28,7 @@ namespace matikApp.Models
         public virtual DbSet<Regissection> Regissections { get; set; }
         public virtual DbSet<Room> Rooms { get; set; }
         public virtual DbSet<Section> Sections { get; set; }
+        public virtual DbSet<Studentprofile> Studentprofiles { get; set; }
         public virtual DbSet<Subject> Subjects { get; set; }
         public virtual DbSet<Subjecthandled> Subjecthandleds { get; set; }
         public virtual DbSet<Timeslot> Timeslots { get; set; }
@@ -334,6 +335,38 @@ namespace matikApp.Models
                     .IsRequired()
                     .HasMaxLength(250)
                     .HasColumnName("yearLevel");
+            });
+
+            modelBuilder.Entity<Studentprofile>(entity =>
+            {
+                entity.HasKey(e => e.StudentId)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("studentprofile");
+
+                entity.Property(e => e.StudentId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("studentID");
+
+                entity.Property(e => e.SchoolId)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("schoolID");
+
+                entity.Property(e => e.StudentFname)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("student_fname");
+
+                entity.Property(e => e.StudentLname)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("student_lname");
+
+                entity.Property(e => e.StudentMname)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("student_mname");
             });
 
             modelBuilder.Entity<Subject>(entity =>
