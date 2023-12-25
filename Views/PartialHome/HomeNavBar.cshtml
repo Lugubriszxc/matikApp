@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="homeNav bg-dark text-dark">
+<header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="cons container-fluid" style="background-color: maroon;">
+                <a class="navbar-brand text-warning" asp-area="" asp-controller="PartialHome" asp-action="HomeIndex">MATIK : Online College Scheduling</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <div class="btn-group ms-auto">
+                            <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                                Login
+                            </button>
+                            <div class="position-relative">
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+                                <li class="dropdown-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Authorization" asp-action="Signin">Admin</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Authorization" asp-action="SigninInstructor">Instructor</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+</header>
+
+<!-- Bootstrap JS and Popper.js are required for the responsive navigation bar -->
+@* <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> *@
+
+</body>
+</html>
+
+<style>
+    
+</style>

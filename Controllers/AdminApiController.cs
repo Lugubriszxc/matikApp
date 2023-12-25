@@ -308,7 +308,33 @@ namespace matikApp.Controllers
             }
             _context.Instructors.Add(i);
             _context.SaveChanges();
+            makeDynamicAccountInstructor();
 
+            return Ok();
+        }
+
+        public IActionResult makeDynamicAccountInstructor()
+        {
+            //Console.WriteLine("I was called");
+            var instructor = _context.Instructors.ToList();
+            foreach(var ins in instructor)
+            {
+                var checkRes = _context.Authorizations.Where(cs => cs.UserType == "instructor" && cs.Id == ins.InstructorId).FirstOrDefault();
+                if(checkRes == null)
+                {
+                    //if it's empty result, then free to add the account
+                    var auth = new Authorization
+                    {
+                        Username = ins.InstructorId.ToString(),
+                        Password = ins.InstructorId.ToString(),
+                        UserType = "instructor",
+                        Id = ins.InstructorId,
+                    };
+
+                    _context.Authorizations.Add(auth);
+                    _context.SaveChanges();
+                }
+            }
             return Ok();
         }
 

@@ -19,10 +19,10 @@
     <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">-->
     @* <link rel="stylesheet" href="~/lib/bootstrapdatepicker/css/bootstrap-datepicker.min.css" /> *@
 </head>
-<body class="bods bg-warning text-dark">
+<body class="bods bg-light text-dark">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid bg-dark">
+        <nav class="navbar shared navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid shared" style="background-color: maroon;">
                 <a class="navbar-brand text-light" asp-area="" asp-controller="Home" asp-action="Index">M A T I K</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@
                         </li> *@
 
                         <div class="btn-group">
-                            <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                            <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                                 Department
                             </button>
                             <div class="position-relative">
@@ -64,8 +64,8 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="btn-group col-md-1">
-                            <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                        <div class="builds btn-group col-md-1">
+                            <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                                 Building
                             </button>
                             <div class="position-relative">
@@ -79,8 +79,8 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="btn-group col-md-1 offset-md-1">
-                            <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                        <div class="subs btn-group col-md-1 offset-md-1">
+                            <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                                 Subject
                             </button>
                             <div class="position-relative">
@@ -94,8 +94,8 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="btn-group col-md-1 offset-md-1">
-                            <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                        <div class="misc btn-group col-md-1 offset-md-1">
+                            <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                                 Miscellaneous
                             </button>
                             <div class="position-relative">
@@ -113,10 +113,11 @@
                             </ul>
                         </div>
                     </ul>
-                    <div class="col-md-8 offset-md-4">
-                        <span class="btn btn-dark" id="span"></span>
+                    <div class="col-md-8 offset-md-8">
+                        <span class="text-light" id="span"></span>
                         <br>
-                        <span class="btn btn-dark" id="spanDate"></span>
+                        <br>
+                        <span class="text-light" id="spanDate"></span>
                         <script>
                             var span = document.getElementById('span');
                             var spanDate = document.getElementById('spanDate');
@@ -287,6 +288,27 @@
         left: 180px;
         bottom: 20px;
         border-radius: 100%;
+    }
+
+    .builds
+    {
+        position: absolute;
+        left: 250px;
+        bottom: 25px;
+    }
+
+    .subs
+    {
+        position: absolute;
+        left: 250px;
+        bottom: 25px;
+    }
+
+    .misc
+    {
+        position: absolute;
+        left: 360px;
+        bottom: 25px;
     }
 </style>
 

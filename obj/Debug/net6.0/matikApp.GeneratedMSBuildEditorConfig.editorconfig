@@ -267,8 +267,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cV2lkZ2V0XE1lbnUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Authorization/HomeNavBar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yaXphdGlvblxIb21lTmF2QmFyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Authorization/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yaXphdGlvblxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Authorization/PartialInstructor/SigninInstructor.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yaXphdGlvblxQYXJ0aWFsSW5zdHJ1Y3RvclxTaWduaW5JbnN0cnVjdG9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Authorization/Signin.cshtml]
@@ -281,6 +289,14 @@ build_metadata.AdditionalFiles.CssScope =
 
 [c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/PartialHome/HomeIndex.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFydGlhbEhvbWVcSG9tZUluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/PartialHome/HomeNavBar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFydGlhbEhvbWVcSG9tZU5hdkJhci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/Shared/Error.cshtml]

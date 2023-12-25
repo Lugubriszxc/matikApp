@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    @Html.Partial("HomeNavBar")
+    <center><h1>Cebu Roosevelt Memorial Colleges</h1></center>
+</body>
+</html>
+
+<script>
+    $(document).ready(function(){
+
+        margin();
+
+        function margin(){
+            $(".page-content").removeClass();
+            $(".container-fluid.shared").removeClass();
+            @* $(".bods").removeClass(); *@
+        }
+    });
+</script>
+
+<style>
+    .navbar.shared{
+        display: none;
+    }
+
+    .bods
+    {
+        color: white;
+        background-color: white;
+    }
+    @* body
+    {
+        background-color: white;
+    } *@
+</style>
