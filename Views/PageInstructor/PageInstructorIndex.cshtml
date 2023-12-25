@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<body>
+    <nav class="navbar bg-body-tertiary fixed-top">
+    <div class="container-fluid">
+        @* <a class="navbar-brand text-warning" href="#">M A T I K</a> *@
+        <button class="navbar-toggler me-auto btn-black" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+            <span class=""><i class="fa-solid fa-bars text-warning"></i></span>
+            
+        </button>
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Instructor X</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-warning" id="btnSignout">Signout</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Dropdown
+                </a>
+                <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                </ul>
+            </li>
+            </ul>
+            @* <form class="d-flex mt-3" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+            </form> *@
+        </div>
+        </div>
+    </div>
+    </nav>
+
+    <!-- THIS IS FOR THE CONTENT OF THE PAGE-->
+    <center><h1>Instructor's Page</h1></center>
+
+</body>
+</html>
+
+
+<script>
+    $(document).ready(function(){
+
+        margin();
+
+        function margin(){
+            $(".page-content").removeClass();
+            $(".container-fluid.shared").removeClass();
+            @* $(".bods").removeClass(); *@
+        }
+    });
+</script>
+
+<style>
+    .navbar.shared{
+        display: none;
+    }
+
+    .bods
+    {
+        color: white;
+        background-color: white;
+    }
+
+    .btn-black {
+    color: #000;
+    background-color: maroon; /* Add this line to set the background color */
+    border-color: gold; /* Add this line to set the border color */
+    }
+
+    @* body
+    {
+        color: black;
+        background-color: black;
+    } *@
+</style>
+
+
+<script>
+    $(() => {
+
+        $("#btnSignout").click((e) =>{
+            confirmLogout();
+        });
+
+        function proceedLogout()
+        {
+            window.location.href = "/Authorization/SigninInstructor";
+        }
+
+
+        //display update confirmation
+        function confirmLogout()
+        {
+            Swal.fire({
+                title: 'Are you sure you want to logout?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                confirmButtonColor: '#3085d6'
+            }).then((result) => {
+                if(result.isConfirmed){
+                    proceedLogout();
+                }
+            })
+        }
+        //End of document
+    });
+</script>
