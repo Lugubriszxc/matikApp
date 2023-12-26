@@ -321,9 +321,10 @@
 
         function proceedLogout()
         {
+            sessionStorage.clear();
             window.location.href = "/Authorization/Signin";
         }
-
+  
 
         //display update confirmation
         function confirmLogout()

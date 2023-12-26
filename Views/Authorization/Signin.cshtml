@@ -153,6 +153,11 @@
 <script>
 
     $(() => {
+		if(JSON.parse(sessionStorage.getItem('userauth') !== null))
+        {
+            window.location.href = "/Home/Index";
+        }
+
         margin();
 
         $("#loginBtn").click(() =>{
@@ -184,8 +189,8 @@
                         if(result.userType == "admin")
                         {
                             //console.log("Open the admin's dashboard");
+							sessionStorage.setItem('userauth', JSON.stringify(result));
 							alertSuccess();
-                            window.location.href = "/Home/Index";
                         }
                     }
                     else
@@ -218,7 +223,13 @@
 				icon: 'success',
 				title: 'Welcome', 
 				showConfirmButton: false,
-				timer: 1500
+				timer: 1000,
+				willClose: () => {
+					// Add your action here
+					//console.log('Timer expired, performing action...');
+					// For example, redirect to another page
+					window.location.href = "/Home/Index";
+				}
 			})
 		}
     });

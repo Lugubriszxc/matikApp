@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<header>
+    
+</header>
 <body>
     <nav class="navbar bg-body-tertiary fixed-top">
     <div class="container-fluid">
@@ -93,12 +95,36 @@
 <script>
     $(() => {
 
+        console.log(JSON.parse(sessionStorage.getItem('userauth')));
+        var storedUserAuth = sessionStorage.getItem('userauth');
+        var userAuth = JSON.parse(storedUserAuth);
+
+        console.log(userAuth.userType);
+
+        if(userAuth === null)
+        {
+            window.location.href = "/Authorization/SigninInstructor";
+        }
+        else if(userAuth.userType !== 'instructor')
+        {
+            if(userAuth.userType === 'admin')
+            {
+                window.location.href = "/Home/Index";
+            }
+        }
+
+
         $("#btnSignout").click((e) =>{
             confirmLogout();
         });
 
         function proceedLogout()
         {
+            @* $.ajax("../api/authorizationapi/logoutUser")
+            .done(function(){
+                window.location.href = "/Authorization/SigninInstructor";
+            }); *@
+            sessionStorage.clear();
             window.location.href = "/Authorization/SigninInstructor";
         }
 

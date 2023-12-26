@@ -36,6 +36,21 @@ var saveVal;
 
 $(document).ready(function(){
 
+  var storedUserAuth = sessionStorage.getItem('userauth');
+  var userAuth = JSON.parse(storedUserAuth);
+
+  if(userAuth === null)
+  {
+      window.location.href = "/Authorization/Signin";
+  }
+  else if(userAuth.userType !== 'admin')
+  {
+      if(userAuth.userType === 'instructor')
+      {
+          window.location.href = "/PageInstructor/PageInstructorIndex";
+      }
+  }
+
     //calling the functions
     populateDepartment();
     displayCourseData();

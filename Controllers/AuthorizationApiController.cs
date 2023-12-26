@@ -30,6 +30,12 @@ namespace matikApp.Controllers
             return Ok(res);
         }
 
+        public IActionResult logoutUser()
+        {
+            //HttpContext.Session.Clear();
+            return Ok();
+        }
+
         public IActionResult makeDynamicAccountInstructor()
         {
             //Console.WriteLine("I was called");

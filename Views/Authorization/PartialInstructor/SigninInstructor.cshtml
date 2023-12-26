@@ -144,6 +144,13 @@
 <script>
 
     $(() => {
+
+		if(JSON.parse(sessionStorage.getItem('userauth') !== null))
+        {
+			//console.log("yes");
+            window.location.href = "/PageInstructor/PageInstructorIndex";
+        }
+
         margin();
 
         $("#loginBtn").click(() =>{
@@ -175,15 +182,21 @@
                         if(result.userType == "instructor")
                         {
                             //console.log("Open the admin's dashboard");
-                            window.location.href = "/PageInstructor/PageInstructorIndex";
+							//var userId = result.userId;
+							//sessionStorage.setItem('userId', userId);
+							//console.log(sessionStorage.getItem('userId'));
+							//alertError(userId);
+
+							sessionStorage.setItem('userauth', JSON.stringify(result));
+							@* console.log(JSON.parse(sessionStorage.getItem('userauth'))); *@
 							alertSuccess();
                         }
                     }
-                    else
+					else
                     {
                         alertError("Invalid password.");
                     }
-                })
+                });
             }
         })
 
@@ -209,7 +222,13 @@
 				icon: 'success',
 				title: 'Welcome', 
 				showConfirmButton: false,
-				timer: 1500
+				timer: 1000,
+				willClose: () => {
+					// Add your action here
+					//console.log('Timer expired, performing action...');
+					// For example, redirect to another page
+					window.location.href = "/PageInstructor/PageInstructorIndex";
+				}
 			})
 		}
 
