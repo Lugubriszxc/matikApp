@@ -13,7 +13,7 @@
         </button>
         <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Instructor X</h5>
+            <center><h5 class="offcanvas-title instructorName" id="offcanvasNavbarLabel">Instructor X</h5></center>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
@@ -25,16 +25,16 @@
                 <a class="btn btn-warning" id="btnSignout">Signout</a>
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Dropdown
+                <a class="nav-link dropdown-toggle text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                User Settings
                 </a>
-                <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+                <li class="dropdown-item"><a class="nav-link btnUpdate">Change detail</a></li>
+                <li class="dropdown-item"><a class="nav-link btnChangePass">Change password</a></li>
+                @* <li>
                     <hr class="dropdown-divider">
                 </li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li> *@
                 </ul>
             </li>
             </ul>
@@ -50,12 +50,17 @@
     <!-- THIS IS FOR THE CONTENT OF THE PAGE-->
     <center><h1>Instructor's Page</h1></center>
 
+    @Html.Partial("PageInstructorUpdate")
+    @Html.Partial("InstructorChangePass")
+
 </body>
 </html>
 
 
 <script>
     $(document).ready(function(){
+
+
 
         margin();
 
@@ -113,6 +118,204 @@
             }
         }
 
+        var selectedInstructor;
+
+        loadInstructorDetail();
+        populateDepartment();
+
+        function loadInstructorDetail()
+        {
+            //LOAD THE INSTRUCTOR DETAILS 
+            $.ajax({
+            url: "../api/pageinstructorapi/loadUserDetail",
+            type: "POST",
+            data:
+            {
+                instructorId : userAuth.id,
+            },
+            }).done(function(result){
+                
+                if(result != null)
+                {
+                    selectedInstructor = result;
+                    //console.log(result.instructorFname);
+                    $('.instructorName').text(result.instructorFname + " " + result.instructorLname);
+                }
+            })
+        }
+
+        //to populate the department option 
+        function populateDepartment()
+        {
+            $.ajax("../api/adminapi/getDepartment")
+            .done(function(result){
+            //console.log(result);
+            var template = document.querySelector("template#departmentOptionTemplate");
+            var parent = document.querySelectorAll("#departmentSelect");
+            
+            for(i = 0; i < parent.length; i++){
+            result.forEach(function (item){
+                var cloned = template.content.cloneNode(true);
+                cloned.querySelector("option").value = item.departmentId;
+                cloned.querySelector("option").innerText= item.departmentName;
+
+                parent[i].prepend(cloned);
+            });
+            }
+
+            //to deselect a selected option
+            $("select").val([]);
+            });
+        }
+
+
+        $(".btnUpdate").click((e) => {
+            $("#modalInstructorUpdate").modal("toggle");
+
+            oFormObject = document.forms["updateInstructorForm"];
+            initForm(oFormObject, selectedInstructor);
+        });
+
+        //to populate the selected element to the form
+        function initForm(form, data){
+            Object.getOwnPropertyNames(data).forEach(function(item){
+            var currentElem = form.elements[item.charAt(0).toUpperCase() + item.slice(1)];
+            //console.log(currentElem);
+            console.log(currentElem);
+
+            if( currentElem == null ){return;}
+
+            if(currentElem.tagName == "SELECT"){
+                var selectChildren = Array.from(currentElem.children);
+                var matchedOpt = selectChildren.find(opt => opt.value == selectedInstructor.departmentId);
+            if(matchedOpt){
+                matchedOpt.selected = true;
+            }
+            }else{
+                form.elements[item.charAt(0).toUpperCase() + item.slice(1)].setAttribute("value",data[item]); 
+            }
+            });
+        }
+
+        //after clicking update
+        $("#updateInstructor").click(function(){
+            alertSaveChanges();
+        });
+
+        function proceedUpdate()
+        {
+            var arrData = {};
+
+            //count the number of elements inside  the form
+            var formelements = $("#updateInstructorForm .form-group");
+
+            //getting the data from the form
+            var formInputs = $("#updateInstructorForm").serializeArray();
+            formInputs.forEach(function(item){
+                arrData[item.name] = item.value;
+            });
+
+            arrData.instructorId = selectedInstructor.instructorId;
+
+            let emptyEl = new Boolean(false);
+            //alternative of bool
+            if(formInputs[0].value === '' || formInputs[2].value === '')
+            {
+                //if the firstname or lastname are empty then return true or 0
+                emptyEl = Boolean(true);
+            }
+            else{
+                //if the firstname and lastname are not empty then return false or 1
+                emptyEl = Boolean(false);
+            }
+
+            //if all elements are not empty
+            if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
+            {
+                //Call API to add Instructor
+                $.ajax({
+                    url: "../api/adminapi/updateInstructor",
+                    type: "POST",
+                    data:
+                    {
+                        i : arrData,
+                    },
+                })
+                .done(function(){
+                    $("#updateInstructorForm")[0].reset();
+                    $("#modalInstructorUpdate").modal("toggle");
+                    alertSuccess();
+                    loadInstructorDetail();
+                });
+            }
+            else   
+            {
+                alertError("Input the necessary elements!");
+            }
+        }
+
+        $(".btnChangePass").click((e) => {
+            $("#modalChangePass").modal("toggle");
+        });
+
+        //after clicking change password
+        $("#passChange").click(function(){
+
+            var currentPass = $("#inputCurrentPass").val();
+            var newPass = $("#inputNewPass").val();
+            var confirmPass = $("#inputConfirmPass").val();
+
+            if(currentPass == "" || newPass == "" || confirmPass == "")
+            {
+                alertError("Complete the field first!");
+            }
+            else if(newPass !== confirmPass)
+            {
+                alertError("Password does not match!");
+            }
+            else
+            {
+                alertConfirmChange();
+            }
+        });
+
+        function proceedChangePass()
+        {
+
+            var currentPass = $("#inputCurrentPass").val();
+            var newPass = $("#inputNewPass").val();
+            var confirmPass = $("#inputConfirmPass").val();
+            
+            $.ajax({
+            url: "../api/authorizationapi/changeUserPass",
+            type: "POST",
+            data:
+            {
+                auth : userAuth,
+                newP : newPass,
+                currentP : currentPass,
+            },
+            })
+            .done(function(result){
+                @* $("#updateInstructorForm")[0].reset();
+                $("#modalInstructorUpdate").modal("toggle");
+                alertSuccess();
+                loadInstructorDetail(); *@
+
+                if(result == "Invalid")
+                {
+                    alertError("Invalid password.");
+                }
+                else if(result == "Confirm")
+                {
+                    $("#passChangeForm")[0].reset();
+                    $("#modalChangePass").modal("toggle");
+                    alertSuccess();
+                    loadInstructorDetail();
+                }
+            });
+        }
+
 
         $("#btnSignout").click((e) =>{
             confirmLogout();
@@ -144,6 +347,55 @@
                 }
             })
         }
+
+        //display update confirmation
+        function alertSaveChanges()
+        {
+            Swal.fire({
+                title: 'Do you want to save the changes?',
+                showCancelButton: true,
+                confirmButtonText: 'Save',
+            }).then((result) => {
+                if(result.isConfirmed){
+                    proceedUpdate();
+                }
+            })
+        }
+
+        //display confirm change password
+        function alertConfirmChange()
+        {
+            Swal.fire({
+                title: 'Do you really want to change your password?',
+                showCancelButton: true,
+                confirmButtonText: 'Save',
+            }).then((result) => {
+                if(result.isConfirmed){
+                    proceedChangePass();
+                }
+            })
+        }
+
+        //display success action
+        function alertSuccess()
+        {
+            Swal.fire({
+                icon: 'success',
+                title: 'Your work has been saved', 
+                showConfirmButton: false,
+                timer: 1500
+            })
+        }
+
+        function alertError(message)
+        {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error occured',
+                text: message,
+            })
+        }
+
         //End of document
     });
 </script>

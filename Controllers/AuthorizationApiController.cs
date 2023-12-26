@@ -36,6 +36,25 @@ namespace matikApp.Controllers
             return Ok();
         }
 
+        public IActionResult changeUserPass(Authorization auth, string newP, string currentP)
+        {
+            var res = _context.Authorizations.Where(rs => rs.UserId == auth.UserId).FirstOrDefault();
+            if(currentP != res.Password)
+            {
+                //It means wrong password
+                return Ok("Invalid");
+            }
+            else if(currentP == res.Password)
+            {
+                res.Password = newP;
+                _context.Authorizations.Update(res);
+                _context.SaveChanges();
+                return Ok("Confirm");
+            }
+
+            return Ok();
+        }
+
         public IActionResult makeDynamicAccountInstructor()
         {
             //Console.WriteLine("I was called");
