@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using matikApp.Models;
 using matikApp.ViewModel;
 using Microsoft.CodeAnalysis.Scripting;
+using NuGet.Protocol;
 
 namespace matikApp.Controllers
 {
@@ -32,6 +33,7 @@ namespace matikApp.Controllers
         private List<Instructorunitload> Instructorunitloads {get; set;}
 
         private List<RoomSchedule> roomSchedule = new List<RoomSchedule>();
+        private List<RoomCompress> compressedSchedule = new List<RoomCompress>();
 
         //private List<string> mergedVal = new List<string>();
 
@@ -1352,6 +1354,55 @@ namespace matikApp.Controllers
             //var result = roomSchedule.Where(rs => rs.SectionId == sectionID && rs.Day == day).Distinct().Count();
             return result.Count();
             //return result;
+        }
+
+
+        public IActionResult compressData([FromBody] CompressDataRequest request)
+        {
+            var holderRoomValSched = request.ValRooms;
+            
+            var uniqueRoomSchedules = holderRoomValSched
+                .GroupBy(rs => new { rs.SectionId, rs.SubjectId, rs.InstructorId, rs.RoomId})
+                .Select(group => group.First())
+                .ToList();
+
+                foreach(var roomSched in uniqueRoomSchedules)
+                {
+
+                    //get the day and filter it and loop it
+                    var uniqueDayRoomSchedules = holderRoomValSched
+                    .Where(rs =>
+                        rs.SectionId == roomSched.SectionId &&
+                        rs.SubjectId == roomSched.SubjectId &&
+                        rs.InstructorId == roomSched.InstructorId &&
+                        rs.RoomId == roomSched.RoomId)
+                    .Select(rs => rs.Day)
+                    .Distinct()
+                    .ToList();
+
+                    foreach(var displayDay in uniqueDayRoomSchedules)
+                    {
+                        var toPrintTime = holderRoomValSched.Where(rs => rs.InstructorId == roomSched.InstructorId && rs.SectionId == roomSched.SectionId && rs.SubjectId == roomSched.SubjectId && rs.RoomId == roomSched.RoomId).ToList();
+                        int timeCount = toPrintTime.Count();
+                        int timeCounter = 0;
+                        foreach(var timePrint in toPrintTime)
+                        {
+                            timeCounter++;
+
+                            if(timeCounter == 1)
+                            {   
+                                compressedSchedule.Add(new RoomCompress(roomSched.InstructorId, roomSched.RoomId, roomSched.SectionId, roomSched.SubjectId, displayDay, timePrint.TimeId, request.AcadYearId, request.Semester));
+                            }
+                            else if(timeCounter == timeCount)
+                            {
+                                compressedSchedule.Add(new RoomCompress(roomSched.InstructorId, roomSched.RoomId, roomSched.SectionId, roomSched.SubjectId, displayDay, timePrint.TimeId, request.AcadYearId, request.Semester));
+                            }
+                        }
+
+                    }
+                }
+
+            return Ok(compressedSchedule);
         }
     }
 }

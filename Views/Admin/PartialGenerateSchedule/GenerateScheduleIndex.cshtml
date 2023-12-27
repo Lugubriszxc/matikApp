@@ -624,6 +624,38 @@
             }
         }
 
+        function saveData()
+        {
+            //Call API to compress and save the schedule
+
+            @* $.ajax({
+            url: "../api/generatescheduleapi/compressData",
+            type: "POST",
+            data:
+            {
+                valRoom : JSON.stringify(GeneratedSched),
+            },
+            })
+            .done(function(result){
+                @* GeneratedSched = result;
+                closeSwalWhilePageLoaded();
+                console.log(result);
+            }); *@
+
+            //console.log("Test");
+            //console.log(GeneratedSched);
+            $.ajax({
+            url: "../api/generatescheduleapi/compressData",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ semester: semesterVal, acadYearId: acadVal, valRooms: GeneratedSched }),
+            })
+            .done(function(result){
+                console.log("Compressed data : ");
+                console.log(result);
+            });
+        }
+
         //SWEET ALERT FUNCTIONS
         const showLoading = function() {
             let timerValue = 0; // Initial timer value in seconds
@@ -657,7 +689,14 @@
         function closeSwalWhilePageLoaded(){
             setTimeout(() => {
                 Swal.close();
-                alertSuccess();
+                if(GeneratedSched.length > 0)
+                {
+                    alertSuccess();
+                }
+                else
+                {
+                    alertError("Cannot open the file because it's empty. Closely check your data before generating.");
+                }
             }, 500);
         }
 
@@ -671,7 +710,16 @@
                 timer: 1500
             }).then(() => {
                 //Call the generating of sched to excel
-                generateExcel();
+                @* console.log("Hello");
+                console.log(GeneratedSched); *@
+                if(GeneratedSched.length > 0)
+                {
+                    confirmSave();
+                }
+                @* else
+                {
+                    alertError("Cannot open the file because it's empty. Closely check your data before generating.");
+                } *@
             });
         }
 
@@ -682,6 +730,23 @@
                 icon: 'error',
                 title: 'Error occured',
                 text: message,
+            })
+        }
+
+
+        //display update confirmation
+        function confirmSave()
+        {
+            Swal.fire({
+                title: 'Do you want to download and save this schedule?',
+                showCancelButton: true,
+                confirmButtonText: 'Save',
+            }).then((result) => {
+                if(result.isConfirmed){
+                    //proceedUpdate();
+                    //generateExcel();
+                    saveData();
+                }
             })
         }
 

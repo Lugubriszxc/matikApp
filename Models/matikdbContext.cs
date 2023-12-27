@@ -27,6 +27,7 @@ namespace matikApp.Models
         public virtual DbSet<Instructorunitload> Instructorunitloads { get; set; }
         public virtual DbSet<Regissection> Regissections { get; set; }
         public virtual DbSet<Room> Rooms { get; set; }
+        public virtual DbSet<Roomschedule> Roomschedules { get; set; }
         public virtual DbSet<Section> Sections { get; set; }
         public virtual DbSet<Studentprofile> Studentprofiles { get; set; }
         public virtual DbSet<Subject> Subjects { get; set; }
@@ -308,6 +309,51 @@ namespace matikApp.Models
                     .IsRequired()
                     .HasMaxLength(255)
                     .HasColumnName("roomType");
+            });
+
+            modelBuilder.Entity<Roomschedule>(entity =>
+            {
+                entity.HasKey(e => e.RoomSchedId)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("roomschedule");
+
+                entity.Property(e => e.RoomSchedId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("roomSchedID");
+
+                entity.Property(e => e.AcadYearId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("acadYearID");
+
+                entity.Property(e => e.Day)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("day");
+
+                entity.Property(e => e.InstructorId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("instructorID");
+
+                entity.Property(e => e.RoomId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("roomID");
+
+                entity.Property(e => e.SectionId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("sectionID");
+
+                entity.Property(e => e.Semester)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("semester");
+
+                entity.Property(e => e.SubjectId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("subjectID");
+
+                entity.Property(e => e.TimeId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("timeID");
             });
 
             modelBuilder.Entity<Section>(entity =>
