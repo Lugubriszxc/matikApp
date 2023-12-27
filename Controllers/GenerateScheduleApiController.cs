@@ -1360,7 +1360,6 @@ namespace matikApp.Controllers
         public IActionResult compressData([FromBody] CompressDataRequest request)
         {
             var holderRoomValSched = request.ValRooms;
-            
             var uniqueRoomSchedules = holderRoomValSched
                 .GroupBy(rs => new { rs.SectionId, rs.SubjectId, rs.InstructorId, rs.RoomId})
                 .Select(group => group.First())
@@ -1380,29 +1379,81 @@ namespace matikApp.Controllers
                     .Distinct()
                     .ToList();
 
+                    string dayConvert = "";
+                    string dayCombined = "";
                     foreach(var displayDay in uniqueDayRoomSchedules)
                     {
                         var toPrintTime = holderRoomValSched.Where(rs => rs.InstructorId == roomSched.InstructorId && rs.SectionId == roomSched.SectionId && rs.SubjectId == roomSched.SubjectId && rs.RoomId == roomSched.RoomId).ToList();
                         int timeCount = toPrintTime.Count();
                         int timeCounter = 0;
+                        int startTime = 0;
+                        int endTime = 0;
                         foreach(var timePrint in toPrintTime)
                         {
                             timeCounter++;
-
                             if(timeCounter == 1)
                             {   
+                                startTime = timePrint.TimeId;
                                 compressedSchedule.Add(new RoomCompress(roomSched.InstructorId, roomSched.RoomId, roomSched.SectionId, roomSched.SubjectId, displayDay, timePrint.TimeId, request.AcadYearId, request.Semester));
                             }
                             else if(timeCounter == timeCount)
                             {
+                                endTime = timePrint.TimeId;
                                 compressedSchedule.Add(new RoomCompress(roomSched.InstructorId, roomSched.RoomId, roomSched.SectionId, roomSched.SubjectId, displayDay, timePrint.TimeId, request.AcadYearId, request.Semester));
                             }
                         }
 
+                        //This is to compress the data by 75% reduction of data
+                        //compressedSchedule.Add(new RoomCompress(roomSched.InstructorId, roomSched.RoomId, roomSched.SectionId, roomSched.SubjectId, displayDay, startTime, endTime, request.AcadYearId, request.Semester));
                     }
                 }
 
+            saveData();
             return Ok(compressedSchedule);
+        }
+
+        public IActionResult saveData()
+        {
+            foreach(var rs in compressedSchedule)
+            {
+                Roomschedule rsSched = new Roomschedule();
+                rsSched.InstructorId = rs.InstructorId;
+                rsSched.RoomId = rs.RoomId;
+                rsSched.SectionId = rs.SectionId;
+                rsSched.SubjectId = rs.SubjectId;
+                rsSched.Day = rs.Day;
+                rsSched.TimeId = rs.TimeId;
+                rsSched.AcadYearId = rs.AcadYearId;
+                rsSched.Semester = rs.Semester;
+
+                _context.Roomschedules.Add(rsSched);
+                _context.SaveChanges();
+            }
+
+            return Ok();
+        }
+
+        public IActionResult checkGenerate(int acadVal, string semesterVal)
+        {
+            var resCheck = _context.Roomschedules.Where(rs => rs.AcadYearId == acadVal && rs.Semester == semesterVal).ToList();
+            return Ok(resCheck);
+        }
+
+        //query to delete the generated sched record
+        public IActionResult deleteSched(int acadVal, string semesterVal)
+        {
+            var scheduleToRemove = _context.Roomschedules.Where(acad => acad.AcadYearId == acadVal && acad.Semester == semesterVal).ToList();
+
+            if (scheduleToRemove != null)
+            {
+                _context.Roomschedules.RemoveRange(scheduleToRemove);
+                _context.SaveChanges(); // Don't forget to save changes to apply the removal.
+            }
+
+
+            //_context.Database.ExecuteSqlRaw(deletecommand);
+
+            return Ok();
         }
     }
 }

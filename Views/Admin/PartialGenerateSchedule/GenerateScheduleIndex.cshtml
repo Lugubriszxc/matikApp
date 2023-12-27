@@ -52,6 +52,14 @@
     var acadVal = "";
     var semesterVal = "";
 
+    let timerValue = 0;
+    let timerMinute = 0;
+
+    let timerVal = 0;
+    let timerMin = 0;
+
+    let timerInterval;
+
     $(document).ready(function(){
 
         var storedUserAuth = sessionStorage.getItem('userauth');
@@ -173,6 +181,39 @@
         };
 
         document.getElementById('generateSchedBtn').addEventListener('click', function() {
+            
+            //Check first if the database already has the schedule
+            acadVal = $('#acadYearSelect').val();
+            semesterVal = $('#semesterSelect').val();
+
+            $.ajax({
+            url: "../api/generatescheduleapi/checkGenerate",
+            type: "POST",
+            data:
+            {
+                acadVal : acadVal,
+                semesterVal : semesterVal,
+            },
+            })
+            .done(function(result){
+                if(result.length <= 0)
+                {
+                    //If the academic year and semester has no schedule yet, proceed to generate
+                    proceedGenerating();
+                }
+                else
+                {
+                    //If it already has a schedule, then choose to open, cancel or delete
+                    GeneratedSched = result;
+                    alertAction();
+                }
+            });
+
+        });
+
+
+        function proceedGenerating()
+        {
             // Disable the button
             acadVal = $('#acadYearSelect').val();
             semesterVal = $('#semesterSelect').val();
@@ -193,9 +234,27 @@
                 closeSwalWhilePageLoaded();
                 console.log(result);
             });
+        }
 
-            //this.disabled = true;
-        });
+
+        function deleteData()
+        {
+            acadVal = $('#acadYearSelect').val();
+            semesterVal = $('#semesterSelect').val();
+
+            $.ajax({
+            url: "../api/generatescheduleapi/deleteSched",
+            type: "POST",
+            data:
+            {
+                acadVal : acadVal,
+                semesterVal : semesterVal,
+            },
+            })
+            .done(function(result){
+                alertDoneSave();
+            });
+        }
 
         function activateButton()
         {
@@ -627,23 +686,7 @@
         function saveData()
         {
             //Call API to compress and save the schedule
-
-            @* $.ajax({
-            url: "../api/generatescheduleapi/compressData",
-            type: "POST",
-            data:
-            {
-                valRoom : JSON.stringify(GeneratedSched),
-            },
-            })
-            .done(function(result){
-                @* GeneratedSched = result;
-                closeSwalWhilePageLoaded();
-                console.log(result);
-            }); *@
-
-            //console.log("Test");
-            //console.log(GeneratedSched);
+            showLoadingSavingData();
             $.ajax({
             url: "../api/generatescheduleapi/compressData",
             type: "POST",
@@ -653,15 +696,16 @@
             .done(function(result){
                 console.log("Compressed data : ");
                 console.log(result);
+                closeAfterSaving();
             });
         }
 
         //SWEET ALERT FUNCTIONS
-        const showLoading = function() {
-            let timerValue = 0; // Initial timer value in seconds
-            let timerMinute = 0;
+        function showLoading() {
+            @* let timerValue = 0; // Initial timer value in seconds
+            let timerMinute = 0; *@
 
-            const timerInterval = setInterval(() => {
+            let timerInterval = setInterval(() => {
                 timerValue++;
                 if(timerValue == 60)
                 {
@@ -682,13 +726,61 @@
                 },
                 willClose: () => {
                     clearInterval(timerInterval); // Clear the timer interval when the modal is closed
+                    timerInterval = null;
+                    timerValue = 0;
+                    timerMinute = 0;
+                    document.getElementById('timerSeconds').innerText = timerValue;
+                    document.getElementById('timerMinutes').innerText = timerMinute;
                 },
             })
         }
 
+
+        function showLoadingSavingData() {
+            @* let timerVal = 0; // Initial timer value in seconds
+            let timerMin = 0; *@
+
+            // Define a named function for the interval
+            let timerInterval = setInterval(() => {
+                timerVal++;
+                if(timerVal == 60)
+                {
+                    timerMin++;
+                    timerVal = 0;
+                }
+                document.getElementById('timerSeconds').innerText = timerVal; // Update the timer value in the modal
+                document.getElementById('timerMinutes').innerText = timerMin; // Update the timer value in the modal
+            }, 1000);
+
+            Swal.fire({
+                title: 'Processing',
+                html: '<b>Saving schedules<br><span id="timerMinutes">0</span> minutes : <span id="timerSeconds">0</span> seconds</b>',// add html attribute if you want or remove
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading()
+                },
+                willClose: () => {
+                    if (timerInterval !== null) {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                    }
+                    timerVal = 0;
+                    timerMin = 0;
+                    document.getElementById('timerSeconds').innerText = timerVal;
+                    document.getElementById('timerMinutes').innerText = timerMin;
+                },
+            })
+        }
+
+
         function closeSwalWhilePageLoaded(){
             setTimeout(() => {
                 Swal.close();
+                clearInterval(timerInterval); // Clear the timer interval when the modal is closed
+                timerInterval = null;
+                @* timerVal = 0;
+                timerMin = 0; *@
                 if(GeneratedSched.length > 0)
                 {
                     alertSuccess();
@@ -697,6 +789,18 @@
                 {
                     alertError("Cannot open the file because it's empty. Closely check your data before generating.");
                 }
+            }, 500);
+        }
+
+        function closeAfterSaving(){
+            setTimeout(() => {
+                Swal.close();
+                clearInterval(timerInterval); // Clear the timer interval when the modal is closed
+                timerInterval = null;
+                @* timerValue = 0;
+                timerMinute = 0; *@
+                alertDoneSave();
+                generateExcel();
             }, 500);
         }
 
@@ -744,8 +848,40 @@
             }).then((result) => {
                 if(result.isConfirmed){
                     //proceedUpdate();
-                    //generateExcel();
                     saveData();
+                    //generateExcel();
+                }
+            })
+        }
+
+        //display success action
+        function alertDoneSave()
+        {
+            Swal.fire({
+                icon: 'success',
+                title: 'Successfully saved.', 
+                showConfirmButton: false,
+                timer: 1500
+            })
+        }
+
+        //display update confirmation
+        function alertAction(result)
+        {
+            Swal.fire({
+                title: 'It already has an existing schedule. Would you like to open instead?',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'Cancel',
+                showDenyButton: true,
+                denyButtonText: 'Delete',
+            }).then((result) => {
+                if(result.isConfirmed){
+                    generateExcel();
+                }
+                else if (result.isDenied) {
+                    // Delete button clicked
+                    deleteData();
                 }
             })
         }

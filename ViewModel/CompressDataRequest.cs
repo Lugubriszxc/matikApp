@@ -9,7 +9,7 @@ namespace matikApp.ViewModel
     {
         public string Semester { get; set; }
         public int AcadYearId { get; set; }
-        public List<RoomCompress> ValRooms { get; set; }
+        public List<RoomSchedule> ValRooms { get; set; }
 
     }
 }
