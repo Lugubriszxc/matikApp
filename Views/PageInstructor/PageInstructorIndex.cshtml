@@ -47,14 +47,16 @@
     </nav>
 
     <!-- THIS IS FOR THE CONTENT OF THE PAGE-->
-    <center><h1>Instructor's Page</h1></center>
+    <center><h1><br><br></h1></center>
 
     @Html.Partial("PageInstructorUpdate")
     @Html.Partial("InstructorChangePass")
-
+    @Html.Partial("PageInstructorTable")
+    <div id="contentContainer">
+        <!-- Existing content or future dynamic content goes here -->
+    </div>
 </body>
 </html>
-
 
 <script>
     $(document).ready(function(){
@@ -97,7 +99,15 @@
 
 
 <script>
-    $(() => {
+
+    var instructorTeachingLoad = {}; // this will hold all of the teaching loads of the instructor
+    $(document).ready(function(){
+
+        var Subjects = {};
+        var Rooms = {};
+        var Sections = {};
+        var Timeslots = {};
+        var AcadYears = {};
 
         console.log(JSON.parse(sessionStorage.getItem('userauth')));
         var storedUserAuth = sessionStorage.getItem('userauth');
@@ -117,10 +127,46 @@
             }
         }
 
+        //loadList();
         var selectedInstructor;
 
         loadInstructorDetail();
+        loadInstructorScheduleData();
         populateDepartment();
+
+        function loadList()
+        {
+            $.ajax("../api/adminapi/getSubjects").done(function(result){
+                Subjects = result;
+                console.log(result);
+                populateTable();
+                //To avoid unexplainable bugs, we called populateTable here. After calling this from the api
+            });
+
+            $.ajax("../api/adminapi/getSections").done(function(result){
+                Sections = result;
+                console.log(result);
+                populateTable();
+            });
+
+            $.ajax("../api/adminapi/getRooms").done(function(result){
+                Rooms = result;
+                console.log(result);
+                populateTable();
+            });
+
+            $.ajax("../api/adminapi/getTimeSlots").done(function(result){
+                Timeslots = result;
+                console.log(result);
+                populateTable();
+            });
+
+            $.ajax("../api/adminapi/getAcademicYear").done(function(result){
+                AcadYears = result;
+                console.log(result);
+                populateTable();
+            });
+        }
 
         function loadInstructorDetail()
         {
@@ -140,6 +186,35 @@
                     //console.log(result.instructorFname);
                     $('.instructorName').text(result.instructorFname + " " + result.instructorLname);
                 }
+            })
+        }
+
+        function loadInstructorScheduleData()
+        {
+            //LOAD THE INSTRUCTOR'S TEACHING LOAD
+            $.ajax({
+            url: "../api/pageinstructorapi/loadInstructorScheduleData",
+            type: "POST",
+            data:
+            {
+                instructorId : userAuth.id,
+            },
+            }).done(function(result){
+                
+                if(result.length > 0)
+                {
+                    instructorTeachingLoad = result;
+                    console.log(instructorTeachingLoad);
+                    @* selectedInstructor = result;
+                    //console.log(result.instructorFname);
+                    $('.instructorName').text(result.instructorFname + " " + result.instructorLname); *@
+                }
+                else
+                {
+                    console.log("empty");
+                }
+                loadList();
+                //populateTable();
             })
         }
 
@@ -329,6 +404,259 @@
             }); *@
             sessionStorage.clear();
             window.location.href = "/Authorization/SigninInstructor";
+        }
+
+
+        // Function to populate the table
+        function populateTable() {
+
+            //loadList();
+            // Define defaultValue
+            var defaultValue = "Undefined";
+
+            //Convert the list into a schedule data
+            var scheduleConvert = [];
+
+            var SubjectList = Subjects;
+
+
+            if(instructorTeachingLoad.length > 0)
+            {
+                instructorTeachingLoad.forEach(function (teachingLoad) {
+                    //This is to convert the data of instructor teaching load to a displayable value
+
+                    if(Subjects.length > 0)
+                    {
+                        var subjectUnitz = Subjects.find(sub => sub.subjectId == teachingLoad.subjectId) ?? defaultValue;
+                    }
+
+                    if(Timeslots.length > 0)
+                    {
+                        var timeVal = Timeslots.find(t => t.timeId == teachingLoad.timeId) ?? defaultValue;
+                        console.log(timeVal);
+                    }
+                    var convertedData = {
+                        section: teachingLoad.sectionId,
+                        subject: teachingLoad.subjectId,
+                        unit: subjectUnitz.subjectUnit,
+                        day: teachingLoad.day,
+                        time: teachingLoad.timeId,
+                        room: teachingLoad.roomId,
+                    };
+                    scheduleConvert.push(convertedData);
+                });
+
+            console.log(scheduleConvert);
+            }
+
+
+            //var testVal = 1;
+            //console.log(instructorTeachingLoad);
+            if(instructorTeachingLoad.length > 0)
+            {
+                // Get the tbody element where you want to append rows
+                var tbody = document.getElementById("scheduleBody");
+
+                // Group data by Section, Subject, and Room
+                var groupedData = {};
+                scheduleConvert.forEach(function (data) {
+                var key = data.section + '-' + data.subject + '-' + data.room;
+                if (!groupedData[key]) {
+                    groupedData[key] = data;
+                    groupedData[key].daySet = new Set();
+                    groupedData[key].timeSet = new Set();
+                } else {
+                    // Check if the day value already exists before pushing
+                    @* if (!groupedData[key].daySet.has(data.day)) {
+                        groupedData[key].day += ' , ' + data.day;
+                        groupedData[key].daySet.add(data.day);
+                    } *@
+
+
+                    var uniqueDayRoomSchedules = scheduleConvert
+                    .filter(rs =>
+                        rs.section === data.section &&
+                        rs.subject === data.subject &&
+                        rs.room === data.room
+                    )
+                    .map(rs => rs.day)
+                    .filter((value, index, self) => self.indexOf(value) === index);
+
+                    var dayConvert = "";
+                    var dayCombined = "";
+
+                    uniqueDayRoomSchedules.forEach(item => {
+                        switch(item)
+                        {
+                            case 1:
+                                dayConvert = "M";
+                                break;
+                            case 2:
+                                dayConvert = "T";
+                                break;
+                            case 3:
+                                dayConvert = "W";
+                                break;
+                            case 4:
+                                dayConvert = "TH";
+                                break;
+                            case 5:
+                                dayConvert = "F";
+                                break;
+                            case 6:
+                                dayConvert = "S";
+                                break;
+                            case 7:
+                                dayConvert = "SUN";
+                                break;
+                        }
+                        dayCombined += dayConvert;
+                    });
+
+                    //Make the data of time, readable
+                    var toPrintTime = scheduleConvert.filter(rs =>
+                        rs.section === data.section &&
+                        rs.subject === data.subject &&
+                        rs.room === data.room
+                    );
+
+                    //printing the time
+                    var timeCount = toPrintTime.length;
+                    var timeCounter = 0;
+
+                    var startTime = "";
+                    var endTime = "";
+
+                    toPrintTime.forEach(item => {
+
+                        timeCounter++;
+                        if(Timeslots.length > 0)
+                        {
+
+                            var resTime = Timeslots.find(tm => tm.timeId == item.time) ?? defaultValue;
+                            //console.log("I was called");
+
+                            if(timeCounter == 1)
+                            {
+                                if (resTime && typeof resTime.endTime === 'string') 
+                                {
+                                    //Convert 24 hour format to 12 hour format
+                                    // Parse the input time in HH:mm format
+                                    var [hours, minutes] = resTime.startTime.split(':');
+                                    // Convert to 12-hour format
+                                    var period = hours >= 12 ? 'PM' : 'AM';
+                                    hours = hours % 12 || 12; // If hours is 0, set it to 12 for 12-hour format
+
+                                    // Format the result as HH:mm AM/PM
+                                    var time12 = hours + ':' + minutes + ' ' + period;
+
+                                    //STORE IT
+                                    startTime = time12;
+                                }
+                                else
+                                {
+                                    //console.error("Invalid or undefined resTime.startTime");
+                                }
+
+                            }
+                            else if(timeCounter == timeCount)
+                            {
+                                // Assuming resTime.endTime is expected to be a string in HH:mm format
+                                if (resTime && typeof resTime.endTime === 'string') {
+                                    // Parse the input time in HH:mm format
+                                    var [hours, minutes] = resTime.endTime.split(':');
+
+                                    // Convert to 12-hour format
+                                    var period = hours >= 12 ? 'PM' : 'AM';
+                                    hours = hours % 12 || 12; // If hours is 0, set it to 12 for 12-hour format
+
+                                    // Format the result as HH:mm AM/PM
+                                    var time12 = hours + ':' + minutes + ' ' + period;
+
+                                    // STORE IT
+                                    endTime = time12;
+                                } else {
+                                    //console.error("Invalid or undefined resTime.endTime");
+                                }
+                            }
+                        }   
+                    });
+
+                    //combine the time
+                    var timeRange = startTime + " - " + endTime;
+                    console.log(timeRange);
+                    groupedData[key].timeSet.add(timeRange);
+                    groupedData[key].daySet.add(dayCombined);
+                    console.log(dayCombined);
+
+
+                    @* if (!groupedData[key].timeSet.has(data.time)) {
+                        //groupedData[key].time += ' - ' + data.time;
+                        
+                    } *@
+                    //console.log(groupedData[key].timeSet);
+                }
+            });
+
+                // Get the tbody element where you want to append rows
+                var tbody = document.getElementById("scheduleBody");
+
+                // Iterate over groupedData and append rows to the table
+                Object.values(groupedData).forEach(function (data) {
+                    var row = document.createElement("tr");
+
+                    if(Sections.length > 0)
+                    {
+                        var sectionVal = Sections.find(sub => sub.sectionId == data.section) ?? defaultValue;
+                    }
+                    
+                    //Convert id's into readable data
+                    if(Subjects.length > 0)
+                    {
+                        var subjectVal = Subjects.find(sub => sub.subjectId == data.subject) ?? defaultValue;
+                    }
+
+                    if(Rooms.length > 0)
+                    {
+                        var roomVal = Rooms.find(sub => sub.roomId == data.room) ?? defaultValue;
+                    }
+
+                    //console.log(data.subject);
+                    //console.log(subjectVal);
+                    // Create and append cells with data
+                    var firstValue = [...data.timeSet][0];
+                    var firstValueDay = [...data.daySet][0];
+                    console.log(firstValue);
+                    row.appendChild(createCell(sectionVal.sectionName));
+                    row.appendChild(createCell(subjectVal.subjectName));
+                    row.appendChild(createCell(data.unit));
+                    row.appendChild(createCell(firstValueDay)); // Convert Set to array
+                    row.appendChild(createCell(firstValue));
+                    row.appendChild(createCell(roomVal.roomName));
+
+                    // Append the row to the tbody
+                    tbody.appendChild(row);
+                });
+            }
+            else
+            {
+                // Create a new div element
+                var newDiv = document.createElement('div');
+                newDiv.id = 'myNewDiv';
+                newDiv.innerHTML = '<br><center>No teaching load data</center>';
+
+                // Append the new div to the content container
+                document.getElementById('contentContainer').appendChild(newDiv);
+            }
+        }
+
+        // Call the function to initially populate the table
+       //populateTable();
+       // Function to create a table cell
+        function createCell(value) {
+            var cell = document.createElement("td");
+            cell.textContent = value;
+            return cell;
         }
 
 

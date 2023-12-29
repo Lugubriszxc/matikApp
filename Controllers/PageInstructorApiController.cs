@@ -22,5 +22,11 @@ namespace matikApp.Controllers
             var res = _context.Instructors.Where(rs => rs.InstructorId == instructorId).FirstOrDefault();
             return Ok(res);
         }
+
+        public IActionResult loadInstructorScheduleData(int instructorId)
+        {
+            var res = _context.Roomschedules.Where(rs => rs.InstructorId == instructorId).ToList();
+            return Ok(res);
+        }
     }
 }
