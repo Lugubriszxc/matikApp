@@ -46,8 +46,12 @@
     </div>
     </nav>
 
+    <br><br>
+    <div><h4>Welcome, <span class="instructorName"></span></h4></div>
+    <hr>
+
     <!-- THIS IS FOR THE CONTENT OF THE PAGE-->
-    <center><h1><br><br></h1></center>
+    <center><h1></h1></center>
 
     @Html.Partial("PageInstructorUpdate")
     @Html.Partial("InstructorChangePass")
@@ -139,32 +143,30 @@
             $.ajax("../api/adminapi/getSubjects").done(function(result){
                 Subjects = result;
                 console.log(result);
-                populateTable();
+                //populateTable();
                 //To avoid unexplainable bugs, we called populateTable here. After calling this from the api
-            });
+                $.ajax("../api/adminapi/getSections").done(function(result){
+                    Sections = result;
+                    console.log(result);
+                    //populateTable();
 
-            $.ajax("../api/adminapi/getSections").done(function(result){
-                Sections = result;
-                console.log(result);
-                populateTable();
-            });
+                    $.ajax("../api/adminapi/getRooms").done(function(result){
+                        Rooms = result;
+                        console.log(result);
+                        //populateTable();
 
-            $.ajax("../api/adminapi/getRooms").done(function(result){
-                Rooms = result;
-                console.log(result);
-                populateTable();
-            });
-
-            $.ajax("../api/adminapi/getTimeSlots").done(function(result){
-                Timeslots = result;
-                console.log(result);
-                populateTable();
-            });
-
-            $.ajax("../api/adminapi/getAcademicYear").done(function(result){
-                AcadYears = result;
-                console.log(result);
-                populateTable();
+                        $.ajax("../api/adminapi/getTimeSlots").done(function(result){
+                            Timeslots = result;
+                            console.log(result);
+                            //populateTable();
+                            $.ajax("../api/adminapi/getAcademicYear").done(function(result){
+                                AcadYears = result;
+                                console.log(result);
+                                populateTable();
+                            });
+                        });
+                    });
+                });
             });
         }
 
