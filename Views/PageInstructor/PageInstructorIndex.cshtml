@@ -113,6 +113,9 @@
         var acadVal = 0;
         var semVal = "";
 
+        //this to display in the select as only once.
+        var displaySelect = false;
+
         console.log(JSON.parse(sessionStorage.getItem('userauth')));
         var storedUserAuth = sessionStorage.getItem('userauth');
         var userAuth = JSON.parse(storedUserAuth);
@@ -444,10 +447,62 @@
 
             var SubjectList = Subjects;
 
+
+
             var holderInstructorTeachingLoad = instructorTeachingLoad;
-            @* holderInstructorTeachingLoad.forEach(function (teachingLoad){
-                console.log(teachingLoad.roomId);                 
-            }); *@
+
+            //Sorting order
+            //Get the latest value of the academic year and semester
+            holderInstructorTeachingLoad.sort(function (a, b) {
+                // Compare acadYearId first
+                if (a.acadYearId !== b.acadYearId) {
+                    return a.acadYearId - b.acadYearId;
+                }
+
+                // If acadYearId is the same, compare semester
+                if (a.semester < b.semester) {
+                    return -1;
+                } else if (a.semester > b.semester) {
+                    return 1;
+                }
+
+                // If acadYearId and semester are the same, maintain the current order
+                return 0;
+            });
+
+            //console.log(holderInstructorTeachingLoad);
+
+            //if the display is empty
+            if(displaySelect == false)
+            {
+                if(holderInstructorTeachingLoad.length > 0)
+                {
+                    var lastValue = holderInstructorTeachingLoad[holderInstructorTeachingLoad.length - 1];
+                    //$("#acadYearSelect").val(lastValue.acadYearId).change();
+                    $("#acadYearSelect").val(lastValue.acadYearId).prop('selected', true);
+                    $("#semesterSelect").val(lastValue.semester).prop('selected', true);
+                    //$("#semesterSelect").val(lastValue.semester).change();
+
+                    // Now, 'lastValue' contains the last element of the array
+                    //console.log('Last Value:', lastValue);
+
+                    displaySelect = true;
+
+                    //To filter only the value that matches with the select options 
+                    holderInstructorTeachingLoad = instructorTeachingLoad.filter(function (item) {
+                        return item.acadYearId == lastValue.acadYearId && item.semester === lastValue.semester;
+                    });
+                    
+                    //loadList();
+                }
+            }
+
+
+            if(acadVal !== 0 && semVal !== "")
+            {
+                //To refresh the value inside the holder instructor teaching load
+                holderInstructorTeachingLoad = instructorTeachingLoad;
+            }
     
             //console.log(holderInstructorTeachingLoad);
 
