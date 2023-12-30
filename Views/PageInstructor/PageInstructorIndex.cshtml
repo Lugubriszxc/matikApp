@@ -64,9 +64,6 @@
 
 <script>
     $(document).ready(function(){
-
-
-
         margin();
 
         function margin(){
@@ -113,6 +110,9 @@
         var Timeslots = {};
         var AcadYears = {};
 
+        var acadVal = 0;
+        var semVal = "";
+
         console.log(JSON.parse(sessionStorage.getItem('userauth')));
         var storedUserAuth = sessionStorage.getItem('userauth');
         var userAuth = JSON.parse(storedUserAuth);
@@ -137,6 +137,7 @@
         loadInstructorDetail();
         loadInstructorScheduleData();
         populateDepartment();
+        populateAcademicYear();
 
         function loadList()
         {
@@ -234,6 +235,28 @@
                 var cloned = template.content.cloneNode(true);
                 cloned.querySelector("option").value = item.departmentId;
                 cloned.querySelector("option").innerText= item.departmentName;
+
+                parent[i].prepend(cloned);
+            });
+            }
+
+            //to deselect a selected option
+            $("select").val([]);
+            });
+        }
+
+        function populateAcademicYear()
+        {
+            $.ajax("../api/adminapi/getAcademicYear")
+            .done(function(result){
+            var template = document.querySelector("template#academicYearTemplate");
+            var parent = document.querySelectorAll("#acadYearSelect");
+            
+            for(i = 0; i < parent.length; i++){
+            result.forEach(function (item){
+                var cloned = template.content.cloneNode(true);
+                cloned.querySelector("option").value = item.acadYearId;
+                cloned.querySelector("option").innerText = item.acadYearName;
 
                 parent[i].prepend(cloned);
             });
@@ -421,10 +444,29 @@
 
             var SubjectList = Subjects;
 
+            var holderInstructorTeachingLoad = instructorTeachingLoad;
+            @* holderInstructorTeachingLoad.forEach(function (teachingLoad){
+                console.log(teachingLoad.roomId);                 
+            }); *@
+    
+            //console.log(holderInstructorTeachingLoad);
 
-            if(instructorTeachingLoad.length > 0)
+             //Sort by academic year and semester
+            if(acadVal !== 0 && semVal !== "")
             {
-                instructorTeachingLoad.forEach(function (teachingLoad) {
+                console.log("acadVal : " + acadVal);
+                //console.log("Instructor Teaching Load" + holderInstructorTeachingLoad.length);
+                holderInstructorTeachingLoad = instructorTeachingLoad.filter(function (item) {
+                    return item.acadYearId == acadVal && item.semester === semVal;
+                });
+
+                @* console.log("hello");
+                console.log(holderInstructorTeachingLoad); *@
+            }
+
+            if(holderInstructorTeachingLoad.length > 0)
+            {
+                holderInstructorTeachingLoad.forEach(function (teachingLoad) {
                     //This is to convert the data of instructor teaching load to a displayable value
 
                     if(Subjects.length > 0)
@@ -437,7 +479,10 @@
                         var timeVal = Timeslots.find(t => t.timeId == teachingLoad.timeId) ?? defaultValue;
                         console.log(timeVal);
                     }
-                    var convertedData = {
+
+                    var convertedData = {};
+
+                    convertedData = {
                         section: teachingLoad.sectionId,
                         subject: teachingLoad.subjectId,
                         unit: subjectUnitz.subjectUnit,
@@ -454,7 +499,7 @@
 
             //var testVal = 1;
             //console.log(instructorTeachingLoad);
-            if(instructorTeachingLoad.length > 0)
+            if(holderInstructorTeachingLoad.length > 0)
             {
                 // Get the tbody element where you want to append rows
                 var tbody = document.getElementById("scheduleBody");
@@ -602,6 +647,11 @@
 
                 // Get the tbody element where you want to append rows
                 var tbody = document.getElementById("scheduleBody");
+                tbody.innerHTML = "";
+
+                //Clear the "no teaching load data";
+                var newDiv = document.getElementById("mynewDiv");
+                newDiv.innerHTML = "";
 
                 // Iterate over groupedData and append rows to the table
                 Object.values(groupedData).forEach(function (data) {
@@ -642,9 +692,14 @@
             }
             else
             {
+                //Clear the data first
+                var tbody = document.getElementById("scheduleBody");
+                tbody.innerHTML = "";
+
                 // Create a new div element
-                var newDiv = document.createElement('div');
-                newDiv.id = 'myNewDiv';
+                var newDiv = document.getElementById("mynewDiv");
+                //newDiv.id = 'myNewDiv';
+                newDiv.innerHTML = "";
                 newDiv.innerHTML = '<br><center>No teaching load data</center>';
 
                 // Append the new div to the content container
@@ -660,6 +715,34 @@
             cell.textContent = value;
             return cell;
         }
+
+        // Academic Year dropdown change event
+        $('#acadYearSelect').change(function () {
+            var selectedAcad = $(this).val();
+            var selectedSem = $('#semesterSelect').val();
+
+            if(selectedAcad !== null && selectedSem !== null)
+            {
+                acadVal = selectedAcad;
+                semVal = selectedSem;
+                loadList();
+                //console.log('Selected Academic Year:', acadVal + " " + semVal);
+            }
+        });
+
+        // Semester dropdown change event
+        $('#semesterSelect').change(function () {
+            var selectedSem = $(this).val();
+            var selectedAcad = $('#acadYearSelect').val();
+
+            if(selectedAcad !== null && selectedSem !== null)
+            {
+                acadVal = selectedAcad;
+                semVal = selectedSem;
+                loadList();
+                //console.log('Selected Academic Year:', acadVal + " " + semVal);
+            }
+        });
 
 
         //display update confirmation
