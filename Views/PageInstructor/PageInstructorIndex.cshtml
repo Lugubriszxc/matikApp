@@ -438,312 +438,328 @@
         // Function to populate the table
         function populateTable() {
 
-            //loadList();
-            // Define defaultValue
-            var defaultValue = "Undefined";
-
-            //Convert the list into a schedule data
-            var scheduleConvert = [];
-
-            var SubjectList = Subjects;
-
-
-
-            var holderInstructorTeachingLoad = instructorTeachingLoad;
-
-            //Sorting order
-            //Get the latest value of the academic year and semester
-            holderInstructorTeachingLoad.sort(function (a, b) {
-                // Compare acadYearId first
-                if (a.acadYearId !== b.acadYearId) {
-                    return a.acadYearId - b.acadYearId;
-                }
-
-                // If acadYearId is the same, compare semester
-                if (a.semester < b.semester) {
-                    return -1;
-                } else if (a.semester > b.semester) {
-                    return 1;
-                }
-
-                // If acadYearId and semester are the same, maintain the current order
-                return 0;
-            });
-
-            //console.log(holderInstructorTeachingLoad);
-
-            //if the display is empty
-            if(displaySelect == false)
+            if(instructorTeachingLoad.length > 0)
             {
+                var defaultValue = "Undefined";
+
+                //Convert the list into a schedule data
+                var scheduleConvert = [];
+
+                var SubjectList = Subjects;
+
+
+
+                var holderInstructorTeachingLoad = instructorTeachingLoad;
+
+                //Sorting order
+                //Get the latest value of the academic year and semester
+                holderInstructorTeachingLoad.sort(function (a, b) {
+                    // Compare acadYearId first
+                    if (a.acadYearId !== b.acadYearId) {
+                        return a.acadYearId - b.acadYearId;
+                    }
+
+                    // If acadYearId is the same, compare semester
+                    if (a.semester < b.semester) {
+                        return -1;
+                    } else if (a.semester > b.semester) {
+                        return 1;
+                    }
+
+                    // If acadYearId and semester are the same, maintain the current order
+                    return 0;
+                });
+
+                //console.log(holderInstructorTeachingLoad);
+
+                //if the display is empty
+                if(displaySelect == false)
+                {
+                    if(holderInstructorTeachingLoad.length > 0)
+                    {
+                        var lastValue = holderInstructorTeachingLoad[holderInstructorTeachingLoad.length - 1];
+                        //$("#acadYearSelect").val(lastValue.acadYearId).change();
+                        $("#acadYearSelect").val(lastValue.acadYearId).prop('selected', true);
+                        $("#semesterSelect").val(lastValue.semester).prop('selected', true);
+                        //$("#semesterSelect").val(lastValue.semester).change();
+
+                        // Now, 'lastValue' contains the last element of the array
+                        //console.log('Last Value:', lastValue);
+
+                        displaySelect = true;
+
+                        //To filter only the value that matches with the select options 
+                        holderInstructorTeachingLoad = instructorTeachingLoad.filter(function (item) {
+                            return item.acadYearId == lastValue.acadYearId && item.semester === lastValue.semester;
+                        });
+                        
+                        //loadList();
+                    }
+                }
+
+
+                if(acadVal !== 0 && semVal !== "")
+                {
+                    //To refresh the value inside the holder instructor teaching load
+                    holderInstructorTeachingLoad = instructorTeachingLoad;
+                }
+        
+                //console.log(holderInstructorTeachingLoad);
+
+                //Sort by academic year and semester
+                if(acadVal !== 0 && semVal !== "")
+                {
+                    console.log("acadVal : " + acadVal);
+                    //console.log("Instructor Teaching Load" + holderInstructorTeachingLoad.length);
+                    holderInstructorTeachingLoad = instructorTeachingLoad.filter(function (item) {
+                        return item.acadYearId == acadVal && item.semester === semVal;
+                    });
+
+                    @* console.log("hello");
+                    console.log(holderInstructorTeachingLoad); *@
+                }
+
                 if(holderInstructorTeachingLoad.length > 0)
                 {
-                    var lastValue = holderInstructorTeachingLoad[holderInstructorTeachingLoad.length - 1];
-                    //$("#acadYearSelect").val(lastValue.acadYearId).change();
-                    $("#acadYearSelect").val(lastValue.acadYearId).prop('selected', true);
-                    $("#semesterSelect").val(lastValue.semester).prop('selected', true);
-                    //$("#semesterSelect").val(lastValue.semester).change();
+                    holderInstructorTeachingLoad.forEach(function (teachingLoad) {
+                        //This is to convert the data of instructor teaching load to a displayable value
 
-                    // Now, 'lastValue' contains the last element of the array
-                    //console.log('Last Value:', lastValue);
-
-                    displaySelect = true;
-
-                    //To filter only the value that matches with the select options 
-                    holderInstructorTeachingLoad = instructorTeachingLoad.filter(function (item) {
-                        return item.acadYearId == lastValue.acadYearId && item.semester === lastValue.semester;
-                    });
-                    
-                    //loadList();
-                }
-            }
-
-
-            if(acadVal !== 0 && semVal !== "")
-            {
-                //To refresh the value inside the holder instructor teaching load
-                holderInstructorTeachingLoad = instructorTeachingLoad;
-            }
-    
-            //console.log(holderInstructorTeachingLoad);
-
-             //Sort by academic year and semester
-            if(acadVal !== 0 && semVal !== "")
-            {
-                console.log("acadVal : " + acadVal);
-                //console.log("Instructor Teaching Load" + holderInstructorTeachingLoad.length);
-                holderInstructorTeachingLoad = instructorTeachingLoad.filter(function (item) {
-                    return item.acadYearId == acadVal && item.semester === semVal;
-                });
-
-                @* console.log("hello");
-                console.log(holderInstructorTeachingLoad); *@
-            }
-
-            if(holderInstructorTeachingLoad.length > 0)
-            {
-                holderInstructorTeachingLoad.forEach(function (teachingLoad) {
-                    //This is to convert the data of instructor teaching load to a displayable value
-
-                    if(Subjects.length > 0)
-                    {
-                        var subjectUnitz = Subjects.find(sub => sub.subjectId == teachingLoad.subjectId) ?? defaultValue;
-                    }
-
-                    if(Timeslots.length > 0)
-                    {
-                        var timeVal = Timeslots.find(t => t.timeId == teachingLoad.timeId) ?? defaultValue;
-                        console.log(timeVal);
-                    }
-
-                    var convertedData = {};
-
-                    convertedData = {
-                        section: teachingLoad.sectionId,
-                        subject: teachingLoad.subjectId,
-                        unit: subjectUnitz.subjectUnit,
-                        day: teachingLoad.day,
-                        time: teachingLoad.timeId,
-                        room: teachingLoad.roomId,
-                    };
-                    scheduleConvert.push(convertedData);
-                });
-
-            console.log(scheduleConvert);
-            }
-
-
-            //var testVal = 1;
-            //console.log(instructorTeachingLoad);
-            if(holderInstructorTeachingLoad.length > 0)
-            {
-                // Get the tbody element where you want to append rows
-                var tbody = document.getElementById("scheduleBody");
-
-                // Group data by Section, Subject, and Room
-                var groupedData = {};
-                scheduleConvert.forEach(function (data) {
-                var key = data.section + '-' + data.subject + '-' + data.room;
-                if (!groupedData[key]) {
-                    groupedData[key] = data;
-                    groupedData[key].daySet = new Set();
-                    groupedData[key].timeSet = new Set();
-                } else {
-                    // Check if the day value already exists before pushing
-                    @* if (!groupedData[key].daySet.has(data.day)) {
-                        groupedData[key].day += ' , ' + data.day;
-                        groupedData[key].daySet.add(data.day);
-                    } *@
-
-
-                    var uniqueDayRoomSchedules = scheduleConvert
-                    .filter(rs =>
-                        rs.section === data.section &&
-                        rs.subject === data.subject &&
-                        rs.room === data.room
-                    )
-                    .map(rs => rs.day)
-                    .filter((value, index, self) => self.indexOf(value) === index);
-
-                    var dayConvert = "";
-                    var dayCombined = "";
-
-                    uniqueDayRoomSchedules.forEach(item => {
-                        switch(item)
+                        if(Subjects.length > 0)
                         {
-                            case 1:
-                                dayConvert = "M";
-                                break;
-                            case 2:
-                                dayConvert = "T";
-                                break;
-                            case 3:
-                                dayConvert = "W";
-                                break;
-                            case 4:
-                                dayConvert = "TH";
-                                break;
-                            case 5:
-                                dayConvert = "F";
-                                break;
-                            case 6:
-                                dayConvert = "S";
-                                break;
-                            case 7:
-                                dayConvert = "SUN";
-                                break;
+                            var subjectUnitz = Subjects.find(sub => sub.subjectId == teachingLoad.subjectId) ?? defaultValue;
                         }
-                        dayCombined += dayConvert;
-                    });
 
-                    //Make the data of time, readable
-                    var toPrintTime = scheduleConvert.filter(rs =>
-                        rs.section === data.section &&
-                        rs.subject === data.subject &&
-                        rs.room === data.room
-                    );
-
-                    //printing the time
-                    var timeCount = toPrintTime.length;
-                    var timeCounter = 0;
-
-                    var startTime = "";
-                    var endTime = "";
-
-                    toPrintTime.forEach(item => {
-
-                        timeCounter++;
                         if(Timeslots.length > 0)
                         {
+                            var timeVal = Timeslots.find(t => t.timeId == teachingLoad.timeId) ?? defaultValue;
+                            console.log(timeVal);
+                        }
 
-                            var resTime = Timeslots.find(tm => tm.timeId == item.time) ?? defaultValue;
-                            //console.log("I was called");
+                        var convertedData = {};
 
-                            if(timeCounter == 1)
-                            {
-                                if (resTime && typeof resTime.endTime === 'string') 
-                                {
-                                    //Convert 24 hour format to 12 hour format
-                                    // Parse the input time in HH:mm format
-                                    var [hours, minutes] = resTime.startTime.split(':');
-                                    // Convert to 12-hour format
-                                    var period = hours >= 12 ? 'PM' : 'AM';
-                                    hours = hours % 12 || 12; // If hours is 0, set it to 12 for 12-hour format
-
-                                    // Format the result as HH:mm AM/PM
-                                    var time12 = hours + ':' + minutes + ' ' + period;
-
-                                    //STORE IT
-                                    startTime = time12;
-                                }
-                                else
-                                {
-                                    //console.error("Invalid or undefined resTime.startTime");
-                                }
-
-                            }
-                            else if(timeCounter == timeCount)
-                            {
-                                // Assuming resTime.endTime is expected to be a string in HH:mm format
-                                if (resTime && typeof resTime.endTime === 'string') {
-                                    // Parse the input time in HH:mm format
-                                    var [hours, minutes] = resTime.endTime.split(':');
-
-                                    // Convert to 12-hour format
-                                    var period = hours >= 12 ? 'PM' : 'AM';
-                                    hours = hours % 12 || 12; // If hours is 0, set it to 12 for 12-hour format
-
-                                    // Format the result as HH:mm AM/PM
-                                    var time12 = hours + ':' + minutes + ' ' + period;
-
-                                    // STORE IT
-                                    endTime = time12;
-                                } else {
-                                    //console.error("Invalid or undefined resTime.endTime");
-                                }
-                            }
-                        }   
+                        convertedData = {
+                            section: teachingLoad.sectionId,
+                            subject: teachingLoad.subjectId,
+                            unit: subjectUnitz.subjectUnit,
+                            day: teachingLoad.day,
+                            time: teachingLoad.timeId,
+                            room: teachingLoad.roomId,
+                        };
+                        scheduleConvert.push(convertedData);
                     });
 
-                    //combine the time
-                    var timeRange = startTime + " - " + endTime;
-                    console.log(timeRange);
-                    groupedData[key].timeSet.add(timeRange);
-                    groupedData[key].daySet.add(dayCombined);
-                    console.log(dayCombined);
-
-
-                    @* if (!groupedData[key].timeSet.has(data.time)) {
-                        //groupedData[key].time += ' - ' + data.time;
-                        
-                    } *@
-                    //console.log(groupedData[key].timeSet);
+                console.log(scheduleConvert);
                 }
-            });
 
-                // Get the tbody element where you want to append rows
-                var tbody = document.getElementById("scheduleBody");
-                tbody.innerHTML = "";
 
-                //Clear the "no teaching load data";
-                var newDiv = document.getElementById("mynewDiv");
-                newDiv.innerHTML = "";
+                //var testVal = 1;
+                //console.log(instructorTeachingLoad);
+                if(holderInstructorTeachingLoad.length > 0)
+                {
+                    // Get the tbody element where you want to append rows
+                    var tbody = document.getElementById("scheduleBody");
 
-                // Iterate over groupedData and append rows to the table
-                Object.values(groupedData).forEach(function (data) {
-                    var row = document.createElement("tr");
+                    // Group data by Section, Subject, and Room
+                    var groupedData = {};
+                    scheduleConvert.forEach(function (data) {
+                    var key = data.section + '-' + data.subject + '-' + data.room;
+                    if (!groupedData[key]) {
+                        groupedData[key] = data;
+                        groupedData[key].daySet = new Set();
+                        groupedData[key].timeSet = new Set();
+                    } else {
+                        // Check if the day value already exists before pushing
+                        @* if (!groupedData[key].daySet.has(data.day)) {
+                            groupedData[key].day += ' , ' + data.day;
+                            groupedData[key].daySet.add(data.day);
+                        } *@
 
-                    if(Sections.length > 0)
-                    {
-                        var sectionVal = Sections.find(sub => sub.sectionId == data.section) ?? defaultValue;
+
+                        var uniqueDayRoomSchedules = scheduleConvert
+                        .filter(rs =>
+                            rs.section === data.section &&
+                            rs.subject === data.subject &&
+                            rs.room === data.room
+                        )
+                        .map(rs => rs.day)
+                        .filter((value, index, self) => self.indexOf(value) === index);
+
+                        var dayConvert = "";
+                        var dayCombined = "";
+
+                        uniqueDayRoomSchedules.forEach(item => {
+                            switch(item)
+                            {
+                                case 1:
+                                    dayConvert = "M";
+                                    break;
+                                case 2:
+                                    dayConvert = "T";
+                                    break;
+                                case 3:
+                                    dayConvert = "W";
+                                    break;
+                                case 4:
+                                    dayConvert = "TH";
+                                    break;
+                                case 5:
+                                    dayConvert = "F";
+                                    break;
+                                case 6:
+                                    dayConvert = "S";
+                                    break;
+                                case 7:
+                                    dayConvert = "SUN";
+                                    break;
+                            }
+                            dayCombined += dayConvert;
+                        });
+
+                        //Make the data of time, readable
+                        var toPrintTime = scheduleConvert.filter(rs =>
+                            rs.section === data.section &&
+                            rs.subject === data.subject &&
+                            rs.room === data.room
+                        );
+
+                        //printing the time
+                        var timeCount = toPrintTime.length;
+                        var timeCounter = 0;
+
+                        var startTime = "";
+                        var endTime = "";
+
+                        toPrintTime.forEach(item => {
+
+                            timeCounter++;
+                            if(Timeslots.length > 0)
+                            {
+
+                                var resTime = Timeslots.find(tm => tm.timeId == item.time) ?? defaultValue;
+                                //console.log("I was called");
+
+                                if(timeCounter == 1)
+                                {
+                                    if (resTime && typeof resTime.endTime === 'string') 
+                                    {
+                                        //Convert 24 hour format to 12 hour format
+                                        // Parse the input time in HH:mm format
+                                        var [hours, minutes] = resTime.startTime.split(':');
+                                        // Convert to 12-hour format
+                                        var period = hours >= 12 ? 'PM' : 'AM';
+                                        hours = hours % 12 || 12; // If hours is 0, set it to 12 for 12-hour format
+
+                                        // Format the result as HH:mm AM/PM
+                                        var time12 = hours + ':' + minutes + ' ' + period;
+
+                                        //STORE IT
+                                        startTime = time12;
+                                    }
+                                    else
+                                    {
+                                        //console.error("Invalid or undefined resTime.startTime");
+                                    }
+
+                                }
+                                else if(timeCounter == timeCount)
+                                {
+                                    // Assuming resTime.endTime is expected to be a string in HH:mm format
+                                    if (resTime && typeof resTime.endTime === 'string') {
+                                        // Parse the input time in HH:mm format
+                                        var [hours, minutes] = resTime.endTime.split(':');
+
+                                        // Convert to 12-hour format
+                                        var period = hours >= 12 ? 'PM' : 'AM';
+                                        hours = hours % 12 || 12; // If hours is 0, set it to 12 for 12-hour format
+
+                                        // Format the result as HH:mm AM/PM
+                                        var time12 = hours + ':' + minutes + ' ' + period;
+
+                                        // STORE IT
+                                        endTime = time12;
+                                    } else {
+                                        //console.error("Invalid or undefined resTime.endTime");
+                                    }
+                                }
+                            }   
+                        });
+
+                        //combine the time
+                        var timeRange = startTime + " - " + endTime;
+                        console.log(timeRange);
+                        groupedData[key].timeSet.add(timeRange);
+                        groupedData[key].daySet.add(dayCombined);
+                        console.log(dayCombined);
+
+
+                        @* if (!groupedData[key].timeSet.has(data.time)) {
+                            //groupedData[key].time += ' - ' + data.time;
+                            
+                        } *@
+                        //console.log(groupedData[key].timeSet);
                     }
-                    
-                    //Convert id's into readable data
-                    if(Subjects.length > 0)
-                    {
-                        var subjectVal = Subjects.find(sub => sub.subjectId == data.subject) ?? defaultValue;
-                    }
-
-                    if(Rooms.length > 0)
-                    {
-                        var roomVal = Rooms.find(sub => sub.roomId == data.room) ?? defaultValue;
-                    }
-
-                    //console.log(data.subject);
-                    //console.log(subjectVal);
-                    // Create and append cells with data
-                    var firstValue = [...data.timeSet][0];
-                    var firstValueDay = [...data.daySet][0];
-                    console.log(firstValue);
-                    row.appendChild(createCell(sectionVal.sectionName));
-                    row.appendChild(createCell(subjectVal.subjectName));
-                    row.appendChild(createCell(data.unit));
-                    row.appendChild(createCell(firstValueDay)); // Convert Set to array
-                    row.appendChild(createCell(firstValue));
-                    row.appendChild(createCell(roomVal.roomName));
-
-                    // Append the row to the tbody
-                    tbody.appendChild(row);
                 });
+
+                    // Get the tbody element where you want to append rows
+                    var tbody = document.getElementById("scheduleBody");
+                    tbody.innerHTML = "";
+
+                    //Clear the "no teaching load data";
+                    var newDiv = document.getElementById("mynewDiv");
+                    newDiv.innerHTML = "";
+
+                    // Iterate over groupedData and append rows to the table
+                    Object.values(groupedData).forEach(function (data) {
+                        var row = document.createElement("tr");
+
+                        if(Sections.length > 0)
+                        {
+                            var sectionVal = Sections.find(sub => sub.sectionId == data.section) ?? defaultValue;
+                        }
+                        
+                        //Convert id's into readable data
+                        if(Subjects.length > 0)
+                        {
+                            var subjectVal = Subjects.find(sub => sub.subjectId == data.subject) ?? defaultValue;
+                        }
+
+                        if(Rooms.length > 0)
+                        {
+                            var roomVal = Rooms.find(sub => sub.roomId == data.room) ?? defaultValue;
+                        }
+
+                        //console.log(data.subject);
+                        //console.log(subjectVal);
+                        // Create and append cells with data
+                        var firstValue = [...data.timeSet][0];
+                        var firstValueDay = [...data.daySet][0];
+                        console.log(firstValue);
+                        row.appendChild(createCell(sectionVal.sectionName));
+                        row.appendChild(createCell(subjectVal.subjectName));
+                        row.appendChild(createCell(data.unit));
+                        row.appendChild(createCell(firstValueDay)); // Convert Set to array
+                        row.appendChild(createCell(firstValue));
+                        row.appendChild(createCell(roomVal.roomName));
+
+                        // Append the row to the tbody
+                        tbody.appendChild(row);
+                    });
+                }
+                else
+                {
+                    //Clear the data first
+                    var tbody = document.getElementById("scheduleBody");
+                    tbody.innerHTML = "";
+
+                    // Create a new div element
+                    var newDiv = document.getElementById("mynewDiv");
+                    //newDiv.id = 'myNewDiv';
+                    newDiv.innerHTML = "";
+                    newDiv.innerHTML = '<br><center>No teaching load data</center>';
+
+                    // Append the new div to the content container
+                    document.getElementById('contentContainer').appendChild(newDiv);
+                }
             }
             else
             {
@@ -760,6 +776,7 @@
                 // Append the new div to the content container
                 document.getElementById('contentContainer').appendChild(newDiv);
             }
+            
         }
 
         // Call the function to initially populate the table
