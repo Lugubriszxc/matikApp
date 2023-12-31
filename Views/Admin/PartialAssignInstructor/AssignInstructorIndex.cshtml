@@ -984,16 +984,6 @@
         }
 
         let emptyEl = new Boolean(false);
-        //alternative of bool
-        @* if(studCount.value === '')
-        {
-            //if the student count is empty return true 
-            emptyEl = Boolean(true);
-        }
-        else{
-            //if the student count is not empty then return false
-            emptyEl = Boolean(false);
-        } *@
 
         //if all elements are not empty
         if(formInputs.length === formelements.length && emptyFilter === Boolean(false))
@@ -1499,10 +1489,10 @@
 
     function defaultClear()
     {
-        //$("#createAssignInstructorForm")[0].reset(); //back
-        //$("#updateAssignInstructorForm")[0].reset();
-        //defaultUnselect();
-        //$("select").val([]);
+        $("#createAssignInstructorForm")[0].reset(); //back
+        $("#updateAssignInstructorForm")[0].reset();
+        defaultUnselect();
+        $("select").val([]);
     }
 
     //sweet alert

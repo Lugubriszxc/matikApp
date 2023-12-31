@@ -1,0 +1,79 @@
+<script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/js/multi-select-tag.js"></script>
+
+<template id="departmentOptionTemplate">
+  <option value=""></option>
+</template>
+
+<template id="courseOptionTemplate">
+  <option value=""></option>
+</template>
+
+<template id="sectionOptionTemplate">
+  <option value=""></option>
+</template>
+
+<template id="academicYearTemplate">
+  <option value=""></option>
+</template>
+
+<div class="modal fade" id="modalEnrollStudentCreate" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-light text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Enroll Student</h5>
+        <button type="button" id="modalEnrollStudentCreateClose" class="btn-close btn-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body enrollStudentCreate d-flex justify-content-center">
+       <div>
+            <div class="cardInfo" style="width: 25rem;">
+            <h4><div class="info-title" id="info-title">
+            </div></h4>
+            <strong><div class="info-Stocks"></div></strong>
+            <hr/>
+            <form id="createEnrollStudentForm">
+            <div class="form-group">
+                <label name="" class="control-label">Department</label>
+                <select id="departmentSelect" name="DepartmentId" class="form-select"></select>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Course</label>
+                <select id="courseSelect" name="CourseId" class="form-select"></select>
+            </div>
+            <div class="form-group">
+              <label name="" class="control-label">Year Level</label>
+              <select id="yearLevelPicker" name="YearLevel" class="form-select">
+              <option value="1st Year">1st Year</option>
+              <option value="2nd Year">2nd Year</option>
+              <option value="3rd Year">3rd Year</option>
+              <option value="4th Year">4th Year</option>
+              </select>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Section</label>
+                <select id="sectionSelect" name="SectionId" class="form-select"></select>
+            </div>
+            <hr/>
+            <div class="form-group">
+              <label name="" class="control-label">Academic Year</label>
+              <select id="acadYearSelect" name="AcadYearID" class="form-select"></select>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Semester</label>
+                <select id="semesterSelect" name="Semester" class="form-select">
+                <option value="1st Semester">1st Semester</option>
+                <option value="2nd Semester">2nd Semester</option>
+                <option value="Summer">Summer</option>
+                </select>
+            </div>
+            </form>
+            <hr/>
+      </div>
+       </div>
+      </div>
+      <div class="modal-footer">
+        <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>!-->
+        <button type="button" class="btn btn-primary" id="createEnrollStudent">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>

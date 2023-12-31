@@ -678,6 +678,10 @@ namespace matikApp.Controllers
             return  _context.Courses.Where(e => e.DepartmentId == departmentId).ToList();
         }
 
+        public ActionResult<List<Section>> getSectionSelect(int courseId, string yearLevel){
+            return  _context.Sections.Where(e => e.CourseId == courseId && e.YearLevel == yearLevel).ToList();
+        }
+
         //fetch multiple instructors with matching department id
         public ActionResult<List<Instructor>> getInstructorSelectDep(int departmentId){
             return  _context.Instructors.Where(e => e.DepartmentId == departmentId).ToList();
@@ -1082,6 +1086,47 @@ namespace matikApp.Controllers
             ).ToList();
 
             return Ok(res);
+        }
+
+        public IActionResult checkStudentEnrollment(Studentenrollment asi)
+        {
+
+            bool checkData = false;
+            //if the row has already the existing datas and subject then this will return true
+            var resExistingData = _context.Studentenrollments.Where(
+                element => element.AcadYearId == asi.AcadYearId
+                && element.Semester == asi.Semester
+                && element.SectionId == asi.SectionId
+                && element.StudentId == asi.StudentId
+                ).FirstOrDefault();
+
+            if(resExistingData != null)
+            {
+                checkData = true;
+            }
+
+            return Ok(resExistingData);
+        }
+
+        public IActionResult enrollStudent(Studentenrollment asi)
+        {
+            if(asi != null)
+            {
+                _context.Studentenrollments.Add(asi);
+                _context.SaveChanges();
+            }
+
+            return Ok();
+        }
+
+        public IActionResult deleteEnrollmentStudent(int enrollmentId)
+        {
+            _context.Studentenrollments.Remove(_context.Studentenrollments.Find(enrollmentId));
+            _context.SaveChanges();
+
+            //_context.Database.ExecuteSqlRaw(deletecommand);
+
+            return Ok();
         }
     }
 }
