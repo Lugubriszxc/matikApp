@@ -29,6 +29,7 @@ namespace matikApp.Models
         public virtual DbSet<Room> Rooms { get; set; }
         public virtual DbSet<Roomschedule> Roomschedules { get; set; }
         public virtual DbSet<Section> Sections { get; set; }
+        public virtual DbSet<Studentenrollment> Studentenrollments { get; set; }
         public virtual DbSet<Studentprofile> Studentprofiles { get; set; }
         public virtual DbSet<Subject> Subjects { get; set; }
         public virtual DbSet<Subjecthandled> Subjecthandleds { get; set; }
@@ -381,6 +382,35 @@ namespace matikApp.Models
                     .IsRequired()
                     .HasMaxLength(250)
                     .HasColumnName("yearLevel");
+            });
+
+            modelBuilder.Entity<Studentenrollment>(entity =>
+            {
+                entity.HasKey(e => e.EnrollmentId)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("studentenrollment");
+
+                entity.Property(e => e.EnrollmentId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("enrollmentID");
+
+                entity.Property(e => e.AcadYearId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("acadYearID");
+
+                entity.Property(e => e.SectionId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("sectionID");
+
+                entity.Property(e => e.Semester)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("semester");
+
+                entity.Property(e => e.StudentId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("studentID");
             });
 
             modelBuilder.Entity<Studentprofile>(entity =>

@@ -21,6 +21,8 @@
     @Html.Partial("PartialStudent/StudentTable")
     @Html.Partial("PartialStudent/StudentCreate")
     @Html.Partial("PartialStudent/StudentUpdate")
+    @Html.Partial("PartialStudent/StudentEnrollTable")
+    
 </body>
 </html>
 
@@ -103,7 +105,7 @@
     //to render buttons in action index
     function btnStudent(studentId)
     {
-        return "<center> <a class='btn btn-success studentUpdate' data-studentId=" + studentId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger studentDelete' data-studentId=" + studentId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+        return "<center> <a class='btn btn-primary studentEnroll' data-studentId=" + studentId + " title='Enroll student'><i class='fa-solid fa-graduation-cap'></i></a> | <a class='btn btn-success studentUpdate' data-studentId=" + studentId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger studentDelete' data-studentId=" + studentId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
     }
 
     //to get the list of student list
@@ -183,6 +185,65 @@
             initForm(oFormObject, selectedStudent);
         }
     });
+
+
+    //studentEnroll
+    // This is the action button when clicking the enroll student
+    $("tbody").delegate(".studentEnroll", "click", function(e){
+        var i = e.target.closest("a").getAttribute("data-studentId");
+        if(i != null)
+        {
+            selectedStudentId = i;
+            selectedStudent = studentList.find(element => element.studentId == i);
+
+            $("#modalEnrollStudentTable").modal("toggle");
+
+            //console.log(selectedStudentId);
+            populateEnrollStudentTable();
+        }
+    });
+
+    function populateEnrollStudentTable()
+    {
+        $('#enrollStudentTable').DataTable().destroy();
+        if(!$.fn.DataTable.isDataTable('#enrollStudentTable'))
+        {
+            $('#enrollStudentTable').DataTable({
+                responsive: true,
+                ajax:
+                {
+                    url: '../api/adminapi/getStudentEnrollment',
+                    data:
+                    {
+                        studentID : selectedStudentId,
+                    },
+                    dataSrc: '',
+                },
+                columns:
+                [
+                    {data: 'enrollmentId'},
+                    {data: 'departmentName'},
+                    {data: 'courseName'},
+                    {data: 'yearLevel'},
+                    {data: 'sectionName'},
+                    {data: 'acadYearName'},
+                    {data: 'semester'},
+                    {
+                        data: 'enrollmentId',
+                        render : function (data, type, row)
+                        {
+                            return btnEnroll(data);
+                        }
+                    },
+                ]
+            });
+        }
+    }
+
+    function btnEnroll(enrollId)
+    {
+        return "<center><a class='btn btn-danger enrollStudentDelete' data-rsId=" + enrollId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+    }
 
 
     //to populate the selected element to the form

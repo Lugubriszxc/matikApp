@@ -1052,5 +1052,36 @@ namespace matikApp.Controllers
 
             return Ok();
         }
+
+
+        public IActionResult getStudentEnrollment(int studentID)
+        {
+            var res = 
+            (
+                from studEn in _context.Studentenrollments
+                join sec in _context.Sections on studEn.SectionId equals sec.SectionId
+                join dep in _context.Departments on sec.DepartmentId equals dep.DepartmentId
+                join cor in _context.Courses on sec.CourseId equals cor.CourseId
+                join acad in _context.Acadyears on studEn.AcadYearId equals acad.AcadYearId
+                where studEn.StudentId == studentID
+
+                select new TableStudentEnroll
+                {
+                    EnrollmentId = studEn.EnrollmentId,
+                    StudentId = studEn.StudentId,
+                    SectionId = sec.SectionId,
+                    AcadYearId = acad.AcadYearId,
+                    Semester = studEn.Semester,
+                    DepartmentName = dep.DepartmentName,
+                    CourseName = cor.CourseName,
+                    SectionName = sec.SectionName,
+                    YearLevel = sec.YearLevel,
+                    AcadYearName = acad.AcadYearName
+                }
+
+            ).ToList();
+
+            return Ok(res);
+        }
     }
 }
