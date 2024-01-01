@@ -670,7 +670,7 @@ namespace matikApp.Controllers
             catch
             {
                 return Ok("Entity not found.");
-            }            
+            }
         }
 
         //fetch multiple courses with matching department id
@@ -678,8 +678,34 @@ namespace matikApp.Controllers
             return  _context.Courses.Where(e => e.DepartmentId == departmentId).ToList();
         }
 
-        public ActionResult<List<Section>> getSectionSelect(int courseId, string yearLevel){
-            return  _context.Sections.Where(e => e.CourseId == courseId && e.YearLevel == yearLevel).ToList();
+        public IActionResult getSectionSelect(int courseId, string yearLevel, int acadVal, string semVal){
+
+            try
+            {
+                var res = 
+                    (
+                    from regis in _context.Regissections
+                    join sec in _context.Sections on regis.SectionId equals sec.SectionId
+                    where regis.AcadYearId == acadVal && regis.Semester == semVal && sec.CourseId == courseId && sec.YearLevel == yearLevel
+                    
+                    select new SecRegisPopulate
+                    {
+                        SectionId = sec.SectionId,
+                        SectionName = sec.SectionName,
+                        YearLevel = sec.YearLevel,
+                        DepartmentId = sec.DepartmentId,
+                        CourseId = sec.CourseId,                    
+                    }
+
+                ).ToList();
+
+                return Ok(res);
+            }
+            catch
+            {
+                return Ok("Entity not found.");
+            }
+            //return  _context.Sections.Where(e => e.CourseId == courseId && e.YearLevel == yearLevel).ToList();
         }
 
         //fetch multiple instructors with matching department id
@@ -1123,8 +1149,6 @@ namespace matikApp.Controllers
         {
             _context.Studentenrollments.Remove(_context.Studentenrollments.Find(enrollmentId));
             _context.SaveChanges();
-
-            //_context.Database.ExecuteSqlRaw(deletecommand);
 
             return Ok();
         }

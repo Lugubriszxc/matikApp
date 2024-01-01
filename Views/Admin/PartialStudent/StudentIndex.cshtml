@@ -34,6 +34,10 @@
     var selectedCourse;
     var selectedEnrollmentId;
 
+    var selectedAcad;
+    var selectedSem;
+    var selectedYear;
+
     $(document).ready(function(){
 
     var storedUserAuth = sessionStorage.getItem('userauth');
@@ -420,11 +424,60 @@
     $("#yearLevelPicker").change(function(){
         const actionSelect = document.getElementById("yearLevelPicker");
         const selectedIndex = actionSelect.selectedIndex;
-        const selectedValue = actionSelect.options[selectedIndex].value;
+        selectedYear = actionSelect.options[selectedIndex].value;
 
-        populateSectionSelect(selectedCourse, selectedValue);
+        if(selectedAcad == undefined)
+            selectedAcad = null;
+
+        if(selectedSem == undefined)
+            selectedSem = null;
+
+        if(selectedAcad != null && selectedSem != null && selectedYear != null)
+        {
+            populateSectionSelect(selectedCourse, selectedYear, selectedAcad, selectedSem);
+        }
+
         checkSelectInputs();
     });
+
+    $("#acadYearSelect").change(function(){
+        const actionSelect = document.getElementById("acadYearSelect");
+        const selectedIndex = actionSelect.selectedIndex;
+        selectedAcad = actionSelect.options[selectedIndex].value;
+
+        if(selectedSem == undefined)
+            selectedSem = null;
+
+        if(selectedYear == undefined)
+            selectedYear = null;
+        
+        if(selectedAcad != null && selectedSem != null && selectedYear != null)
+        {
+            populateSectionSelect(selectedCourse, selectedYear, selectedAcad, selectedSem);
+        }
+
+        checkSelectInputs();
+    });
+
+    $("#semesterSelect").change(function(){
+        const actionSelect = document.getElementById("semesterSelect");
+        const selectedIndex = actionSelect.selectedIndex;
+        selectedSem = actionSelect.options[selectedIndex].value;
+
+        if(selectedAcad == undefined)
+            selectedAcad = null;
+
+        if(selectedYear == undefined)
+            selectedYear = null;
+
+        if(selectedAcad != null && selectedSem != null && selectedYear != null)
+        {
+            populateSectionSelect(selectedCourse, selectedYear, selectedAcad, selectedSem);
+        }
+
+        checkSelectInputs();
+    });
+
 
     function populateCourseSelect(selectedDepartmentId)
     {
@@ -466,7 +519,7 @@
             })
     }
 
-    function populateSectionSelect(selectedCourseId, selectedYear)
+    function populateSectionSelect(selectedCourseId, selectedYear, selectedAcad, selectedSem)
     {
         $("#sectionSelect").val([]);
             const actionSelect = document.getElementById("sectionSelect");
@@ -484,7 +537,10 @@
                 {
                     courseId : selectedCourseId,
                     yearLevel : selectedYear,
+                    acadVal : selectedAcad,
+                    semVal : selectedSem,
                 },
+
             }).done(function(result){
                 //template sections
                 var template = document.querySelector("template#sectionOptionTemplate");
@@ -514,8 +570,9 @@
         const courseSel = document.getElementById('courseSelect');
         const yearLevelSelect = document.getElementById('yearLevelPicker')
         const subjectSelect = document.getElementById('subjectSelect')
-        const semesterSelect = document.getElementById('semesterSelect')
         const sectionSelect = document.getElementById('sectionSelect')
+        const acadSelect = document.getElementById('acadYearSelect')
+        const semesterSelect = document.getElementById('semesterSelect')
 
         const subjectSelectUpdate = document.getElementById('subjectSelectUpdate')
         //department condition
@@ -542,7 +599,7 @@
         }
 
         //section select
-        if(yearLevelSelect.selectedIndex !== -1)
+        if(yearLevelSelect.selectedIndex !== -1 && acadSelect.selectedIndex !== -1 && semesterSelect.selectedIndex !== -1)
         {
             sectionSelect.disabled = false;
         }
