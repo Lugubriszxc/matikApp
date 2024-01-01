@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Load</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <template id="academicYearTemplate">
+        <option value=""></option>
+    </template>
+
+    <center><h3>Student Load</h3></center>
+    <br>
+    <div class="dropDownMenu row">
+        <div class="col-md-3 dpAcad">
+            <label class="control-label col-md-3">Academic</label>
+            <select id="acadYearSelect" name="AcadYearID" class="form-select w-75"></select>
+        </div>
+        <div class="col-md-3 dpSem">
+            <label class="control-label col-md-3">Semester</label>
+            <select id="semesterSelect" name="Semester" class="form-select w-75">
+                <option value="1st Semester">1st Semester</option>
+                <option value="2nd Semester">2nd Semester</option>
+                <option value="Summer">Summer</option>
+            </select>
+        </div>
+    </div>
+
+    <table id="scheduleTable">
+        <thead>
+            <tr>
+                @* <th>Section</th> *@
+                <th>Subject</th>
+                <th>Unit</th>
+                <th>Day</th>
+                <th>Time</th>
+                <th>Room</th>
+            </tr>
+        </thead>
+        <tbody id="scheduleBody">
+            <!-- Table body will be populated dynamically using JavaScript -->
+        </tbody>
+        <!-- To display if there is no teaching load data -->
+        <div id="mynewDiv">
+            
+        </div>
+    </table>
+</body>
+</html>
+
+<style>
+    .dpSem
+    {
+        right: 75px;
+    }
+</style>

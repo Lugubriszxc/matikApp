@@ -45,11 +45,10 @@
     <!-- THIS IS FOR THE CONTENT OF THE PAGE-->
     <center><h1></h1></center>
 
+    @Html.Partial("PageStudentUpdate")
     @Html.Partial("StudentChangePass")
+    @Html.Partial("PageStudentTable")
 
-    @* @Html.Partial("PageInstructorUpdate")
-    @Html.Partial("InstructorChangePass")
-    @Html.Partial("PageInstructorTable") *@
     <div id="contentContainer">
         <!-- Existing content or future dynamic content goes here -->
     </div>
@@ -93,6 +92,7 @@
 </style>
 
 <script>
+    var studentLoad = {}; // this will hold all of the study loads of the student
     $(document).ready(function(){
 
         var storedUserAuth = sessionStorage.getItem('userauth');
@@ -205,12 +205,126 @@
 
 
         //UPDATE STUDENT
-        @* $(".btnUpdate").click((e) => {
+        $(".btnUpdate").click((e) => {
             $("#modalStudentUpdate").modal("toggle");
 
             oFormObject = document.forms["updateStudentForm"];
             initForm(oFormObject, selectedStudent);
-        }); *@
+        });
+
+         //to populate the selected element to the form
+        function initForm(form, data){
+            Object.getOwnPropertyNames(data).forEach(function(item){
+            var currentElem = form.elements[item.charAt(0).toUpperCase() + item.slice(1)];
+            //console.log(currentElem);
+
+            if( currentElem == null ){return;}
+
+            if(currentElem.tagName == "SELECT"){
+                var selectChildren = Array.from(currentElem.children);
+                var matchedOpt = selectChildren.find(opt => opt.value == selectedStudent.departmentId);
+            if(matchedOpt){
+                matchedOpt.selected = true;
+            }
+            }else{
+                form.elements[item.charAt(0).toUpperCase() + item.slice(1)].setAttribute("value",data[item]); 
+            }
+            });
+        }
+
+        //after clicking update
+        $("#updateStudent").click(function(){
+            alertSaveChanges();
+        });
+
+        function proceedUpdate()
+        {
+            var arrData = {};
+
+            //count the number of elements inside  the form
+            var formelements = $("#updateStudentForm .form-group");
+
+            //getting the data from the form
+            var formInputs = $("#updateStudentForm").serializeArray();
+            formInputs.forEach(function(item){
+                arrData[item.name] = item.value;
+            });
+
+            arrData.studentId = selectedStudent.studentId;
+
+            let emptyEl = new Boolean(false);
+            //alternative of bool
+            if(formInputs[0].value === '' || formInputs[2].value === '')
+            {
+                //if the firstname or lastname are empty then return true or 0
+                emptyEl = Boolean(true);
+            }
+            else{
+                //if the firstname and lastname are not empty then return false or 1
+                emptyEl = Boolean(false);
+            }
+
+            //if all elements are not empty
+            if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
+            {
+                //Call API to add Student
+                $.ajax({
+                    url: "../api/adminapi/updateStudent",
+                    type: "POST",
+                    data:
+                    {
+                        stud : arrData,
+                    },
+                })
+                .done(function(result){
+                    if(result === undefined || result === "" || result === null)
+                    {
+                        $("#updateStudentForm")[0].reset();
+                        $("#modalStudentUpdate").modal("toggle");
+                        alertSuccess();
+                        loadStudentDetail();
+                    }
+                    else
+                    {
+                        alertError("This student is already created");
+                    }
+                });
+            }
+            else   
+            {
+                alertError("Input the necessary elements!");
+            }
+        }
+
+
+        function loadStudentScheduleData()
+        {
+            //LOAD THE STUDENT'S STUDY LOAD
+            $.ajax({
+            url: "../api/pagestudentapi/loadStudentScheduleData",
+            type: "POST",
+            data:
+            {
+                studentId : userAuth.id,
+            },
+            }).done(function(result){
+                
+                if(result.length > 0)
+                {
+                    studentLoad = result;
+                    console.log(studentLoad);
+                    @* selectedInstructor = result;
+                    //console.log(result.instructorFname);
+                    $('.instructorName').text(result.instructorFname + " " + result.instructorLname); *@
+                }
+                else
+                {
+                    console.log("empty");
+                }
+                loadList();
+                //populateTable();
+            })
+        }
 
 
         $("#btnSignout").click((e) =>{
@@ -255,6 +369,19 @@
         }
 
 
+        //display update confirmation
+        function alertSaveChanges()
+        {
+            Swal.fire({
+                title: 'Do you want to save the changes?',
+                showCancelButton: true,
+                confirmButtonText: 'Save',
+            }).then((result) => {
+                if(result.isConfirmed){
+                    proceedUpdate();
+                }
+            })
+        }
 
         function confirmLogout()
         {
