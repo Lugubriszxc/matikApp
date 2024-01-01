@@ -120,9 +120,16 @@
         var Timeslots = {};
         var AcadYears = {};
 
+        var acadVal = 0;
+        var semVal = "";
+
+        //this to display in the select as only once.
+        var displaySelect = false;
+
         loadStudentDetail();
         //loadList();
         loadStudentScheduleData();
+        populateAcademicYear();
 
         var selectedStudent;
 
@@ -328,6 +335,29 @@
             })
         }
 
+        //populate the academic year select options
+        function populateAcademicYear()
+        {
+            $.ajax("../api/adminapi/getAcademicYear")
+            .done(function(result){
+            var template = document.querySelector("template#academicYearTemplate");
+            var parent = document.querySelectorAll("#acadYearSelect");
+            
+            for(i = 0; i < parent.length; i++){
+            result.forEach(function (item){
+                var cloned = template.content.cloneNode(true);
+                cloned.querySelector("option").value = item.acadYearId;
+                cloned.querySelector("option").innerText = item.acadYearName;
+
+                parent[i].prepend(cloned);
+            });
+            }
+
+            //to deselect a selected option
+            $("select").val([]);
+            });
+        }
+
 
         //function to populate the table
         function populateTable()
@@ -363,23 +393,19 @@
                 });
 
                 //if the display is empty
-                @* if(displaySelect == false)
+                if(displaySelect == false)
                 {
-                    if(holderInstructorTeachingLoad.length > 0)
+                    if(holderStudentLoad.length > 0)
                     {
-                        var lastValue = holderInstructorTeachingLoad[holderInstructorTeachingLoad.length - 1];
+                        var lastValue = holderStudentLoad[holderStudentLoad.length - 1];
                         //$("#acadYearSelect").val(lastValue.acadYearId).change();
                         $("#acadYearSelect").val(lastValue.acadYearId).prop('selected', true);
                         $("#semesterSelect").val(lastValue.semester).prop('selected', true);
-                        //$("#semesterSelect").val(lastValue.semester).change();
-
-                        // Now, 'lastValue' contains the last element of the array
-                        //console.log('Last Value:', lastValue);
 
                         displaySelect = true;
 
                         //To filter only the value that matches with the select options 
-                        holderInstructorTeachingLoad = instructorTeachingLoad.filter(function (item) {
+                        holderStudentLoad = studentLoad.filter(function (item) {
                             return item.acadYearId == lastValue.acadYearId && item.semester === lastValue.semester;
                         });
                         
@@ -390,12 +416,23 @@
                 if(acadVal !== 0 && semVal !== "")
                 {
                     //To refresh the value inside the holder instructor teaching load
-                    holderInstructorTeachingLoad = instructorTeachingLoad;
-                } *@
+                    holderStudentLoad = studentLoad;
+                } 
 
-                if(studentLoad.length > 0)
+                //Sort by academic year and semester
+                if(acadVal !== 0 && semVal !== "")
                 {
-                    studentLoad.forEach(function (teachingLoad) {
+                    holderStudentLoad = studentLoad.filter(function (item) {
+                        return item.acadYearId == acadVal && item.semester === semVal;
+                    });
+
+                    @* console.log("hello");
+                    console.log(holderInstructorTeachingLoad); *@
+                }
+
+                if(holderStudentLoad.length > 0)
+                {
+                    holderStudentLoad.forEach(function (teachingLoad) {
                         //This is to convert the data of instructor teaching load to a displayable value
 
                         if(Subjects.length > 0)
@@ -425,7 +462,7 @@
                 }
 
 
-                if(studentLoad.length > 0)
+                if(holderStudentLoad.length > 0)
                 {
                     // Get the tbody element where you want to append rows
                     var tbody = document.getElementById("scheduleBody");
@@ -649,6 +686,32 @@
             cell.textContent = value;
             return cell;
         }
+
+        // Academic Year dropdown change event
+        $('#acadYearSelect').change(function () {
+            var selectedAcad = $(this).val();
+            var selectedSem = $('#semesterSelect').val();
+
+            if(selectedAcad !== null && selectedSem !== null)
+            {
+                acadVal = selectedAcad;
+                semVal = selectedSem;
+                loadList();
+            }
+        });
+
+        // Semester dropdown change event
+        $('#semesterSelect').change(function () {
+            var selectedSem = $(this).val();
+            var selectedAcad = $('#acadYearSelect').val();
+
+            if(selectedAcad !== null && selectedSem !== null)
+            {
+                acadVal = selectedAcad;
+                semVal = selectedSem;
+                loadList();
+            }
+        });
 
 
         $("#btnSignout").click((e) =>{

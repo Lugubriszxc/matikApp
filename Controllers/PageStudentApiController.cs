@@ -29,12 +29,21 @@ namespace matikApp.Controllers
 
             //Get the student's information (section ID) in the enrollment
 
-            var resEnroll = _context.Studentenrollments.Where(e => e.StudentId == studentId).FirstOrDefault();
+            var resEnroll = _context.Studentenrollments.Where(e => e.StudentId == studentId).ToList();
 
-            if(resEnroll != null)
+            if(resEnroll != null && resEnroll.Any())
             {
-                //Get the room schedule according to sectionID
-                var resRoomSchedule = _context.Roomschedules.Where(rs => rs.SectionId == resEnroll.SectionId).ToList();
+                // Get the tuples of (SectionId, AcadYearId, Semester)
+                var enrollmentDetails = resEnroll
+                    .Select(enr => (enr.SectionId, enr.AcadYearId, enr.Semester))
+                    .ToList();
+
+                var resRoomSchedule = _context.Roomschedules
+                .AsEnumerable()
+                .Where(rs => enrollmentDetails
+                    .Any(enr => enr.SectionId == rs.SectionId && enr.AcadYearId == rs.AcadYearId && enr.Semester == rs.Semester))
+                .ToList();
+                
                 return Ok(resRoomSchedule);
             }
             else
