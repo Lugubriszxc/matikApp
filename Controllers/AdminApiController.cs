@@ -371,7 +371,9 @@ namespace matikApp.Controllers
             var res = _context.Unavailableperiods.Where(e => e.InstructorId == instructorId).ToList();
             var res2 = _context.Instructorunitloads.Where(e => e.InstructorId == instructorId).ToList();
             var res3 = _context.Subjecthandleds.Where(e => e.InstructorId == instructorId).ToList();
+            var resAuth = _context.Authorizations.Where(e => e.Id == instructorId && e.UserType == "instructor").FirstOrDefault();
 
+            _context.Authorizations.Remove(resAuth);
             _context.Unavailableperiods.RemoveRange(res);
             _context.Instructorunitloads.RemoveRange(res2);
             _context.Subjecthandleds.RemoveRange(res3);
@@ -764,6 +766,12 @@ namespace matikApp.Controllers
         //query to delete an section
         public IActionResult deleteSection(int sectionId)
         {
+            //delete the connected value of section id
+            var resStudEnroll = _context.Studentenrollments.Where(e => e.SectionId == sectionId).ToList();
+            var resRegisSection = _context.Regissections.Where(e => e.SectionId == sectionId).ToList();
+
+            _context.Studentenrollments.RemoveRange(resStudEnroll);
+            _context.Regissections.RemoveRange(resRegisSection);
             _context.Sections.Remove(_context.Sections.Find(sectionId));
             _context.SaveChanges();
             return Ok();
@@ -1157,6 +1165,18 @@ namespace matikApp.Controllers
             var res = _context.Studentenrollments.Where(element => element.StudentId == studentId).ToList();
             var res2 = _context.Authorizations.Where(element => element.Id == studentId && element.UserType == "student").FirstOrDefault();
 
+            //before removing, deduct the total number of students from the enrolled sections first
+            foreach(var val in res)
+            {
+                //get the needed value to update the number of students
+                var deductStudent = _context.Regissections.Where(e => e.SectionId == val.SectionId && e.AcadYearId == val.AcadYearId && e.Semester == val.Semester).FirstOrDefault();
+                if(deductStudent != null)
+                {
+                    deductStudent.TotalStudents -= 1;
+                    _context.Regissections.Update(deductStudent);
+                }
+            }
+
             _context.Authorizations.Remove(res2);
             _context.Studentenrollments.RemoveRange(res);
             //_context.Studentenrollments.Remove(_context.Studentenrollments.Find(studentId));
@@ -1222,6 +1242,12 @@ namespace matikApp.Controllers
             if(asi != null)
             {
                 _context.Studentenrollments.Add(asi);
+
+                //after adding it you must increment the total students of the enrolled section.
+                var res = _context.Regissections.Where(e => e.SectionId == asi.SectionId && e.AcadYearId == asi.AcadYearId && e.Semester == asi.Semester).FirstOrDefault();
+                res.TotalStudents += 1;
+
+                _context.Regissections.Update(res);
                 _context.SaveChanges();
             }
 
@@ -1230,10 +1256,41 @@ namespace matikApp.Controllers
 
         public IActionResult deleteEnrollmentStudent(int enrollmentId)
         {
+
+            //Before removing the student enrollment,
+            //get the necessary value first to deduct the total number of students of enrolled section
+
+            var res = _context.Studentenrollments.Where(e => e.EnrollmentId == enrollmentId).FirstOrDefault();
+            
+            //after that, update the total number of students
+            var deductStudent = _context.Regissections.Where(e => e.SectionId == res.SectionId && e.AcadYearId == res.AcadYearId && e.Semester == res.Semester).FirstOrDefault();
+            if(deductStudent != null)
+            {
+                deductStudent.TotalStudents -= 1;
+                _context.Regissections.Update(deductStudent);
+            }
+
             _context.Studentenrollments.Remove(_context.Studentenrollments.Find(enrollmentId));
+
+            //var res = _context.Regissections.Where(e => e.SectionId == asi.SectionId && e.AcadYearId == asi.AcadYearId && e.Semester == asi.Semester).FirstOrDefault();
+            //res.TotalStudents += 1;
+
             _context.SaveChanges();
 
             return Ok();
         }
+
+        // public IActionResult updateTotalStudents()
+        // {
+        //     var res = _context.Regissections.ToList();
+        //     foreach(var reg in res)
+        //     {
+        //         reg.TotalStudents = 0;
+        //         _context.Regissections.Update(reg);
+        //         _context.SaveChanges();
+        //     }
+
+        //     return Ok();
+        // }
     }
 }

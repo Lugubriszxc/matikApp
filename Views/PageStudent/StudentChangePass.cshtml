@@ -1,0 +1,37 @@
+<div class="modal fade" id="modalChangePass" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-white text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Change password</h5>
+        <button type="button" id="modalChangePassClose" class="btn-close btn-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body changePass d-flex justify-content-center">
+       <div>
+            <div class="cardInfo" style="width: 25rem;">
+            <h4><div class="info-title" id="info-title">
+            </div></h4>
+            <strong><div class="info-Stocks"></div></strong>
+            <hr/>
+            <form id="passChangeForm">
+            <div class="form-group">
+                <input type="password" name="" id="inputCurrentPass" class="form-control" placeholder="Current password" required/>
+            </div>
+            <hr/>
+            <div class="form-group">
+                <input type="password" name="" id="inputNewPass" class="form-control" placeholder="New password" required/>
+            </div>
+            <div class="form-group">
+                <input type="password" name="" id="inputConfirmPass" class="form-control" placeholder="Confirm password" required/>
+            </div>
+            </form>
+            <hr/>
+      </div>
+       </div>
+      </div>
+      <div class="modal-footer">
+        <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>!-->
+        <button type="button" class="btn btn-primary" id="passChange">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>

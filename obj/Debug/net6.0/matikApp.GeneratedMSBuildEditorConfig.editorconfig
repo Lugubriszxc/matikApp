@@ -323,6 +323,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZVN0dWRlbnRcUGFnZVN0dWRlbnRJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/PageStudent/PageStudentUpdate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZVN0dWRlbnRcUGFnZVN0dWRlbnRVcGRhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/PageStudent/StudentChangePass.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZVN0dWRlbnRcU3R1ZGVudENoYW5nZVBhc3MuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [c:/Users/Neil Chris/Desktop/for capstone/matikApp/Views/PartialHome/HomeIndex.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFydGlhbEhvbWVcSG9tZUluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
