@@ -31,10 +31,16 @@ namespace matikApp.Controllers
 
             var resEnroll = _context.Studentenrollments.Where(e => e.StudentId == studentId).FirstOrDefault();
 
-            //Get the room schedule according to sectionID
-            var resRoomSchedule = _context.Roomschedules.Where(rs => rs.SectionId == resEnroll.SectionId).ToList();
-
-            return Ok(resRoomSchedule);
+            if(resEnroll != null)
+            {
+                //Get the room schedule according to sectionID
+                var resRoomSchedule = _context.Roomschedules.Where(rs => rs.SectionId == resEnroll.SectionId).ToList();
+                return Ok(resRoomSchedule);
+            }
+            else
+            {
+                return Ok();
+            }
         }
     }
 }
