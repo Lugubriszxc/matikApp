@@ -53,6 +53,10 @@
         {
             window.location.href = "/PageInstructor/PageInstructorIndex";
         }
+        else if(userAuth.userType === 'student')
+        {
+            window.location.href = "/PageStudent/PageStudentIndex";
+        }
     }
 
     populateStudentTable();
@@ -165,12 +169,23 @@
                     stud : arrData,
                 },
             })
-            .done(function(){
-                $("#createStudentForm")[0].reset();
-                $("#modalStudentCreate").modal("toggle");
-                alertSuccess();
-                populateStudentTable();
+            .done(function(result){
+
+                //console.log(result);
+                if(result === undefined || result === "" || result === null)
+                {
+                    $("#createStudentForm")[0].reset();
+                    $("#modalStudentCreate").modal("toggle");
+                    alertSuccess();
+                    populateStudentTable();
+                }
+                else
+                {
+                    alertError("This student is already created");
+                }
             });
+
+
         }
         else   
         {
@@ -239,7 +254,7 @@
                 }
                 else
                 {
-                    alertError("There is an already existing data!");
+                    alertError("The student is already enrolled for the selected academic year and semester");
                 }
             });
         }
@@ -677,11 +692,18 @@
                     stud : arrData,
                 },
             })
-            .done(function(){
-                $("#updateStudentForm")[0].reset();
-                $("#modalStudentUpdate").modal("toggle");
-                alertSuccess();
-                populateStudentTable();
+            .done(function(result){
+                if(result === undefined || result === "" || result === null)
+                {
+                    $("#updateStudentForm")[0].reset();
+                    $("#modalStudentUpdate").modal("toggle");
+                    alertSuccess();
+                    populateStudentTable();
+                }
+                else
+                {
+                    alertError("This student is already created");
+                }
             });
         }
         else   

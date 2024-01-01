@@ -1,0 +1,27 @@
+<h1>Student Page</h1>
+
+<script>
+    $(document).ready(function(){
+        
+        var storedUserAuth = sessionStorage.getItem('userauth');
+        var userAuth = JSON.parse(storedUserAuth);
+
+		if(userAuth === null)
+        {
+            window.location.href = "/Authorization/SigninStudent";
+        }
+        else if(userAuth.userType !== 'student')
+        {
+            if(userAuth.userType === 'admin')
+            {
+                window.location.href = "/Home/Index";
+            }
+            else if(userAuth.userType === 'instructor')
+            {
+                window.location.href = "/PageInstructor/PageInstructorIndex";
+            }
+        }
+
+        //end of document.ready
+    });
+</script>

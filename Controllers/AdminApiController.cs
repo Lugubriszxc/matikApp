@@ -7,6 +7,7 @@ using matikApp.Models;
 using matikApp.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using System.Reflection.Metadata;
+using Microsoft.EntityFrameworkCore;
 
 namespace matikApp.Controllers
 {
@@ -338,10 +339,43 @@ namespace matikApp.Controllers
             return Ok();
         }
 
+        public IActionResult makeDynamicAccountStudent()
+        {
+            var student = _context.Studentprofiles.ToList();
+            foreach(var stud in student)
+            {
+                var checkRes = _context.Authorizations.Where(cs => cs.UserType == "student" && cs.Id == stud.StudentId).FirstOrDefault();
+                if(checkRes == null)
+                {
+                    //if it's empty result, then free to add the account
+                    var auth = new Authorization
+                    {
+                        Username = stud.SchoolId.ToString(),
+                        Password = stud.SchoolId.ToString(),
+                        UserType = "student",
+                        Id = stud.StudentId,
+                    };
+
+                    _context.Authorizations.Add(auth);
+                    _context.SaveChanges();
+                }
+            }
+            return Ok();
+        }
+
         //query to delete the selected instructor
         public IActionResult deleteInstructor(int instructorId)
         {
             _context.Instructors.Remove(_context.Instructors.Find(instructorId));
+
+            var res = _context.Unavailableperiods.Where(e => e.InstructorId == instructorId).ToList();
+            var res2 = _context.Instructorunitloads.Where(e => e.InstructorId == instructorId).ToList();
+            var res3 = _context.Subjecthandleds.Where(e => e.InstructorId == instructorId).ToList();
+
+            _context.Unavailableperiods.RemoveRange(res);
+            _context.Instructorunitloads.RemoveRange(res2);
+            _context.Subjecthandleds.RemoveRange(res3);
+
             _context.SaveChanges();
 
             //_context.Database.ExecuteSqlRaw(deletecommand);
@@ -1050,32 +1084,82 @@ namespace matikApp.Controllers
         //query to create a student
         public IActionResult createStudent(Studentprofile stud)
         {
-            if(stud.StudentMname == null)
-            {
-                stud.StudentMname = "";
-            }
-            _context.Studentprofiles.Add(stud);
-            _context.SaveChanges();
 
-            return Ok();
+            //Check the data first if it has already an existing data
+            var checkRes = _context.Studentprofiles.Where(rs => rs.SchoolId == stud.SchoolId).FirstOrDefault();
+
+            if(checkRes == null)
+            {
+                if(stud.StudentMname == null)
+                {
+                    stud.StudentMname = "";
+                }
+                _context.Studentprofiles.Add(stud);
+                _context.SaveChanges();
+                makeDynamicAccountStudent();
+
+                return Ok();
+            }
+            else
+            {
+                return Ok(checkRes);
+            }
         }
 
         //query to update the student
         public IActionResult updateStudent(Studentprofile stud)
         {
-            if(stud.StudentMname == null)
+            var checkRes = _context.Studentprofiles.Where(rs => rs.SchoolId == stud.SchoolId).AsNoTracking().FirstOrDefault();
+
+            if(checkRes == null)
             {
-                stud.StudentMname = "";
+                if(stud.StudentMname == null)
+                {
+                    stud.StudentMname = "";
+                }
+                _context.Studentprofiles.Update(stud);
+                _context.SaveChanges();
+
+                return Ok();
             }
-            _context.Studentprofiles.Update(stud);
-            _context.SaveChanges();
-            return Ok();
+            else
+            {
+                //But if the reason is because it's the same student id // same student then validate
+                // var checkRes2 = _context.Studentprofiles.Where(rs2 => rs2.SchoolId == stud.SchoolId && rs2.StudentId == stud.StudentId).FirstOrDefault();
+
+                //detach
+                //_context.Studentprofiles.State = EntityState.Detached;
+                var studIdHolder = stud.StudentId;
+                if(checkRes.StudentId == studIdHolder)
+                {
+                    //Then if it's not null then proceed to update. If the value is null however, return as duplicated school id
+                    if(stud.StudentMname == null)
+                    {
+                        stud.StudentMname = "";
+                    }
+                    _context.Studentprofiles.Update(stud);
+                    _context.SaveChanges();
+
+                    return Ok();
+                }
+                else
+                {
+                    return Ok(checkRes);
+                }
+            }
         }
 
         //query to delete the selected student
         public IActionResult deleteStudent(int studentId)
         {
             _context.Studentprofiles.Remove(_context.Studentprofiles.Find(studentId));
+
+            var res = _context.Studentenrollments.Where(element => element.StudentId == studentId).ToList();
+            var res2 = _context.Authorizations.Where(element => element.Id == studentId && element.UserType == "student").FirstOrDefault();
+
+            _context.Authorizations.Remove(res2);
+            _context.Studentenrollments.RemoveRange(res);
+            //_context.Studentenrollments.Remove(_context.Studentenrollments.Find(studentId));
             _context.SaveChanges();
 
             //_context.Database.ExecuteSqlRaw(deletecommand);
@@ -1118,11 +1202,10 @@ namespace matikApp.Controllers
         {
 
             bool checkData = false;
-            //if the row has already the existing datas and subject then this will return true
+            //if the row has already the existing datas then this will return true
             var resExistingData = _context.Studentenrollments.Where(
                 element => element.AcadYearId == asi.AcadYearId
                 && element.Semester == asi.Semester
-                && element.SectionId == asi.SectionId
                 && element.StudentId == asi.StudentId
                 ).FirstOrDefault();
 
