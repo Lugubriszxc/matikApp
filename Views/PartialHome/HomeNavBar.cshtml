@@ -4,12 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Bootstrap Navbar Example</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap">
+
 </head>
 <body class="homeNav bg-dark text-dark">
 <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="cons container-fluid" style="background-color: maroon;">
-                <a class="navbar-brand text-warning" asp-area="" asp-controller="PartialHome" asp-action="HomeIndex">MATIK : Online College Scheduling</a>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light  border-bottom box-shadow mb-3" style="background-color: #640d14;" id="nav">
+            <div class="cons container-fluid" >
+                <a class="navbar-brand text-warning" asp-area="" asp-controller="PartialHome" asp-action="HomeIndex" id="txt-header">MATIK : Online College Scheduling</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -17,12 +20,11 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <div class="btn-group ms-auto">
-                            <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                            <button id="btn" type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                                 Login
                             </button>
-                            <div class="position-relative">
-                            </div>
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+                           
+                            <ul class="dropdown-menu dropdown-menu-lg-start" id="ul-drop">
                                 <li class="dropdown-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Authorization" asp-action="Signin">Admin</a>
                                 </li>
@@ -47,5 +49,31 @@
 </html>
 
 <style>
+    
+
+    header{
+        margin-top: 10px;
+        margin-bottom: -18px;
+    }
+     
+   #btn{
+    width: 150px;
+    font-size: 20px;
+   font-weight: bold;
+  
+    color: rgb(83, 79, 79);
+
+   }
+    #txt-header{
+        margin-top: 7px;
+        font-weight: bold;
+        font-size: 30px;
+    }
+
+    @* #nav{
+        padding-bottom: 10px;
+    } *@
+
+    
     
 </style>

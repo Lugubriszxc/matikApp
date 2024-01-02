@@ -1,41 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     @Html.Partial("HomeNavBar")
-    <center><h1>Cebu Roosevelt Memorial Colleges</h1></center>
+
+
+    <div class="slider-container">
+        <h1 id="crmcTxt">Cebu Roosevelt Memorial Colleges</h1>
+        <div class="slider">
+            <!-- Add your background images as separate slides -->
+            <div class="slide"></div>
+            <div class="slide"></div>
+             <div class="slide"></div>
+            <!-- Add more slides as needed -->
+        </div>
+        <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
+        <button class="next" onclick="changeSlide(1)">&#10095;</button>
+    </div>
+
+
+
 </body>
+
 </html>
 
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
 
         margin();
 
-        function margin(){
+        function margin() {
             $(".page-content").removeClass();
-            $(".container-fluid.shared").removeClass();
-            @* $(".bods").removeClass(); *@
+            $(".page-fluid").removeClass();
+    @* $(".bods").removeClass(); *@
         }
     });
 </script>
 
+
 <style>
-    .navbar.shared{
+    @*#crmcTxt{padding-top:250px;text-align:center;}*@.navbar.shared {
         display: none;
     }
 
-    .bods
-    {
+    .bods {
         color: white;
         background-color: white;
     }
-    @* body
-    {
-        background-color: white;
-    } *@
 </style>
+
+<style>
+
+.slide:nth-child(1) {
+     background: 
+        linear-gradient(to right, rgb(0 0 0 / 0.5), rgb(0 0 0 / 0)),
+        url('../../image/crmcImg1.jpg');
+}
+
+.slide:nth-child(2) {
+    background: 
+        linear-gradient(to right, rgb(0 0 0 / 0.5), rgb(0 0 0 / 0)),
+        url('../../image/crmcImg2.jpg');
+    
+}
+
+.slide:nth-child(3) {
+
+    background: 
+        linear-gradient(to right, rgb(0 0 0 / 0.5), rgb(0 0 0 / 0)),
+        url('../../image/crmcImg3.jpg');
+
+
+}
+   
+   
+    .slider-container {
+        position: relative;
+        width: 100%;
+        height: 625px;
+        /* Set the height of your slider container */
+        overflow: hidden;
+    }
+
+    #crmcTxt {
+        position: absolute;
+        top: 50%;
+        left: 650px;
+        transform: translate(-50%, -50%);
+        color: white;
+        /* Set the text color */
+        z-index: 2;
+    }
+
+    .slider {
+        display: flex;
+        transition: transform 1.5s ease-in-out;
+    }
+
+    .slide {
+     min-width: 100vw; /* Full width of the viewport */
+      height: 100vh; /* Full height of the viewport */
+      background-size: cover;
+      background-position: center;
+    }
+   
+
+    .prev,
+    .next {
+        position: absolute;
+        top: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        color: white;
+        background: rgba(0, 0, 0, 0.5);
+        border: none;
+        cursor: pointer;
+        z-index: 3;
+    }
+
+    .prev {
+        left: 0;
+    }
+
+    .next {
+        right: 0;
+    }
+</style>
+
+<script>
+
+    let currentSlide = 0;
+  const totalSlides = document.querySelectorAll('.slide').length;
+
+  function changeSlide(direction) {
+    currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+    updateSlider();
+  }
+
+  function updateSlider() {
+    const slider = document.querySelector('.slider');
+    const newTransformValue = -currentSlide * 100 + '%';
+    slider.style.transform = 'translateX(' + newTransformValue + ')';
+  }
+
+  // Automatic slide change every 5 seconds (adjust as needed)
+  setInterval(function() {
+    changeSlide(1);
+  }, 4000);
+  
+</script>
