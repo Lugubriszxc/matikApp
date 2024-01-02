@@ -228,7 +228,6 @@ namespace matikApp.Controllers
             //check if the section is registered for the academic year and semester
             var resAcadSec = Regissections.Where(rs => rs.AcadYearId == acadValz && rs.Semester == semesterValz).ToList();
 
-            var resInstructorAvailable = Instructorunitloads.Where(rs => rs.AcadYearId == acadValz && rs.Semester == semesterValz).ToList();
             //Console.WriteLine(resAcadSec);
 
             var resSecJoin = (from sec in Sections
@@ -249,10 +248,13 @@ namespace matikApp.Controllers
 
             //var filterSections = Sections.Where(s =>s.CourseId == 39 || s.CourseId == 40).ToList();
 
+            var resInstructorAvailable = Instructorunitloads.Where(rs => rs.AcadYearId == acadValz && rs.Semester == semesterValz).ToList();
+
             //you can replace filterSections with Sections
             foreach(var section in resSecJoin)
             {
                 //counting the section;
+                Console.WriteLine("In the list : " + section.SectionName);
                 sectionCounter++;
                 assignSubjectCounter = 0; //starting count
 
@@ -278,8 +280,37 @@ namespace matikApp.Controllers
                         var resultSubject = Subjects.Where(sub => sub.SubjectId == assignSubject.SubjectId).FirstOrDefault();
                         //Console.WriteLine(resultSubject.SubjectName);
 
+                        //var resInstructorUnitLoad = Instructorunitloads.Where()
+
                         //filter in the instructors who handled the subject and use it for looping
-                        var filterIns = Subjecthandleds.Where(x => x.SubjectId == resultSubject.SubjectId).ToList();
+                        //var filterIns = Subjecthandleds.Where(x => x.SubjectId == resultSubject.SubjectId).ToList();
+                        var filterIns = (from rs in Subjecthandleds
+                        join ins in Instructorunitloads on rs.InstructorId equals ins.InstructorId
+                        where ins.AcadYearId == acadValz && ins.Semester == semesterValz && rs.SubjectId == resultSubject.SubjectId
+                        select new
+                        {
+                            ShId = rs.ShId,
+                            InstructorId = rs.InstructorId,
+                            SubjectId = rs.SubjectId
+                        }).Distinct().ToList();
+
+
+                        // var resInstructorAvailable = Instructorunitloads.Where(rs => rs.AcadYearId == acadValz && rs.Semester == semesterValz).ToList();
+
+                        // var filterIns = Subjecthandleds
+                        // .Where(subject => subject.SubjectId == resultSubject.SubjectId)
+                        // .Join(
+                        //     Instructorunitloads,
+                        //     subject => subject.SubjectId,
+                        //     instructor => instructor.InstructorId,
+                        //     (subject, instructor) => new { Subject = subject, Instructor = instructor }
+                        // )
+                        // .Where(result => result.Instructor.AcadYearId == acadValz && result.Instructor.Semester == semesterValz)
+                        // .ToList();
+
+                        // make a foreach to filter only the instructors who are enrolled in the teaching unit load
+                        
+
                         // var filterIns = 
                         // (from rs in Subjecthandleds
                         // join ins in Instructorunitloads on rs.InstructorId equals ins.InstructorId
@@ -298,6 +329,7 @@ namespace matikApp.Controllers
                         int totInstructor = 0;
                         foreach(var instruct in filterIns)
                         {
+        
                             var resInstructorPrio = 
                                 (from rs in roomSchedule
                                 join ins in Instructors on rs.InstructorId equals ins.InstructorId
@@ -931,7 +963,7 @@ namespace matikApp.Controllers
 
                                                                                     //LACK OF CONDITIONS : IT MUST CHECK FIRST IF THE INSTRUCTOR IS ALREADY TEACHING OR UNAVAILABLE WITHIN THAT TIME PERIOD BEFORE ADDING THIS TO ROOM SCHEDULE
                                                                                     string dayCons = dayConvertFunc(day+2).ToString();
-                                                                                    Console.WriteLine("DayConvertFunc Section ID : " + section.SectionId + " Subject ID : " + subName.SubjectId + " Instructor : " + instructor.InstructorId + " Day: " + dayCons);
+                                                                                    Console.WriteLine("DayConvertFunc Section ID : " + section.SectionName + " Subject ID : " + subName.SubjectName + " Instructor : " + instructor.InstructorId + " Day: " + dayCons);
                                                                                     var resUnavailablePeriod2 = Unavailableperiods.Where(up => up.TimeId == time.TimeId && up.Day == dayCons && up.InstructorId == instructor.InstructorId).FirstOrDefault();
                                                                                     if(resUnavailablePeriod2 == null)
                                                                                     {
