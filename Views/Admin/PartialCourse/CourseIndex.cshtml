@@ -110,15 +110,26 @@ $(document).ready(function(){
                 cor : arrData,
             },
             })
-            .done(function()
+            .done(function(result)
             {
-              $("#createCourseForm")[0].reset();
-              $("#modalCourseCreate").modal("toggle");
-              displayCourseData();
-              displaySavedProgress();
+              if(result === undefined)
+                result = null;
+
+              if(result.length <= 0 || result === null)
+              {
+                $("#createCourseForm")[0].reset();
+                $("#modalCourseCreate").modal("toggle");
+                displayCourseData();
+                displaySavedProgress();
+              }
+              else
+              {
+                alertError("A program with the same name is already registered inside the selected department.");
+              }
+              
             });
         }else{
-            alertError();
+            alertError("Input the necessary elements");
         }
     });
 
@@ -296,14 +307,14 @@ $(document).ready(function(){
     })
   }
 
-  function alertError()
-  {
-    Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: 'Input the necessary elements!',
-    })
-  }
+  function alertError(message)
+    {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error occured',
+            text: message,
+        })
+    }
 
   function proceedUpdate()
   {

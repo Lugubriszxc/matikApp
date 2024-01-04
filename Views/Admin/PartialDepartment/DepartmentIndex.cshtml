@@ -1,6 +1,9 @@
-<center><h1>Department</h1></center>
+<center>
+  <h1>Department</h1>
+</center>
 
-<button type="button" title="Create Department" id="createDepartmentbtn" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalDepartmentCreate">
+<button type="button" title="Create Department" id="createDepartmentbtn" class="btn btn-success" style="color: #ffffff;"
+  data-bs-toggle="modal" data-bs-target="#modalDepartmentCreate">
   <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Create Department
 </button>
 
@@ -8,18 +11,21 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <link rel="stylesheet" href="~/css/tableCss/tableStyle.css" asp-append-version="true"/>
+  <link rel="stylesheet" href="~/css/tableCss/tableStyle.css" asp-append-version="true" />
 </head>
+
 <body>
   @Html.Partial("PartialDepartment/DepartmentCreate")
   @Html.Partial("PartialDepartment/DepartmentTable")
   @Html.Partial("PartialDepartment/DepartmentUpdate")
   @Html.Partial("PartialDepartment/DepartmentDelete")
 </body>
+
 </html>
 
 
@@ -27,40 +33,36 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    var selectedDepartment;
-    var selectedDepartmentId;
-    var inputtedDepName;
-    var departmentList = {};
+  var selectedDepartment;
+  var selectedDepartmentId;
+  var inputtedDepName;
+  var departmentList = {};
 
-    $(document).ready(function(){
+  $(document).ready(function () {
 
-      var storedUserAuth = sessionStorage.getItem('userauth');
-      var userAuth = JSON.parse(storedUserAuth);
+    var storedUserAuth = sessionStorage.getItem('userauth');
+    var userAuth = JSON.parse(storedUserAuth);
 
-      if(userAuth === null)
-      {
-          window.location.href = "/Authorization/Signin";
+    if (userAuth === null) {
+      window.location.href = "/Authorization/Signin";
+    }
+    else if (userAuth.userType !== 'admin') {
+      if (userAuth.userType === 'instructor') {
+        window.location.href = "/PageInstructor/PageInstructorIndex";
       }
-      else if(userAuth.userType !== 'admin')
-      {
-          if(userAuth.userType === 'instructor')
-          {
-              window.location.href = "/PageInstructor/PageInstructorIndex";
-          }
-          else if(userAuth.userType === 'student')
-          {
-              window.location.href = "/PageStudent/PageStudentIndex";
-          }
+      else if (userAuth.userType === 'student') {
+        window.location.href = "/PageStudent/PageStudentIndex";
       }
+    }
 
-      getDepartment();
-      displayDepartmentData();
+    getDepartment();
+    displayDepartmentData();
 
-    function getDepartment(){
+    function getDepartment() {
       $.ajax("../api/adminapi/getDepartment")
-      .done(function(result){
-        departmentList = result;
-      });
+        .done(function (result) {
+          departmentList = result;
+        });
     }
 
     $("#createDepartment").click((e) => {
@@ -68,258 +70,251 @@
       var arrData = {};
       var formelements = $("#createDepartmentForm .form-group");
 
-       //getting the data from the form
-        var formInputs = $("#createDepartmentForm").serializeArray();
-        formInputs.forEach(function(item){
-            arrData[item.name] = item.value;
-        });
-      
-        if(formInputs.length === formelements.length && formInputs[0].value !== '')
-        {
-          //AJAX ADD DEPARTMENT
-          $.ajax
+      //getting the data from the form
+      var formInputs = $("#createDepartmentForm").serializeArray();
+      formInputs.forEach(function (item) {
+        arrData[item.name] = item.value;
+      });
+
+      if (formInputs.length === formelements.length && formInputs[0].value !== '') {
+        //AJAX ADD DEPARTMENT
+        $.ajax
           ({
             url: "../api/adminapi/createDepartment",
             type: "POST",
             data:
             {
-                dep : arrData
+              dep: arrData
             },
-            })
-            .done(function()
-            {
+          })
+          .done(function (result) {
+
+            if (result === undefined)
+              result = null;
+
+            if (result.length <= 0 || result === null) {
               //document.querySelector(".parent").innerHTML = "";
               $("#createDepartmentForm")[0].reset();
               $("#modalDepartmentCreate").modal("toggle");
               displayDepartmentData();
               displaySavedProgress();
+            }
+            else
+            {
+              alertError("A department with the same name is already registered.");
+            }
+
           });
+      }
+      else {
+        alertError("Input the necessary elements.");
+      }
+    });
+
+    function alertError(message)
+    {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error occured',
+            text: message,
+        })
+    }
+
+    function displaySavedProgress() {
+      Swal.fire({
+        icon: 'success',
+        title: 'Your work has been saved',
+        showConfirmButton: false,
+        timer: 1500
+      })
+    }
+
+    function displayDepartmentData() {
+      $('#departmentData').DataTable().destroy();
+      if (!$.fn.DataTable.isDataTable('#departmentData')) {
+        $('#departmentData').DataTable({
+          responsive: true,
+          ajax: {
+            url: '../api/adminapi/getDepartment', // API endpoint to retrieve department
+            dataSrc: ''
+          },
+          columns:
+            [
+              { data: 'departmentId' },
+              { data: 'departmentName' },
+              {
+                data: 'departmentId',
+                render: function (data, type, row) {
+                  return btnDepartment(data);
+                }
+              },
+            ]
+        });
+      }
+      getDepartment();
+    }
+
+    function btnDepartment(departmentId) {
+      return "<center><a class='btn btn-success departmentUpdate' data-departmentId=" + departmentId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger departmentDelete' data-departmentId=" + departmentId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+    }
+
+
+    $("tbody").delegate(".departmentUpdate", "click", function (e) {
+      //console.log("I was clicked");
+      var i = e.target.closest("a").getAttribute("data-departmentId");
+      if (i != null) {
+        $("#createDepartmentForm")[0].reset();
+        $("#modalDepartmentUpdate").modal("toggle");
+
+        selectedDepartmentId = i;
+        selectedDepartment = departmentList.find(element => element.departmentId == i);
+
+        oFormObject = document.forms["updateDepartmentForm"];
+        initForm(oFormObject, selectedDepartment);
+      }
+    });
+
+    function alertSaveChanges() {
+      Swal.fire({
+        title: 'Do you want to save the changes?',
+        confirmButtonText: 'Save',
+        showCancelButton: true,
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          updateDepartmentHolder();
         }
-        else
-        {
-          alertError();
+      })
+    }
+
+
+    function initForm(form, data) {
+
+      Object.getOwnPropertyNames(data).forEach(function (item) {
+        //console.log(form.elements[item.charAt(0).toUpperCase() + item.slice(1)]);
+        var currentElem = form.elements[item.charAt(0).toUpperCase() + item.slice(1)];
+
+        if (currentElem == null) { return; }
+
+        if (currentElem.tagName == "SELECT") {
+          var selectChildren = Array.from(currentElem.children);
+          var matchedOpt = selectChildren.find(opt => opt.value == selectedProd.category);
+          if (matchedOpt) {
+            matchedOpt.selected = true;
+          }
+        } else {
+          form.elements[item.charAt(0).toUpperCase() + item.slice(1)].setAttribute("value", data[item]);
         }
       });
+    }
 
-  function alertError()
-  {
-    Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: 'Input the necessary elements!',
-    })
-  }
-
-  function displaySavedProgress()
-  {
-    Swal.fire({
-      icon: 'success',
-      title: 'Your work has been saved',
-      showConfirmButton: false,
-      timer: 1500
-      })
-  }
-        
-  function displayDepartmentData()
-  {
-    $('#departmentData').DataTable().destroy();
-    if (!$.fn.DataTable.isDataTable('#departmentData')) {
-      $('#departmentData').DataTable({
-        responsive: true,
-        ajax: {
-          url: '../api/adminapi/getDepartment', // API endpoint to retrieve department
-          dataSrc: ''
-        },
-        columns:
-        [
-          { data: 'departmentId'},
-          { data: 'departmentName'},
-          { 
-            data : 'departmentId',
-            render : function (data, type, row)
-            {
-              return btnDepartment(data);
-            } 
-          },
-        ]
+    $("#updateDepartment").click(function () {
+      alertSaveChanges();
     });
-    }
-    getDepartment();
-  }
 
-  function btnDepartment(departmentId)
-  {
-    return "<center><a class='btn btn-success departmentUpdate' data-departmentId=" + departmentId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger departmentDelete' data-departmentId=" + departmentId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
-  }
-  
+    function updateDepartmentHolder() {
+      var arrData = {};
+      var formelements = $("#updateDepartmentForm .form-group");
 
-  $("tbody").delegate(".departmentUpdate", "click", function(e){
-    //console.log("I was clicked");
-    var i = e.target.closest("a").getAttribute("data-departmentId");
-    if(i != null){
-      $("#createDepartmentForm")[0].reset();
-      $("#modalDepartmentUpdate").modal("toggle");
+      //getting the data from the form
+      var formInputs = $("#updateDepartmentForm").serializeArray();
+      formInputs.forEach(function (item) {
+        arrData[item.name] = item.value;
+      });
+      arrData.departmentId = selectedDepartmentId;
 
-      selectedDepartmentId = i;
-      selectedDepartment = departmentList.find(element => element.departmentId == i);
-
-      oFormObject = document.forms["updateDepartmentForm"];
-      initForm(oFormObject, selectedDepartment);
-    }
-  });
-
-  function alertSaveChanges()
-  {
-      Swal.fire({
-      title: 'Do you want to save the changes?',
-      confirmButtonText: 'Save',
-      showCancelButton: true,
-      }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-          updateDepartmentHolder();
+      if (formInputs.length === formelements.length && formInputs[0].value !== '') {
+        proceedUpdate(arrData);
+      } else {
+        alertError("Input the necessary elements");
       }
-    })
-  }
+    }
 
-  
-    function initForm(form, data){
-
-        Object.getOwnPropertyNames(data).forEach(function(item){
-          //console.log(form.elements[item.charAt(0).toUpperCase() + item.slice(1)]);
-          var currentElem = form.elements[item.charAt(0).toUpperCase() + item.slice(1)];
-
-          if( currentElem == null ){return;}
-
-          if(currentElem.tagName == "SELECT"){
-            var selectChildren = Array.from(currentElem.children);
-            var matchedOpt = selectChildren.find(opt => opt.value == selectedProd.category);
-            if(matchedOpt){
-              matchedOpt.selected = true;
-            }
-          }else{
-            form.elements[item.charAt(0).toUpperCase() + item.slice(1)].setAttribute("value",data[item]); 
-          }
+    function proceedUpdate(arrData) {
+      //AJAX UPDATE DEPARTMENT
+      $.ajax
+        ({
+          url: "../api/adminapi/updateDepartment",
+          type: "POST",
+          data:
+          {
+            dep: arrData,
+          },
+        })
+        .done(function () {
+          $("#updateDepartmentForm")[0].reset();
+          $("#modalDepartmentUpdate").modal("toggle");
+          displayDepartmentData();
+          displaySavedProgress();
         });
     }
 
-  $("#updateDepartment").click(function(){
-    alertSaveChanges();
-  });
-
-  function updateDepartmentHolder()
-  {
-    var arrData = {};
-    var formelements = $("#updateDepartmentForm .form-group");
-
-    //getting the data from the form
-    var formInputs = $("#updateDepartmentForm").serializeArray();
-    formInputs.forEach(function(item){
-        arrData[item.name] = item.value;
+    $("tbody").delegate(".departmentDelete", "click", function (e) {
+      var i = e.target.closest("a").getAttribute("data-departmentId");
+      if (i != null) {
+        //Insert code here for the delete
+        selectedDepartmentId = i;
+        alertDeleteConfirmation();
+      }
     });
-    arrData.departmentId = selectedDepartmentId;
 
-    if(formInputs.length === formelements.length && formInputs[0].value !== '')
-    {
-      proceedUpdate(arrData);
-    }else
-    {
-      alertError();
+    //upon closing the modal create
+    $("#modalDepartmentCreateClose").click(function () {
+      defaultClear();
+    });
+
+    //upon opening of create modal
+    $("#createDepartmentbtn").click((e) => {
+      defaultClear();
+    });
+
+    function defaultClear() {
+      $("#createDepartmentForm")[0].reset();
+      $("#updateDepartmentForm")[0].reset();
+      $("select").val([]);
     }
-  }
 
-  function proceedUpdate(arrData)
-  {
-    //AJAX UPDATE DEPARTMENT
-          $.ajax
-          ({
-            url: "../api/adminapi/updateDepartment",
-            type: "POST",
-            data:
-            {
-                dep : arrData,
-            },
-            })
-            .done(function()
-            {
-              $("#updateDepartmentForm")[0].reset();
-              $("#modalDepartmentUpdate").modal("toggle");
-              displayDepartmentData();
-              displaySavedProgress();
-          });
-  }
-
-  $("tbody").delegate(".departmentDelete", "click", function(e){
-    var i = e.target.closest("a").getAttribute("data-departmentId");
-    if(i != null){
-      //Insert code here for the delete
-      selectedDepartmentId = i;
-      alertDeleteConfirmation();
+    function alertDeleteConfirmation() {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          proceedDelete();
+        }
+      })
     }
-  });
 
-  //upon closing the modal create
-  $("#modalDepartmentCreateClose").click(function(){
-    defaultClear();
-  });
-
-  //upon opening of create modal
-  $("#createDepartmentbtn").click((e) => {
-    defaultClear();
-  });
-
-  function defaultClear()
-  {
-    $("#createDepartmentForm")[0].reset();
-    $("#updateDepartmentForm")[0].reset();
-    $("select").val([]);
-  }
-
-  function alertDeleteConfirmation()
-  {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-    if (result.isConfirmed) {
-      proceedDelete();
-    }
-    })
-  }
-
-  function proceedDelete()
-  {
-    //AJAX DELETE DEPARTMENT
-    $.ajax
-      ({
-        url: "../api/adminapi/deleteDepartment",
-        type: "POST",
-        data:
-        {
-          departmentId : selectedDepartmentId
-        },
+    function proceedDelete() {
+      //AJAX DELETE DEPARTMENT
+      $.ajax
+        ({
+          url: "../api/adminapi/deleteDepartment",
+          type: "POST",
+          data:
+          {
+            departmentId: selectedDepartmentId
+          },
         })
-        .done(function()
-        {
+        .done(function () {
           displayDepartmentData();
           alertDeleteInfo();
-      });
-  }
+        });
+    }
 
-  function alertDeleteInfo()
-  {
-    Swal.fire(
-      'Deleted!',
-      'Your file has been deleted.',
-      'success'
+    function alertDeleteInfo() {
+      Swal.fire(
+        'Deleted!',
+        'Your file has been deleted.',
+        'success'
       )
-  }
+    }
 
-      //Don't touch
-    });
+    //Don't touch
+  });
 </script>

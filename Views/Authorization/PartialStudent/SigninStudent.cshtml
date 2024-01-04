@@ -6,22 +6,124 @@
     <title>Student Login</title>
 </head>
 <body>
-    @Html.Partial("HomeNavBar")
-	<center style="position: absolute; width: 83%;"><h2 style="text-align: center;">Student</h2></center>
+	
+			@* @Html.Partial("Authorization/HomeNavBar") *@
+			@Html.Partial("HomeNavBar")
+			<div class="video-container">
+			<video autoplay muted loop id="background-video">
+			<source src="~/video/crmcvid.mp4" type="video/mp4">
+			Your browser does not support the video tag.
+		</video>
+		<div class="overlay"></div>
+		<div class="content">
+
+			<h2 class="txt-admin">Student</h2>
+			<div class="container h-10" style="margin-top: 150px;">
+				<div class="d-flex justify-content-center h-100">
+					<div class="user_card">
+						<div class="d-flex justify-content-center">
+							<div class="brand_logo_container">
+								<img src="https://scontent.fceb8-1.fna.fbcdn.net/v/t1.15752-9/398539399_769348385237475_3487999140637166116_n.png?_nc_cat=102&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeFgBy8ofA9AyZkOuJLukTDPVS5wDdlA5_NVLnAN2UDn8yweMgA5lo5MtHmQzMnjQrsdLrC542v7BHotDprkNkrr&_nc_ohc=vn8jbdunz9YAX_TWPvJ&_nc_ht=scontent.fceb8-1.fna&oh=03_AdSXKIPzc9bqH8MxoI1z1SKeIlmauAZMutr1DGlApi-LdQ&oe=65A0D45D"
+									class="brand_logo" alt="Logo">
+							</div>
+						</div>
+						<div class="d-flex justify-content-center form_container">
+							<form id="">
+								<div class="input-group mb-3">
+									<div class="input-group-append">
+										<span class="input-group-text"><i class="fas fa-user"></i></span>
+									</div>
+									<input type="text" id="usernameInput" name="" class="form-control input_user"
+										value="" placeholder="Username" required>
+								</div>
+								<div class="input-group mb-2">
+									<div class="input-group-append">
+										<span class="input-group-text"><i class="fas fa-key"></i></span>
+									</div>
+									<input type="password" id="passwordInput" name="" class="form-control input_pass"
+										value="" placeholder="Password" required>
+								</div>
+								<div class="d-flex justify-content-center mt-3 login_container">
+									<button type="button" name="button" id="loginBtn"
+										class="btn login_btn">Login</button>
+								</div>
+							</form>
+						</div>
+
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
 
 <style>
-    .navbar.shared{
-        display: none;
-    }
+    .txt-admin {
+		text-align: center;
+		font-weight: bold;
+		font-size: 35px;
+	}
 
-    .bods
-    {
-        color: white;
-        background-color: white;
-    }
+	.navbar.shared {
+		display: none;
+	}
+
+	.bods {
+		color: white;
+		background-color: white;
+	}
+
+
+	body {
+		font-family: 'Poppins', sans-serif;
+
+	}
 </style>
+
+<style>
+	.video-container {
+    position: relative;
+    height: 90vh;
+    overflow: hidden;
+	
+}
+
+#background-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -1;
+	background: linear-gradient(to right, rgb(0 0 0 / 0.8), rgb(0 0 0 / 0)), url('../../video/crmcvid.mp4');
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Adjust the opacity as needed */
+    z-index: 1;
+}
+
+.content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    text-align: center;
+    color: #fff; /* Adjust text color */
+}
+</style>
+
 <style>
     	/* Coded with love by Mutiullah Samim */
 		body,
@@ -96,36 +198,6 @@
 			background-color: #c0392b !important;
 		}
 </style>
-<div class="container h-10" style="margin-top: 150px;">
-		<div class="d-flex justify-content-center h-100">
-			<div class="user_card">
-				<div class="d-flex justify-content-center">
-					<div class="brand_logo_container">
-						<img src="https://scontent.fceb8-1.fna.fbcdn.net/v/t1.15752-9/398539399_769348385237475_3487999140637166116_n.png?_nc_cat=102&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeFgBy8ofA9AyZkOuJLukTDPVS5wDdlA5_NVLnAN2UDn8yweMgA5lo5MtHmQzMnjQrsdLrC542v7BHotDprkNkrr&_nc_ohc=vn8jbdunz9YAX_TWPvJ&_nc_ht=scontent.fceb8-1.fna&oh=03_AdSXKIPzc9bqH8MxoI1z1SKeIlmauAZMutr1DGlApi-LdQ&oe=65A0D45D" class="brand_logo" alt="Logo">
-					</div>
-				</div>
-				<div class="d-flex justify-content-center form_container">
-					<form id="">
-						<div class="input-group mb-3">
-							<div class="input-group-append">
-								<span class="input-group-text"><i class="fas fa-user"></i></span>
-							</div>
-							<input type="text" id="usernameInput" name="" class="form-control input_user" value="" placeholder="School ID" required>
-						</div>
-						<div class="input-group mb-2">
-							<div class="input-group-append">
-								<span class="input-group-text"><i class="fas fa-key"></i></span>
-							</div>
-							<input type="password" id="passwordInput" name="" class="form-control input_pass" value="" placeholder="Password" required>
-						</div>
-						<div class="d-flex justify-content-center mt-3 login_container">
-				 	        <button type="button" name="button" id="loginBtn" class="btn login_btn">Login</button>
-				        </div>
-					</form>
-				</div>
-			</div>
-		</div>
-</div>
 
 <script>
 
@@ -202,6 +274,7 @@
         function margin(){
             $(".page-content").removeClass();
             $(".container-fluid.shared").removeClass();
+			$(".page-fluid").removeClass();
             @* $(".bods").removeClass(); *@
         }
 

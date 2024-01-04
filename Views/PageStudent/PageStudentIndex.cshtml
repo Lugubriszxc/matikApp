@@ -13,13 +13,15 @@
         </button>
         <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
         <div class="offcanvas-header">
+            <br> <!--This <br> made the student's name in a center layout-->
             <center><h5 class="offcanvas-title studentName" id="offcanvasNavbarLabel">Student X</h5></center>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
+        <hr>
         <div class="offcanvas-body">
             <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="btn btn-light nav-link dropdown-toggle text-dark bg-gray" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 User Settings
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
@@ -27,13 +29,14 @@
                 <li class="dropdown-item"><a class="nav-link btnChangePass">Change password</a></li>
                 </ul>
             </li>
-
-            <br><br><br><br><br>
-            <li class="nav-item">
-                <a class="btn btn-warning" id="btnSignout">Signout</a>
-            </li>
             </ul>
         </div>
+            <hr>
+            <div class="offcanvas-footer">
+                <center>
+                <a class="btn btn-danger text-light" id="btnSignout">Signout</a>
+                </center>
+            </div>
         </div>
     </div>
     </nav>
@@ -89,6 +92,19 @@
         color: black;
         background-color: black;
     } *@
+
+    .nav-item{
+        @* background-color: rgb(83, 79, 79); *@
+    }
+
+    body {
+        margin: 40px; /* You can adjust the value as per your design preferences */
+    }
+
+    .offcanvas-footer
+    {
+        padding-bottom: 70px;
+    }
 </style>
 
 <script>
@@ -818,3 +834,41 @@
         //end of document.ready
     });
 </script>
+
+<style>
+
+  *{
+    letter-spacing: 1px;
+  }
+
+  .modal-header
+  {
+    background-color: maroon;
+    color: gold;
+  }
+
+  .modal-footer
+  {
+    background-color: maroon;
+    color: gold;
+  }
+
+  .modal-body
+  {
+    background-color: #f8f9fa;
+  }
+
+  .passChange
+  {
+    background: gold;
+    color: black;
+  }
+
+  .updateStudent
+  {
+    background: gold;
+    color: black;
+  }
+
+
+</style>

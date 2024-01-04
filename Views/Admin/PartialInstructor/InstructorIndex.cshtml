@@ -575,10 +575,21 @@
                         sh : myArray,
                     },
                     })
-                    .done(function(){
-                        $("#modalAddSubjectHandledTable").modal("toggle");
-                        alertSuccess();
-                        populateSubjectHandled(selectedInstructorId);
+                    .done(function(result){
+
+                        @* if(result === undefined)
+                            result = null;
+                        
+                        if(result.length <= 0 || result === null)
+                        {
+                            $("#modalAddSubjectHandledTable").modal("toggle");
+                            alertSuccess();
+                            populateSubjectHandled(selectedInstructorId);
+                        }
+                        else
+                        {
+                            alertError("Already added this subject");
+                        }     *@
                     });
                 }
                 else
@@ -762,12 +773,24 @@
                             iul : arrData,
                         },
                     })
-                    .done(function(){
-                        //$("#createUnitLoadForm")[0].reset();
-                        $("#modalUnitLoadCreate").modal("toggle");
-                        alertSuccess();
-                        populateUnitLoadTable(selectedInstructorId);
-                        //populateInstructorTable();
+                    .done(function(result){
+
+                        if(result === undefined)
+                            result = null;
+
+                        if(result.length <= 0 || result === null)
+                        {
+                            //$("#createUnitLoadForm")[0].reset();
+                            $("#modalUnitLoadCreate").modal("toggle");
+                            alertSuccess();
+                            populateUnitLoadTable(selectedInstructorId);
+                            //populateInstructorTable();
+                        }
+                        else
+                        {
+                            alertError("Already registered in this academic year and semester");
+                        }
+                       
                     });
                 }
                 else
@@ -812,11 +835,22 @@
                     up : arrData,
                 },
             })
-            .done(function(){
-                $("#createTimePeriodForm")[0].reset();
-                $("#modalTimePeriodCreate").modal("toggle");
-                alertSuccess();
-                populateInstructorTable();
+            .done(function(result){
+
+                if(result === undefined)
+                    result = null;
+
+                if(result.length <= 0 || result === null)
+                {
+                    $("#createTimePeriodForm")[0].reset();
+                    $("#modalTimePeriodCreate").modal("toggle");
+                    alertSuccess();
+                    populateInstructorTable();
+                }
+                else{
+                    alertError("Already added this time slot");
+                }
+                
             });
         }
         else

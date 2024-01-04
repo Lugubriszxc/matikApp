@@ -23,10 +23,19 @@ namespace matikApp.Controllers
         //Department Section
         public IActionResult createDepartment(Department dep)
         {
-            _context.Departments.Add(dep);
-            _context.SaveChanges();
 
-            return Ok();
+            var res = _context.Departments.Where(x => x.DepartmentName == dep.DepartmentName).FirstOrDefault();
+            if(res == null)
+            {
+                _context.Departments.Add(dep);
+                _context.SaveChanges();
+
+                return Ok();
+            }
+            else
+            {
+                return Ok(res);
+            }
         }
 
         public ActionResult<List<Department>> getDepartment(){
@@ -51,10 +60,19 @@ namespace matikApp.Controllers
        //Course Section API
         public IActionResult createCourse(Course cor)
         {
-            _context.Courses.Add(cor);
-            _context.SaveChanges();
+            var res = _context.Courses.Where(x => x.CourseName == cor.CourseName && x.DepartmentId == cor.DepartmentId).FirstOrDefault();
+            if(res == null)
+            {
+                _context.Courses.Add(cor);
+                _context.SaveChanges();
 
-            return Ok();
+                return Ok();
+            }
+            else
+            {
+                return Ok(res);
+            }
+            
         }
 
         public IActionResult getCourseDep()
@@ -584,10 +602,19 @@ namespace matikApp.Controllers
             {
                 return Ok("Error Occurred");
             }
-            _context.Timeslots.Add(ts);
-            _context.SaveChanges();
 
-            return Ok();
+            var res = _context.Timeslots.Where(x => x.StartTime == ts.StartTime && x.EndTime == ts.EndTime).FirstOrDefault();
+            if(res == null)
+            {
+                _context.Timeslots.Add(ts);
+                _context.SaveChanges();
+
+                return Ok();
+            }
+            else
+            {
+                return Ok(res);
+            }
         }
 
         //query to delete the selected time slot
@@ -622,10 +649,18 @@ namespace matikApp.Controllers
             {
                 return Ok("Error Occurred");
             }
-            _context.Unavailableperiods.Add(up);
-            _context.SaveChanges();
 
-            return Ok();
+            var res = _context.Unavailableperiods.Where(x => x.Day == up.Day && x.TimeId == up.TimeId).FirstOrDefault();
+            if(res == null)
+            {
+                _context.Unavailableperiods.Add(up);
+                _context.SaveChanges();
+                return Ok();
+            }
+            else
+            {
+                return Ok(res);
+            }
         }
 
         //fetch subject handleds
@@ -641,11 +676,18 @@ namespace matikApp.Controllers
                 return Ok("Error Occurred");
             }
 
-            // var res = _context.Subjecthandleds;
-            _context.Subjecthandleds.Add(sh);
-            _context.SaveChanges();
+            var res = _context.Subjecthandleds.Where(x => x.SubjectId == sh.SubjectId && x.InstructorId == sh.InstructorId).FirstOrDefault();
+            if(res == null)
+            {
+                _context.Subjecthandleds.Add(sh);
+                _context.SaveChanges();
 
-            return Ok();
+                return Ok();
+            }
+            else
+            {
+                return Ok(res);
+            }
         }
 
         //check if there is any existing data for subject handled
@@ -1032,10 +1074,22 @@ namespace matikApp.Controllers
 
         public IActionResult createInstructorLoad(Instructorunitload iul)
         {
-            _context.Instructorunitloads.Add(iul);
-            _context.SaveChanges();
+            
+            var res = _context.Instructorunitloads.Where(x => x.AcadYearId == iul.AcadYearId && x.Semester == iul.Semester && x.InstructorId == iul.InstructorId).FirstOrDefault();
+            if(res == null)
+            {
+                _context.Instructorunitloads.Add(iul);
+                _context.SaveChanges();
 
-            return Ok();
+                return Ok();
+            }
+            else
+            {
+                return Ok(res);
+            }
+
+
+            
         }
 
         //query to delete the selected instructor
@@ -1056,10 +1110,18 @@ namespace matikApp.Controllers
 
         public IActionResult createRegisSection(Regissection rs)
         {
-            _context.Regissections.Add(rs);
-            _context.SaveChanges();
+            var res = _context.Regissections.Where(x => x.AcadYearId == rs.AcadYearId && x.Semester == x.Semester && rs.SectionId == x.SectionId).FirstOrDefault();
+            if(res == null)
+            {
+                _context.Regissections.Add(rs);
+                _context.SaveChanges();
 
-            return Ok();
+                return Ok();
+            }
+            else
+            {
+                return Ok(res);
+            }
         }
 
         //check if the same academic year and semester is registered
@@ -1241,6 +1303,7 @@ namespace matikApp.Controllers
         {
             if(asi != null)
             {
+                
                 _context.Studentenrollments.Add(asi);
 
                 //after adding it you must increment the total students of the enrolled section.
