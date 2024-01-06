@@ -20,8 +20,8 @@
              <div class="slide"></div>
             <!-- Add more slides as needed -->
         </div>
-        <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
-        <button class="next" onclick="changeSlide(1)">&#10095;</button>
+        <button class="prev" onclick="">&#10094;</button>
+        <button class="next" onclick="">&#10095;</button>
     </div>
 
 
@@ -136,7 +136,7 @@
 
 <script>
 
-    let currentSlide = 0;
+  let currentSlide = 0;
   const totalSlides = document.querySelectorAll('.slide').length;
 
   function changeSlide(direction) {
@@ -151,8 +151,33 @@
   }
 
   // Automatic slide change every 5 seconds (adjust as needed)
-  setInterval(function() {
+  @* setInterval(function() {
+    changeSlide(1);
+  }, 4000); *@
+
+  function stopSlideInterval() {
+    clearInterval(slideInterval);
+  }
+
+    startSlideInterval();
+
+  function startSlideInterval() {
+  // Automatic slide change every 5 seconds (adjust as needed)
+  slideInterval = setInterval(function() {
     changeSlide(1);
   }, 4000);
+}
+
+  const nextButton = document.querySelector('.next');
+    nextButton.addEventListener('click', function() {
+        changeSlide(1);
+        stopSlideInterval();
+    });
+
+    const prevButton = document.querySelector('.prev');
+    prevButton.addEventListener('click', function() {
+        changeSlide(-1)
+        stopSlideInterval();
+    });
   
 </script>
