@@ -214,7 +214,30 @@
 <script>
 
 	$(() => {
-		if (JSON.parse(sessionStorage.getItem('userauth') !== null)) {
+		@* if (JSON.parse(sessionStorage.getItem('userauth') !== null)) {
+			window.location.href = "/Home/Index";
+		} *@
+
+		var storedUserAuth = sessionStorage.getItem('userauth');
+        var userAuth = JSON.parse(storedUserAuth);
+
+		if(userAuth === null)
+        {
+            
+        }
+        else if(userAuth.userType !== 'admin')
+        {
+            if(userAuth.userType === 'student')
+            {
+                window.location.href = "/PageStudent/PageStudentIndex";
+            }
+            else if(userAuth.userType === 'instructor')
+            {
+                window.location.href = "/PageInstructor/PageInstructorIndex";
+            }
+        }
+		else if(userAuth.userType === 'admin')
+		{
 			window.location.href = "/Home/Index";
 		}
 

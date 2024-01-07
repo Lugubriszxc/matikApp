@@ -120,5 +120,16 @@ namespace matikApp.Controllers
             
             return Ok();
         }
+
+        public IActionResult resetPasswordInstructor(Instructor userInfo)
+        {
+            var res = _context.Authorizations.Where(e => e.Id == userInfo.InstructorId && e.UserType == "instructor").FirstOrDefault();
+            res.Password = userInfo.InstructorId.ToString();
+
+            _context.Authorizations.Update(res);
+            _context.SaveChanges();
+            
+            return Ok();
+        }
     }
 }

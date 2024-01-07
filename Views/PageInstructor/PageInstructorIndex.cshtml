@@ -340,8 +340,28 @@
             arrData.instructorId = selectedInstructor.instructorId;
 
             let emptyEl = new Boolean(false);
+
+            var dropdown = $("#departmentSelect");
+
+            // Get the selected value
+            var selectedValue = dropdown.val();
+            if(selectedValue !== null)
+            {
+                emptyEl = Boolean(false);
+            }
+
+            var formInput1 = $(".inputFName").val();
+            var formInput2 = $(".inputLName").val();
+            var formInput3 = $(".inputEmailAdd").val();
+            var formInput4 = $(".inputSecretCode").val();
+
+            console.log(formInput1);
+            console.log(formInput2);
+            console.log(formInput3);
+            console.log(formInput4);
+
             //alternative of bool
-            if(formInputs[0].value === '' || formInputs[2].value === '')
+            if(formInput1 === '' || formInput2 === '' || formInput3 === '' || formInput4 === '')
             {
                 //if the firstname or lastname are empty then return true or 0
                 emptyEl = Boolean(true);
@@ -356,18 +376,39 @@
             {
                 //Call API to add Instructor
                 $.ajax({
-                    url: "../api/adminapi/updateInstructor",
+                    url: "../api/adminapi/checkEmailInstructor",
                     type: "POST",
                     data:
                     {
                         i : arrData,
                     },
                 })
-                .done(function(){
-                    $("#updateInstructorForm")[0].reset();
-                    $("#modalInstructorUpdate").modal("toggle");
-                    alertSuccess();
-                    loadInstructorDetail();
+                .done(function(result){
+                    if(result === undefined)
+                        result = null;
+
+                    if(result.length <= 0 || result === null)
+                    {
+                        //Call API to add Instructor
+                        $.ajax({
+                            url: "../api/adminapi/updateInstructor",
+                            type: "POST",
+                            data:
+                            {
+                                i : arrData,
+                            },
+                        })
+                        .done(function(){
+                            $("#updateInstructorForm")[0].reset();
+                            $("#modalInstructorUpdate").modal("toggle");
+                            alertSuccess();
+                            loadInstructorDetail();
+                        });
+                    }
+                    else
+                    {
+                        alertError("Email is already in use.")
+                    }
                 });
             }
             else   
