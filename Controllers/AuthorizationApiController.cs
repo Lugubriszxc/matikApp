@@ -79,5 +79,46 @@ namespace matikApp.Controllers
             }
             return Ok();
         }
+
+        public IActionResult findAccount(string emailAdd, string securityCode, string userType)
+        {   
+            if(userType == "student")
+            {
+                var res = _context.Studentprofiles.Where(e => e.EmailAddress == emailAdd && e.SecretCode == securityCode).FirstOrDefault();
+                if(res != null)
+                {
+                    return Ok(res);
+                }
+                else
+                {
+                    return Ok();
+                }
+            }
+            else if(userType == "instructor")
+            {
+                var res = _context.Instructors.Where(e => e.EmailAddress == emailAdd && e.SecretCode == securityCode).FirstOrDefault();
+                if(res != null)
+                {
+                    return Ok(res);
+                }
+                else
+                {
+                    return Ok();
+                }
+            }
+
+            return Ok();
+        }
+
+        public IActionResult resetPasswordStudent(Studentprofile userInfo)
+        {
+            var res = _context.Authorizations.Where(e => e.Id == userInfo.StudentId && e.UserType == "student").FirstOrDefault();
+            res.Password = userInfo.SchoolId;
+
+            _context.Authorizations.Update(res);
+            _context.SaveChanges();
+            
+            return Ok();
+        }
     }
 }
