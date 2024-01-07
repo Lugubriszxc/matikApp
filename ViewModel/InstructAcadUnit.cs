@@ -16,6 +16,7 @@ namespace matikApp.ViewModel
         public string AcadYearName { get; set; }
         public int UnitLoadId { get; set; }
         public int UnitLoad { get; set; }
+        // public string Overload { get; set; }
         public string Semester { get; set; }
     }
 }

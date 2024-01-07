@@ -485,6 +485,7 @@
                     {data: 'acadYearName'},
                     {data: 'semester'},
                     {data: 'unitLoad'},
+                    @* {data: 'overload'}, *@
                     {   //actions
                         data: 'unitLoadId',
                         render : function (data, type, row)
@@ -786,6 +787,7 @@
         arrData.InstructorId = selectedInstructorId;
 
         let valUnitLoad = document.getElementById('loadUnit');
+        //let valOverLoad = document.getElementById('overloadingSelect');
 
         console.log(formelements.length);
         if(formInputs.length === formelements.length && valUnitLoad !== '')
@@ -817,7 +819,7 @@
 
                         if(result.length <= 0 || result === null)
                         {
-                            //$("#createUnitLoadForm")[0].reset();
+                            $("#createUnitLoadForm")[0].reset();
                             $("#modalUnitLoadCreate").modal("toggle");
                             alertSuccess();
                             populateUnitLoadTable(selectedInstructorId);
@@ -840,7 +842,7 @@
         }
         else
         {
-            alertError("Select a time period!");
+            alertError("Input all fields first!");
         }
     }
 

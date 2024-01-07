@@ -1085,6 +1085,7 @@ namespace matikApp.Controllers
                     AcadYearName = acad.AcadYearName,
                     UnitLoad = iau.UnitLoad,
                     UnitLoadId = iau.UnitLoadId,
+                    // Overload = iau.Overload,
                     Semester = iau.Semester
                 }
 
@@ -1095,12 +1096,20 @@ namespace matikApp.Controllers
 
         public IActionResult createInstructorLoad(Instructorunitload iul)
         {
-            
             var res = _context.Instructorunitloads.Where(x => x.AcadYearId == iul.AcadYearId && x.Semester == iul.Semester && x.InstructorId == iul.InstructorId).FirstOrDefault();
             if(res == null)
             {
                 _context.Instructorunitloads.Add(iul);
                 _context.SaveChanges();
+
+
+                // var res2 = _context.Instructorunitloads.Where(x => x.AcadYearId == iul.AcadYearId && x.Semester == iul.Semester).ToList();
+                // foreach(var x in res2)
+                // {
+                //     x.Overload = "Available";
+                //     _context.Instructorunitloads.Update(x);
+                //     _context.SaveChanges();
+                // }
 
                 return Ok();
             }
@@ -1108,9 +1117,6 @@ namespace matikApp.Controllers
             {
                 return Ok(res);
             }
-
-
-            
         }
 
         //query to delete the selected instructor
