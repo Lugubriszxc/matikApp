@@ -23,5 +23,10 @@ namespace matikApp.Controllers
         {
             return View("PartialStudent/SigninStudent");
         }
+
+        public ActionResult ForgotPasswordStudent()
+        {
+            return View("PartialStudent/ForgotPassword");
+        }
     }
 }

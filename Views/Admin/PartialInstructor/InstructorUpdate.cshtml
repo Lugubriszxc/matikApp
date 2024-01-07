@@ -12,10 +12,10 @@
             </div></h4>
             <strong><div class="info-Stocks"></div></strong>
             <hr/>
-            <form id="updateInstructorForm">
+            <form id="updateInstructorForm" autocomplete="off">
             <div class="form-group">
                 <label name="" class="control-label">First Name</label>
-                <input type="text" name="InstructorFname" id="inputFName" class="form-control" placeholder="First name" required/>
+                <input type="text" name="InstructorFname" id="inputFName" class="form-control inputFName" placeholder="First name" required/>
             </div>
             <div class="form-group">
                 <label name="" class="control-label">Middle Name (Optional)</label>
@@ -23,14 +23,22 @@
             </div>
             <div class="form-group">
                 <label name="" class="control-label">Last Name</label>
-                <input type="text" name="InstructorLname" id="inputLName" class="form-control" placeholder="Last name" required/>
+                <input type="text" name="InstructorLname" id="inputLName" class="form-control inputLName" placeholder="Last name" required/>
             </div>
             <div class="form-group">
                 <label name="" class="control-label">Department</label>
                 <select id="departmentSelect" name="DepartmentId" class="form-select"></select>
             </div>
-            </form>
             <hr/>
+            <div class="form-group">
+                <label name="" class="control-label">Email Address</label>
+                <input type="text" name="EmailAddress" id="inputEmailAdd" class="form-control inputEmailAdd" placeholder="Email address" required/>
+            </div>
+            <div class="form-group">
+                <label name="" class="control-label">Secret Code</label>
+                <input type="text" name="SecretCode" id="inputSecretCode" class="form-control inputSecretCode" placeholder="Secret Code" required/>
+            </div>
+            </form>
       </div>
        </div>
       </div>

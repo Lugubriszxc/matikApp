@@ -214,6 +214,11 @@ namespace matikApp.Models
                     .HasColumnType("int(11)")
                     .HasColumnName("departmentID");
 
+                entity.Property(e => e.EmailAddress)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("emailAddress");
+
                 entity.Property(e => e.InstructorFname)
                     .IsRequired()
                     .HasMaxLength(250)
@@ -228,6 +233,11 @@ namespace matikApp.Models
                     .IsRequired()
                     .HasMaxLength(250)
                     .HasColumnName("instructor_mname");
+
+                entity.Property(e => e.SecretCode)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("secretCode");
             });
 
             modelBuilder.Entity<Instructorunitload>(entity =>
@@ -424,10 +434,20 @@ namespace matikApp.Models
                     .HasColumnType("int(11)")
                     .HasColumnName("studentID");
 
+                entity.Property(e => e.EmailAddress)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("emailAddress");
+
                 entity.Property(e => e.SchoolId)
                     .IsRequired()
                     .HasMaxLength(255)
                     .HasColumnName("schoolID");
+
+                entity.Property(e => e.SecretCode)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("secretCode");
 
                 entity.Property(e => e.StudentFname)
                     .IsRequired()

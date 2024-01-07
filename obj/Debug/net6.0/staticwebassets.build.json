@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "uz7fidD6RldyYCd7iBHPr/N1YVbawvWjJ8E5qc9iYLQ=",
+  "Hash": "NGJRq1nQYQ1jHlVxwhAZNLiihl3D5jU2tn4isA6Qbcg=",
   "Source": "matikApp",
   "BasePath": "_content/matikApp",
   "Mode": "Default",
@@ -202,6 +202,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\image\\crmcImg3.jpg"
+    },
+    {
+      "Identity": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\wwwroot\\image\\matikIcon.png",
+      "SourceId": "matikApp",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\wwwroot\\",
+      "BasePath": "_content/matikApp",
+      "RelativePath": "image/matikIcon.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\image\\matikIcon.png"
     },
     {
       "Identity": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\wwwroot\\image\\p1.jpg",

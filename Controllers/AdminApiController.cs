@@ -328,8 +328,29 @@ namespace matikApp.Controllers
             _context.Instructors.Add(i);
             _context.SaveChanges();
             makeDynamicAccountInstructor();
-
             return Ok();
+        }
+
+        public IActionResult checkEmailInstructor(Instructor i)
+        {
+            //If there is email address found
+            var res = _context.Instructors.Where(e => e.EmailAddress == i.EmailAddress).FirstOrDefault();
+            if(res == null)
+            {   
+                return Ok();
+            }
+            else
+            {
+                //check if it's because of the selected instructor
+                if(res.InstructorId == i.InstructorId)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return Ok(res);
+                }
+            }
         }
 
         public IActionResult makeDynamicAccountInstructor()
@@ -1173,6 +1194,27 @@ namespace matikApp.Controllers
             else
             {
                 return Ok(checkRes);
+            }
+        }
+
+        public IActionResult CheckEmailStudent(Studentprofile stud)
+        {
+            //If there is email address found
+            var res = _context.Studentprofiles.Where(e => e.EmailAddress == stud.EmailAddress).FirstOrDefault();
+            if(res == null)
+            {   
+                return Ok();
+            }
+            else
+            {
+                if(res.StudentId == stud.StudentId)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return Ok(res); 
+                }
             }
         }
 

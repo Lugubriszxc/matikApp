@@ -236,12 +236,26 @@
         formInputs.forEach(function(item){
             arrData[item.name] = item.value;
         });
-
-        //console.log(arrData);
-
+        
         let emptyEl = new Boolean(false);
+
+        var dropdown = $("#departmentSelect");
+
+        // Get the selected value
+        var selectedValue = dropdown.val();
+
+        if(selectedValue !== null)
+        {
+            emptyEl = Boolean(false);
+        }
+
+        var formInput1 = $("#inputFName").val();
+        var formInput2 = $("#inputLName").val();
+        var formInput3 = $("#inputEmailAdd").val();
+        var formInput4 = $("#inputSecretCode").val();
+
         //alternative of bool
-        if(formInputs[0].value === '' || formInputs[2].value === '')
+        if(formInput1 === '' || formInput2 === '' || formInput3 === '' || formInput4 === '')
         {
             //if the firstname or lastname are empty then return true or 0
             emptyEl = Boolean(true);
@@ -255,20 +269,43 @@
         if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
         {
 
-            //Call API to add Instructor
+            //checkEmailInstructor
+
+            //Call API to check email
             $.ajax({
-                url: "../api/adminapi/createInstructor",
+                url: "../api/adminapi/checkEmailInstructor",
                 type: "POST",
                 data:
                 {
                     i : arrData,
                 },
             })
-            .done(function(){
-                $("#createInstructorForm")[0].reset();
-                $("#modalInstructorCreate").modal("toggle");
-                alertSuccess();
-                populateInstructorTable();
+            .done(function(result){
+                if(result === undefined)
+                    result = null;
+
+                if(result.length <= 0 || result === null)
+                {
+                    //Call API to add Instructor
+                    $.ajax({
+                        url: "../api/adminapi/createInstructor",
+                        type: "POST",
+                        data:
+                        {
+                            i : arrData,
+                        },
+                    })
+                    .done(function(){
+                        $("#createInstructorForm")[0].reset();
+                        $("#modalInstructorCreate").modal("toggle");
+                        alertSuccess();
+                        populateInstructorTable();
+                    });
+                }
+                else
+                {
+                    alertError("Email is already in use.");
+                }
             });
         }
         else   
@@ -880,7 +917,6 @@
         Object.getOwnPropertyNames(data).forEach(function(item){
         var currentElem = form.elements[item.charAt(0).toUpperCase() + item.slice(1)];
         //console.log(currentElem);
-        console.log(currentElem);
 
         if( currentElem == null ){return;}
 
@@ -917,8 +953,28 @@
         arrData.instructorId = selectedInstructorId;
 
         let emptyEl = new Boolean(false);
+
+        var dropdown = $("#departmentSelect");
+
+        // Get the selected value
+        var selectedValue = dropdown.val();
+        if(selectedValue !== null)
+        {
+            emptyEl = Boolean(false);
+        }
+
+        var formInput1 = $(".inputFName").val();
+        var formInput2 = $(".inputLName").val();
+        var formInput3 = $(".inputEmailAdd").val();
+        var formInput4 = $(".inputSecretCode").val();
+
+        console.log(formInput1);
+        console.log(formInput2);
+        console.log(formInput3);
+        console.log(formInput4);
+
         //alternative of bool
-        if(formInputs[0].value === '' || formInputs[2].value === '')
+        if(formInput1 === '' || formInput2 === '' || formInput3 === '' || formInput4 === '')
         {
             //if the firstname or lastname are empty then return true or 0
             emptyEl = Boolean(true);
@@ -928,23 +984,47 @@
             emptyEl = Boolean(false);
         }
 
+        console.log(formelements.length);
+
         //if all elements are not empty
         if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
         {
+
             //Call API to add Instructor
             $.ajax({
-                url: "../api/adminapi/updateInstructor",
+                url: "../api/adminapi/checkEmailInstructor",
                 type: "POST",
                 data:
                 {
                     i : arrData,
                 },
             })
-            .done(function(){
-                $("#updateInstructorForm")[0].reset();
-                $("#modalInstructorUpdate").modal("toggle");
-                alertSuccess();
-                populateInstructorTable();
+            .done(function(result){
+                if(result === undefined)
+                    result = null;
+
+                if(result.length <= 0 || result === null)
+                {
+                    //Call API to add Instructor
+                    $.ajax({
+                        url: "../api/adminapi/updateInstructor",
+                        type: "POST",
+                        data:
+                        {
+                            i : arrData,
+                        },
+                    })
+                    .done(function(){
+                        $("#updateInstructorForm")[0].reset();
+                        $("#modalInstructorUpdate").modal("toggle");
+                        alertSuccess();
+                        populateInstructorTable();
+                    });
+                }
+                else
+                {
+                    alertError("Email is already in use.")
+                }
             });
         }
         else   
