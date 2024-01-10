@@ -1339,8 +1339,8 @@ namespace matikApp.Controllers
                 rsSched.Semester = rs.Semester;
 
                 _context.Roomschedules.Add(rsSched);
-                _context.SaveChanges();
             }
+            _context.SaveChanges();
 
             return Ok();
         }
