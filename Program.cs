@@ -27,4 +27,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=PartialHome}/{action=HomeIndex}/{id?}");
 
+//app.Run("https://192.168.103.150:7272");
 app.Run();
