@@ -87,6 +87,11 @@ namespace matikApp.Controllers
             return View("PartialStudent/StudentIndex");
         }
 
+        // public IActionResult SwapScheduleIndex()
+        // {
+        //     return View("PartialSwapSchedule/SwapScheduleIndex");
+        // }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

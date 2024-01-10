@@ -30,7 +30,7 @@
 							</div>
 						</div>
 						<div class="d-flex justify-content-center form_container">
-							<form id="">
+							<form id="loginForm">
 								<div class="input-group mb-3">
 									<div class="input-group-append">
 										<span class="input-group-text"><i class="fas fa-user"></i></span>
@@ -242,6 +242,14 @@
 		}
 
 		margin();
+
+		document.getElementById("loginForm").addEventListener("keyup", function(event) {
+            // Check if the Enter key is pressed (key code 13)
+            if (event.key === "Enter") {
+                // Trigger the click event on the login button
+                document.getElementById("loginBtn").click();
+            }
+        });
 
 		$("#loginBtn").click(() => {
 			var userName = $("#usernameInput").val();

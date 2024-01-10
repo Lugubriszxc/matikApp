@@ -41,6 +41,9 @@
                 <option value="Summer">Summer</option>
             </select>
         </div>
+        <div class="col-md-6 d-flex justify-content-end">
+            <button class="btn btn-warning btn-sm" id="exportBtn">Export Schedule</button>
+        </div>
     </div>
 
     <table id="scheduleTable">
@@ -68,6 +71,18 @@
 <style>
     .dpSem
     {
-        right: 75px;
+        position: relative;
+        left: -75px;
+    }
+
+    #exportBtn
+    {
+        position: relative;
+        width: 150px;
+        height: 50px;
+        margin-top: 20px;
+        background-color: maroon;
+        color: gold;
+        border-color: gold;
     }
 </style>

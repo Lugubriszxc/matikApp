@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-<header>
-    
-</header>
+<head>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+</head>
 <body>
     <nav class="navbar bg-body-tertiary fixed-top" id="navSkirt">
     <div class="container-fluid">
@@ -59,6 +59,7 @@
     @Html.Partial("PageInstructorUpdate")
     @Html.Partial("InstructorChangePass")
     @Html.Partial("PageInstructorTable")
+    @* @Html.Partial("SwapModal") *@
     <div id="contentContainer">
         <!-- Existing content or future dynamic content goes here -->
     </div>
@@ -118,6 +119,9 @@
 <script>
 
     var instructorTeachingLoad = {}; // this will hold all of the teaching loads of the instructor
+
+    var exportTeachingLoad = [];
+
     $(document).ready(function(){
 
         var Subjects = {};
@@ -132,11 +136,11 @@
         //this to display in the select as only once.
         var displaySelect = false;
 
-        console.log(JSON.parse(sessionStorage.getItem('userauth')));
+        //console.log(JSON.parse(sessionStorage.getItem('userauth')));
         var storedUserAuth = sessionStorage.getItem('userauth');
         var userAuth = JSON.parse(storedUserAuth);
 
-        console.log(userAuth.userType);
+        //console.log(userAuth.userType);
 
         if(userAuth === null)
         {
@@ -166,26 +170,26 @@
         {
             $.ajax("../api/adminapi/getSubjects").done(function(result){
                 Subjects = result;
-                console.log(result);
+                //console.log(result);
                 //populateTable();
                 //To avoid unexplainable bugs, we called populateTable here. After calling this from the api
                 $.ajax("../api/adminapi/getSections").done(function(result){
                     Sections = result;
-                    console.log(result);
+                    //console.log(result);
                     //populateTable();
 
                     $.ajax("../api/adminapi/getRooms").done(function(result){
                         Rooms = result;
-                        console.log(result);
+                        //console.log(result);
                         //populateTable();
 
                         $.ajax("../api/adminapi/getTimeSlots").done(function(result){
                             Timeslots = result;
-                            console.log(result);
+                            //console.log(result);
                             //populateTable();
                             $.ajax("../api/adminapi/getAcademicYear").done(function(result){
                                 AcadYears = result;
-                                console.log(result);
+                               // console.log(result);
                                 populateTable();
                             });
                         });
@@ -230,14 +234,14 @@
                 if(result.length > 0)
                 {
                     instructorTeachingLoad = result;
-                    console.log(instructorTeachingLoad);
+                    //console.log(instructorTeachingLoad);
                     @* selectedInstructor = result;
                     //console.log(result.instructorFname);
                     $('.instructorName').text(result.instructorFname + " " + result.instructorLname); *@
                 }
                 else
                 {
-                    console.log("empty");
+                    //console.log("empty");
                 }
                 loadList();
                 //populateTable();
@@ -303,7 +307,7 @@
             Object.getOwnPropertyNames(data).forEach(function(item){
             var currentElem = form.elements[item.charAt(0).toUpperCase() + item.slice(1)];
             //console.log(currentElem);
-            console.log(currentElem);
+            //console.log(currentElem);
 
             if( currentElem == null ){return;}
 
@@ -355,10 +359,10 @@
             var formInput3 = $(".inputEmailAdd").val();
             var formInput4 = $(".inputSecretCode").val();
 
-            console.log(formInput1);
-            console.log(formInput2);
-            console.log(formInput3);
-            console.log(formInput4);
+            //console.log(formInput1);
+            //console.log(formInput2);
+            //console.log(formInput3);
+            //console.log(formInput4);
 
             //alternative of bool
             if(formInput1 === '' || formInput2 === '' || formInput3 === '' || formInput4 === '')
@@ -460,11 +464,6 @@
             },
             })
             .done(function(result){
-                @* $("#updateInstructorForm")[0].reset();
-                $("#modalInstructorUpdate").modal("toggle");
-                alertSuccess();
-                loadInstructorDetail(); *@
-
                 if(result == "Invalid")
                 {
                     alertError("Invalid password.");
@@ -487,10 +486,6 @@
 
         function proceedLogout()
         {
-            @* $.ajax("../api/authorizationapi/logoutUser")
-            .done(function(){
-                window.location.href = "/Authorization/SigninInstructor";
-            }); *@
             sessionStorage.clear();
             window.location.href = "/Authorization/SigninInstructor";
         }
@@ -498,6 +493,8 @@
 
         // Function to populate the table
         function populateTable() {
+
+            exportTeachingLoad.length = 0;
 
             if(instructorTeachingLoad.length > 0)
             {
@@ -528,8 +525,6 @@
                     // If acadYearId and semester are the same, maintain the current order
                     return 0;
                 });
-
-                //console.log(holderInstructorTeachingLoad);
 
                 //if the display is empty
                 if(displaySelect == false)
@@ -568,7 +563,7 @@
                 //Sort by academic year and semester
                 if(acadVal !== 0 && semVal !== "")
                 {
-                    console.log("acadVal : " + acadVal);
+                    //console.log("acadVal : " + acadVal);
                     //console.log("Instructor Teaching Load" + holderInstructorTeachingLoad.length);
                     holderInstructorTeachingLoad = instructorTeachingLoad.filter(function (item) {
                         return item.acadYearId == acadVal && item.semester === semVal;
@@ -591,7 +586,7 @@
                         if(Timeslots.length > 0)
                         {
                             var timeVal = Timeslots.find(t => t.timeId == teachingLoad.timeId) ?? defaultValue;
-                            console.log(timeVal);
+                            //console.log(timeVal);
                         }
 
                         var convertedData = {};
@@ -607,7 +602,7 @@
                         scheduleConvert.push(convertedData);
                     });
 
-                console.log(scheduleConvert);
+                //console.log(scheduleConvert);
                 }
 
 
@@ -745,10 +740,10 @@
 
                         //combine the time
                         var timeRange = startTime + " - " + endTime;
-                        console.log(timeRange);
+                        //console.log(timeRange);
                         groupedData[key].timeSet.add(timeRange);
                         groupedData[key].daySet.add(dayCombined);
-                        console.log(dayCombined);
+                        //console.log(dayCombined);
 
 
                         @* if (!groupedData[key].timeSet.has(data.time)) {
@@ -792,13 +787,30 @@
                         // Create and append cells with data
                         var firstValue = [...data.timeSet][0];
                         var firstValueDay = [...data.daySet][0];
-                        console.log(firstValue);
+                        //console.log(firstValue);
                         row.appendChild(createCell(sectionVal.sectionName));
                         row.appendChild(createCell(subjectVal.subjectName));
                         row.appendChild(createCell(data.unit));
                         row.appendChild(createCell(firstValueDay)); // Convert Set to array
                         row.appendChild(createCell(firstValue));
                         row.appendChild(createCell(roomVal.roomName));
+
+                        // Create an array with the values
+                        var rowData = {
+                            SECTION : sectionVal.sectionName,
+                            SUBJECT : subjectVal.subjectName,
+                            UNIT : data.unit,
+                            DAY : firstValueDay,
+                            TIME : firstValue,
+                            ROOM : roomVal.roomName
+                        };
+
+                        exportTeachingLoad.push(rowData);
+
+                        // Create a cell for the button and append it to the row
+                        @* const btnCell = createCell('');
+                        btnCell.innerHTML = btnInstructor(sectionVal.sectionId, subjectVal.subjectId);
+                        row.appendChild(btnCell); *@
 
                         // Append the row to the tbody
                         tbody.appendChild(row);
@@ -836,6 +848,7 @@
                 document.getElementById('contentContainer').appendChild(newDiv);
             }
             
+            console.log(exportTeachingLoad);
         }
 
         // Call the function to initially populate the table
@@ -847,6 +860,26 @@
             return cell;
         }
 
+
+        //to render buttons in action index
+        @* function btnInstructor(sectionID, subjectID)
+        {
+            return "<center><a class='btn btn-success insSched' title='Request swap' data-sectionID=" + sectionID + " data-subjectID=" + subjectID +"><i class='fa-solid fa-rotate'></i></a></center>"
+        } *@
+
+        //const XLSX = require('xlsx');
+
+        //EXPORTING PURPOSES 
+        const headerData = {
+            "SECTION" : "SECTION",
+            "DESCRIPTIVE TITLE": "DESCRIPTIVE TITLE",
+            "UNITS" : "UNITS",
+            "DAY": "DAY",
+            "TIME": "TIME",
+            "ROOM": "ROOM",
+        };
+
+
         // Academic Year dropdown change event
         $('#acadYearSelect').change(function () {
             var selectedAcad = $(this).val();
@@ -857,6 +890,7 @@
                 acadVal = selectedAcad;
                 semVal = selectedSem;
                 loadList();
+                //checkExportBtn();
                 //console.log('Selected Academic Year:', acadVal + " " + semVal);
             }
         });
@@ -871,7 +905,83 @@
                 acadVal = selectedAcad;
                 semVal = selectedSem;
                 loadList();
+                //checkExportBtn();
                 //console.log('Selected Academic Year:', acadVal + " " + semVal);
+            }
+        });
+
+        @* function checkExportBtn()
+        {
+            if(acadVal === null || acadVal === undefined || semVal === null || semVal === null)
+            {
+                $('#exportBtn').disabled = true;
+            }
+        } *@
+
+        //#exportBtn
+        $('#exportBtn').click(function () {
+            var selectedSem = $('#semesterSelect').val();
+            var selectedAcad = $('#acadYearSelect').val();
+
+            var convertAcad = AcadYears.find(ay => ay.acadYearId == selectedAcad);
+
+            if(selectedAcad !== null && selectedSem !== null)
+            {
+                if(exportTeachingLoad.length === 0)
+                {
+                    alertError("Cannot export with an empty data");
+                }
+                else
+                {
+                    
+                    @* // Create a worksheet
+                    const ws = XLSX.utils.json_to_sheet(exportTeachingLoad);
+
+                    // Auto size feature
+                    ws['!cols'] = fitToColumn(exportTeachingLoad);
+                    function fitToColumn(data) {
+                        // Get maximum character of each column
+                        return Object.keys(data[0]).map((key) => ({
+                            wch: Math.max(...data.map((row) => row[key] ? row[key].toString().length : 0))
+                        }));
+                    }
+
+                    // Create a workbook
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Teaching Load");
+
+                    // Save the workbook to a file
+                    XLSX.writeFile(wb, "teaching_load.xlsx"); *@
+
+                    /* create workbook & add worksheet */
+                    var wb = XLSX.utils.book_new();
+                    var wsData = [];
+                    wsData.push(["Academic Year","Semester", "", "", "", ""]);
+                    wsData.push([convertAcad.acadYearName,selectedSem, "", "", "", ""]);
+                    wsData.push(["","", "", "", "", ""]);
+                    wsData.push(Object.keys(headerData));
+
+                    exportTeachingLoad.forEach(item => {
+                        wsData.push([item.SECTION, item.SUBJECT, item.UNIT, item.DAY, item.TIME, item.ROOM]);
+                    });
+
+                    var ws = XLSX.utils.aoa_to_sheet(wsData);
+                    ws['!cols'] = fitToColumn(wsData);
+                    function fitToColumn(wsData) {
+                        // get maximum character of each column
+                        return wsData[0].map((a, i) => ({ wch: Math.max(...wsData.map(a2 => a2[i] ? a2[i].toString().length : 0)) }));
+                    }
+
+                    /* add worksheet to workbook */
+                    XLSX.utils.book_append_sheet(wb, ws, "Teaching Load".toUpperCase());
+
+                    //$('.instructorName').text(result.instructorFname + " " + result.instructorLname);
+                    XLSX.writeFile(wb, selectedInstructor.instructorFname + " " + selectedInstructor.instructorLname + " | " + convertAcad.acadYearName + " - " + selectedSem + ".xlsx");
+                }
+            }
+            else
+            {
+                alertError("Must select the academic and semester first!");
             }
         });
 

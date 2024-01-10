@@ -1352,18 +1352,59 @@ namespace matikApp.Controllers
         }
 
         //query to delete the generated sched record
-        public IActionResult deleteSched(int acadVal, string semesterVal)
+        public async Task<IActionResult> deleteSched(int acadVal, string semesterVal)
         {
             var scheduleToRemove = _context.Roomschedules.Where(acad => acad.AcadYearId == acadVal && acad.Semester == semesterVal).ToList();
 
             if (scheduleToRemove != null)
             {
                 _context.Roomschedules.RemoveRange(scheduleToRemove);
-                _context.SaveChanges(); // Don't forget to save changes to apply the removal.
+                await _context.SaveChangesAsync(); // Don't forget to save changes to apply the removal.
             }
 
 
             //_context.Database.ExecuteSqlRaw(deletecommand);
+
+            return Ok();
+        }
+
+        public IActionResult displayPotentialSwap(int sectionID, int subjectID, int instructorID, int acadd, string semm)
+        {
+
+            var resSub = _context.Subjects.Where(s => s.SubjectId == subjectID).FirstOrDefault();
+
+            var res = 
+            (
+                from rs in _context.Roomschedules
+                join ins in _context.Instructors on rs.InstructorId equals ins.InstructorId
+                join sub in _context.Subjects on rs.SubjectId equals sub.SubjectId
+                join room in _context.Rooms on rs.RoomId equals room.RoomId
+                join sec in _context.Sections on rs.SectionId equals sec.SectionId
+                join ts in _context.Timeslots on rs.TimeId equals ts.TimeId
+                
+                where sub.RoomType == resSub.RoomType && sub.SubjectUnit == resSub.SubjectUnit
+                && ins.InstructorId != instructorID && rs.AcadYearId == acadd && rs.Semester == semm
+
+                select new PotentialSchedule
+                {
+                    InstructorId = ins.InstructorId,
+                    InstructorFname = ins.InstructorFname,
+                    InstructorLname = ins.InstructorLname,
+                    SubjectId = sub.SubjectId,
+                    SubjectName = sub.SubjectName,
+                    Day = rs.Day,
+                    TimeId = ts.TimeId,
+                    StartTime = ts.StartTime,
+                    EndTime = ts.EndTime,
+                    RoomId = room.RoomId,
+                    RoomName = room.RoomName,
+                }
+            ).ToList().Distinct();
+
+            foreach(var result in res)
+            {
+                Console.WriteLine(result.SubjectName);
+            }
 
             return Ok();
         }
