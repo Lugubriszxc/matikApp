@@ -52,7 +52,20 @@ namespace matikApp.Controllers
         public IActionResult deleteDepartment(int departmentId)
         {
             var res = _context.Departments.Where(element => element.DepartmentId == departmentId).FirstOrDefault();
+            var res2 = _context.Courses.Where(element => element.DepartmentId == departmentId).ToList();
+            var res3 = _context.Deans.Where(element => element.DepartmentId == departmentId).ToList();
+            var res4 = _context.Instructors.Where(element => element.DepartmentId == departmentId).ToList();
+            var res5 = _context.Assignsubjects.Where(element => element.DepartmentId == departmentId).ToList();
+            var res6 = _context.Sections.Where(element => element.DepartmentId == departmentId).ToList();
+
             _context.Departments.Remove(res);
+            _context.Courses.RemoveRange(res2);
+            _context.Deans.RemoveRange(res3);
+            _context.Instructors.RemoveRange(res4);
+            _context.Assignsubjects.RemoveRange(res5);
+            _context.Sections.RemoveRange(res6);
+
+
             _context.SaveChanges();
             return Ok();
         }
