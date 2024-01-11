@@ -203,7 +203,7 @@
     //to render buttons in action index
     function btnInstructor(instructorId)
     {
-        return "<center> <a class='btn btn-primary unitLoad' title='Unit Load' data-instructorId=" + instructorId + "><i class='fa-solid fa-book-open-reader'></i></a> | <a class='btn btn-warning subjectHandled' title='Subjects handled' data-instructorId=" + instructorId + "><i class='fa-solid fa-book-open' style='color : #213454;'></i></a> | <a class='btn btn-warning unavailablePeriod' title='Unavailable time period' data-instructorId=" + instructorId + "><i class='fa-solid fa-business-time' style='color : #213454;'></i></a> | <a class='btn btn-success instructorUpdate' data-instructorId=" + instructorId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger instructorDelete' data-instructorId=" + instructorId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+        return "<center> <a class='btn btn-primary unitLoad' title='Unit Load' data-instructorId=" + instructorId + "><i class='fa-solid fa-book-open-reader'></i></a> | <a class='btn btn-warning subjectHandled' title='Subjects handled' data-instructorId=" + instructorId + "><i class='fa-solid fa-book-open' style='color : #213454;'></i></a> | <a class='btn btn-warning unavailablePeriod' title='Unavailable time period' data-instructorId=" + instructorId + "><i class='fa-solid fa-business-time' style='color : #213454;'></i></a> | <a class='btn btn-success instructorUpdate' title='Update Instructor' data-instructorId=" + instructorId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger instructorDelete' title='Delete Instructor' data-instructorId=" + instructorId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
     }
 
     //get the data of the instructor and store it to array
@@ -411,7 +411,7 @@
 
     function btnSH(shId)
     {
-        return "<center><a class='btn btn-danger subjectHandledDelete' data-shId=" + shId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+        return "<center><a class='btn btn-danger subjectHandledDelete' title='Delete Subject' data-shId=" + shId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
     }
 
     //when clicking the delete of subject handled button
@@ -500,7 +500,7 @@
 
     function btnUnitLoad(unitLoadId)
     {
-        return "<center><a class='btn btn-danger unitLoadDelete' data-iauId=" + unitLoadId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+        return "<center><a class='btn btn-danger unitLoadDelete' title='Delete Unit Load' data-iauId=" + unitLoadId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
     }
 
     //to populate the academic year
@@ -572,7 +572,7 @@
     //subjects add
     function btnSubject(subjectId)
     {
-        return "<center><a class='btn btn-primary createSubjectHandled' data-subjectId=" + subjectId + "><i class='fa-solid fa-plus' style='color : #ffffff;'></i></a></center>"
+        return "<center><a class='btn btn-primary createSubjectHandled' title='Add this subject to your handleds' data-subjectId=" + subjectId + "><i class='fa-solid fa-plus' style='color : #ffffff;'></i></a></center>"
     }
 
     //this for adding the subjects
@@ -703,7 +703,7 @@
 
     function btnUAPeriod(uaId)
     {
-        return "<center><a class='btn btn-danger uaPeriodDelete' data-uaId=" + uaId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+        return "<center><a class='btn btn-danger uaPeriodDelete' title='Delete this time period' data-uaId=" + uaId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
     }
 
     //this for deleting the unavailable timeslot

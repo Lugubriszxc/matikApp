@@ -1,6 +1,6 @@
 <center><h1>Program</h1></center>
 
-<button type="button" id="createCoursebtn" title="Create Course" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalCourseCreate">
+<button type="button" id="createCoursebtn" title="Create Program" class="btn btn-success" style="color: #ffffff;" data-bs-toggle="modal" data-bs-target="#modalCourseCreate">
   <i class="fa-solid fa-circle-plus" style="color: #ffffff;"></i> &nbsp Create Program
 </button>
 
@@ -182,7 +182,7 @@ $(document).ready(function(){
 
     function btnCourse(courseId)
     {
-        return "<center><a class='btn btn-success courseUpdate' data-courseId=" + courseId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger courseDelete' data-courseId=" + courseId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
+        return "<center><a class='btn btn-success courseUpdate' title='Update Program' data-courseId=" + courseId + "><i class='fa-solid fa-pen-to-square' style='color : #ffffff;'></i></a> | <a class='btn btn-danger courseDelete' title='Delete Program' data-courseId=" + courseId + "><i class='fa-solid fa-trash' style='color : #ffffff;'></i></a></center>"
     }
 
   $("tbody").delegate(".courseUpdate", "click", function(e)

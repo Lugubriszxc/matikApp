@@ -281,8 +281,18 @@
             arrData.studentId = selectedStudent.studentId;
 
             let emptyEl = new Boolean(false);
+
+
+            var formInput1 = $(".inputFName").val();
+            var formInput2 = $(".inputLName").val();
+            var formInput3 = $(".inputEmailAdd").val();
+            var formInput4 = $(".inputSecretCode").val();
+            var formInput5 = $(".inputSchoolID").val();
+
+            arrData.schoolId = formInput5;
+
             //alternative of bool
-            if(formInputs[0].value === '' || formInputs[2].value === '')
+            if(formInput1 === '' || formInput2 === '' || formInput3 === '' || formInput4 === '' || formInput5 === '')
             {
                 //if the firstname or lastname are empty then return true or 0
                 emptyEl = Boolean(true);
@@ -292,29 +302,49 @@
                 emptyEl = Boolean(false);
             }
 
+            console.log(formInputs.length);
+
             //if all elements are not empty
-            if(formInputs.length === formelements.length && emptyEl ===  Boolean(false))
+            if(emptyEl ===  Boolean(false))
             {
-                //Call API to add Student
+
                 $.ajax({
-                    url: "../api/adminapi/updateStudent",
-                    type: "POST",
-                    data:
-                    {
-                        stud : arrData,
-                    },
+                url: "../api/adminapi/checkEmailStudent",
+                type: "POST",
+                data:
+                {
+                    stud : arrData,
+                },
                 })
                 .done(function(result){
                     if(result === undefined || result === "" || result === null)
                     {
-                        $("#updateStudentForm")[0].reset();
-                        $("#modalStudentUpdate").modal("toggle");
-                        alertSuccess();
-                        loadStudentDetail();
+                        //Call API to add Student
+                        $.ajax({
+                            url: "../api/adminapi/updateStudent",
+                            type: "POST",
+                            data:
+                            {
+                                stud : arrData,
+                            },
+                        })
+                        .done(function(result){
+                            if(result === undefined || result === "" || result === null)
+                            {
+                                $("#updateStudentForm")[0].reset();
+                                $("#modalStudentUpdate").modal("toggle");
+                                alertSuccess();
+                                loadStudentDetail();
+                            }
+                            else
+                            {
+                                alertError("This student is already created");
+                            }
+                        });
                     }
                     else
                     {
-                        alertError("This student is already created");
+                        alertError("Email is already in use");
                     }
                 });
             }
