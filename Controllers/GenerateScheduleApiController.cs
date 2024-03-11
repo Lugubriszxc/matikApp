@@ -294,36 +294,6 @@ namespace matikApp.Controllers
                             SubjectId = rs.SubjectId
                         }).Distinct().ToList();
 
-
-                        // var resInstructorAvailable = Instructorunitloads.Where(rs => rs.AcadYearId == acadValz && rs.Semester == semesterValz).ToList();
-
-                        // var filterIns = Subjecthandleds
-                        // .Where(subject => subject.SubjectId == resultSubject.SubjectId)
-                        // .Join(
-                        //     Instructorunitloads,
-                        //     subject => subject.SubjectId,
-                        //     instructor => instructor.InstructorId,
-                        //     (subject, instructor) => new { Subject = subject, Instructor = instructor }
-                        // )
-                        // .Where(result => result.Instructor.AcadYearId == acadValz && result.Instructor.Semester == semesterValz)
-                        // .ToList();
-
-                        // make a foreach to filter only the instructors who are enrolled in the teaching unit load
-                        
-
-                        // var filterIns = 
-                        // (from rs in Subjecthandleds
-                        // join ins in Instructorunitloads on rs.InstructorId equals ins.InstructorId
-                        // where ins.AcadYearId == acadValz && ins.Semester == semesterValz
-                        // select new
-                        // {
-                        //     ShId = rs.ShId,
-                        //     InstructorId = rs.InstructorId,
-                        //     SubjectId = rs.SubjectId
-                        // }
-                        //
-                        //).Distinct();
-
                         //Get the lowest unit among the filtered instructor so that it can be prioritized
                         int prioInstructorId = 0;
                         int totInstructor = 0;
@@ -560,10 +530,6 @@ namespace matikApp.Controllers
                                                 
                                                 if(getLastDay != null)
                                                 {
-                                                    // if(getLastDay.SubjectId != subName.SubjectId)
-                                                    // {
-                                                        
-                                                    // }
                                                     //Randomize it back
                                                     // Create a Random object
                                                     Random random = new Random();
@@ -757,12 +723,6 @@ namespace matikApp.Controllers
                                                             prioNumber = 1;
                                                             goto outInstructorLoop;
                                                         }
-
-                                                        // //this skips the time and increment it
-                                                        // if(boolRoomTime == true)
-                                                        // {
-                                                        //     goto outTimeLoop;
-                                                        // }
 
                                                         skipCondition:
                                                         //replace 12 with instructor.InstructorId
@@ -977,10 +937,6 @@ namespace matikApp.Controllers
                                                                             }
                                             
                                                                         }
-                                                                        
-                                                                        //boolRoomTime = false;
-                                                                        //Console.WriteLine("HELLO THIS IS NEIL");
-                                                                        //Console.ReadKey();
 
                                                                     }
                                                                     else if(resRoomSched != null)
@@ -1033,20 +989,11 @@ namespace matikApp.Controllers
                                                         outTimeLoop:
                                                         Console.Write("");
                                                     }
-
-                                                    //timeSkipped = true;
-                                                    //timeSkipped = true;
-                                                    //end of day loop
                                                 }
                                             
                                             }
                                             else
                                             {
-                                                // if(filterRoomCounter == filterRoomCount)
-                                                // {
-                                                //     byPassRoomCapacity = true;
-                                                //     goto loopRoomAgain;
-                                                // }
                                                 if(filterRoomCounter != filterRoomCount)
                                                 {
                                                     goto outRoomLoop;
@@ -1108,12 +1055,6 @@ namespace matikApp.Controllers
                     .Select(rs => rs.Day)
                     .Distinct()
                     .ToList();
-
-                    // var uniqueDayRoomSchedules = roomSchedule.Where(rs =>
-                    //     rs.SectionId == roomSched.SectionId &&
-                    //     rs.SubjectId == roomSched.SubjectId &&
-                    //     rs.InstructorId == roomSched.InstructorId &&
-                    //     rs.RoomId == roomSched.RoomId).Distinct().ToList();
 
                     string dayConvert = "";
                     foreach(var displayDay in uniqueDayRoomSchedules)
