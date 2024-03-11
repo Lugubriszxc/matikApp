@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\matikApp.csproj": {}
+    "C:\\Users\\Neil Chris\\Desktop\\4th year 1st sem\\for capstone\\matikApp\\matikApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\matikApp.csproj": {
+    "C:\\Users\\Neil Chris\\Desktop\\4th year 1st sem\\for capstone\\matikApp\\matikApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\matikApp.csproj",
+        "projectUniqueName": "C:\\Users\\Neil Chris\\Desktop\\4th year 1st sem\\for capstone\\matikApp\\matikApp.csproj",
         "projectName": "matikApp",
-        "projectPath": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\matikApp.csproj",
+        "projectPath": "C:\\Users\\Neil Chris\\Desktop\\4th year 1st sem\\for capstone\\matikApp\\matikApp.csproj",
         "packagesPath": "C:\\Users\\Neil Chris\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Neil Chris\\Desktop\\for capstone\\matikApp\\obj\\",
+        "outputPath": "C:\\Users\\Neil Chris\\Desktop\\4th year 1st sem\\for capstone\\matikApp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
