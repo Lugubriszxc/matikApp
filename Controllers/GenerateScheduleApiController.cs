@@ -235,7 +235,6 @@ namespace matikApp.Controllers
                 join cor in Courses on sec.CourseId equals cor.CourseId
                 join reg in Regissections on sec.SectionId equals reg.SectionId
                 where reg.AcadYearId == acadValz && reg.Semester == semesterValz
-                //where cor.CourseId == 39
 
                 select new
                 {
@@ -244,6 +243,7 @@ namespace matikApp.Controllers
                     YearLevel = sec.YearLevel,
                     DepartmentId = sec.DepartmentId,
                     CourseId = sec.CourseId,
+                    
                 }).ToList();
 
             //var filterSections = Sections.Where(s =>s.CourseId == 39 || s.CourseId == 40).ToList();
@@ -879,7 +879,6 @@ namespace matikApp.Controllers
                                                                                                 {
                                                                                                     //loop the room back to 1
                                                                                                     goto loopRoomBack;
-
                                                                                                 }
                                                                                                 else
                                                                                                 {
@@ -1005,6 +1004,13 @@ namespace matikApp.Controllers
                                                 }
                                             }
                                         }
+
+                                        if(filterRoomCounter == filterRoomCount)
+                                        {
+                                            //You check the data of RoomSchedule if there is something that is missing a room
+                                            
+                                        }
+
                                         outRoomLoop:
                                         Console.Write(""); //this is temp
                                     }

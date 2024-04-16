@@ -307,14 +307,14 @@
                         if(result.userType == "student")
                         {
                             //console.log("Open the admin's dashboard");
-							//var userId = result.userId;
-							//sessionStorage.setItem('userId', userId);
+							var userId = result.userId;
+							sessionStorage.setItem('userId', userId);
 							//console.log(sessionStorage.getItem('userId'));
 							//alertError(userId);
 
 							sessionStorage.setItem('userauth', JSON.stringify(result));
 							@* console.log(JSON.parse(sessionStorage.getItem('userauth'))); *@
-							//alertSuccess();
+							alertSuccess();
                         }
                     }
 					else
