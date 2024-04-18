@@ -391,8 +391,6 @@ namespace matikApp.Controllers
                                 totalInstructorUnit += result.subUnit;
                             }
 
-
-
                             // get the unit load of the instructor
                             var resUnitLoadInstructor = resInstructorAvailable.Where(il => il.InstructorId == instructor.InstructorId && il.AcadYearId == acadValz && il.Semester == semesterValz).FirstOrDefault();
 
@@ -1070,16 +1068,18 @@ namespace matikApp.Controllers
 
 
             //PLAN : Check if each subject of sections has a room schedule
-            var checkInstructor = Instructorunitloads.Where(s => s.AcadYearId == acadValz && s.Semester == semesterValz).ToList();
-            foreach (var ins in checkInstructor)
-            {
-                //check the room schedules if there is no instructorID existing
-                bool instructorExists = roomSchedule.Any(s => s.InstructorId == ins.InstructorId);
-                if (!instructorExists)
-                {
-                    Console.WriteLine("Instructor doesn't have a schedule detected : " + ins.InstructorId);
-                }
-            }
+            // var checkInstructor = Instructorunitloads.Where(s => s.AcadYearId == acadValz && s.Semester == semesterValz).ToList();
+            // foreach (var ins in checkInstructor)
+            // {
+            //     //check the room schedules if there is no instructorID existing
+            //     bool instructorExists = roomSchedule.Any(s => s.InstructorId == ins.InstructorId);
+            //     if (!instructorExists)
+            //     {
+            //         Console.WriteLine("Instructor doesn't have a schedule detected : " + ins.InstructorId);
+            //     }
+            // }
+
+            //calling the instructor backlogs
 
             // var joinedSubjectSec = from a in Assignsubjects
             //                        join s in Sections on new { a.CourseId, a.YearLevel } equals new { s.CourseId, s.YearLevel }
@@ -1100,7 +1100,6 @@ namespace matikApp.Controllers
                     var getAssignSub = Assignsubjects.Where(asub => asub.CourseId == getSec.CourseId && asub.YearLevel == getSec.YearLevel && asub.Semester == semesterValz).ToList();
                     foreach(var subJ in getAssignSub)
                     {
-                        
                         bool subjectExists = roomSchedule.Any(rs => rs.SectionId == sec.SectionId && rs.SubjectId == subJ.SubjectId);
                         if(!subjectExists)
                         {
@@ -1110,7 +1109,6 @@ namespace matikApp.Controllers
                                 Console.WriteLine("This section : " + getSec.SectionName +  "Don't have : " + getSub.SubjectName);
                             }
                         }
-                        // Console.WriteLine("Subject ID : " + subJ.SubjectId);
                     }
                 }
             }
@@ -1121,6 +1119,11 @@ namespace matikApp.Controllers
             // {
             //     Console.WriteLine(rs.SectionId);
             // }
+
+            var getValueSection = roomSchedule.Where(s => s.Day == 6).ToList();
+
+            //Get the value of the room schedules from the database roomShedule (compressed data) that has no end time. TimeID.Count <= 1
+            //Which means it doesn't have an end time
 
 
             if (roomSchedule != null)
@@ -1212,7 +1215,6 @@ namespace matikApp.Controllers
                         }
                     }
                     Console.WriteLine("\n");
-                    //Console.ReadKey();
                 }
 
                 Console.WriteLine(roomSchedule);
@@ -1248,12 +1250,6 @@ namespace matikApp.Controllers
                 Console.WriteLine("Total Unit : " + totalUnit);
 
             }
-            // Console.WriteLine(secName);
-            // Console.WriteLine(subjectN);
-            // Console.WriteLine(instructorN);
-            // Console.WriteLine(roomN);
-            // Console.WriteLine(timeN);
-
             return Ok();
         }
 

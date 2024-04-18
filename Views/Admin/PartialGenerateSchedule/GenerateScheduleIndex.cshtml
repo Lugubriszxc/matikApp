@@ -1,41 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 </head>
+
 <body>
     <template id="academicYearTemplate">
         <option value=""></option>
     </template>
-    <center><h1>Generate Class Schedules</h1></center>
+    <center>
+        <h1>Generate Class Schedules</h1>
+    </center>
     <center>
         <div id="formDiv">
             <form id="createRegisSectionForm">
-            <div class="form-group">
-              <label name="" class="control-label">Academic Year</label>
-              <select id="acadYearSelect" name="AcadYearID" class="form-select"></select>
-            </div>
-            <div class="form-group">
-                <label name="" class="control-label">Semester</label>
-                <select id="semesterSelect" name="Semester" class="form-select">
-                <option value="1st Semester">1st Semester</option>
-                <option value="2nd Semester">2nd Semester</option>
-                <option value="Summer">Summer</option>
-                </select>
-            </div>
+                <div class="form-group">
+                    <label name="" class="control-label">Academic Year</label>
+                    <select id="acadYearSelect" name="AcadYearID" class="form-select"></select>
+                </div>
+                <div class="form-group">
+                    <label name="" class="control-label">Semester</label>
+                    <select id="semesterSelect" name="Semester" class="form-select">
+                        <option value="1st Semester">1st Semester</option>
+                        <option value="2nd Semester">2nd Semester</option>
+                        <option value="Summer">Summer</option>
+                    </select>
+                </div>
             </form>
             <button type="button" class="btn btn-success mods" id="generateSchedBtn" disabled>Generate Schedule</button>
+            <button type="button" class="btn btn-warning mods" id="viewBacklogsBtn" disabled>Open Backlogs</button>
         </div>
     </center>
 </body>
+
 </html>
 
 <script>
     var GeneratedSched = {};
-    
+
     var Departments = {};
     var Rooms = {};
     var Courses = {};
@@ -48,7 +54,7 @@
     var Regissections = {};
     var Timeslots = {};
     var AcadYears = {};
-    
+
     var acadVal = "";
     var semesterVal = "";
 
@@ -60,23 +66,19 @@
 
     let timerInterval;
 
-    $(document).ready(function(){
+    $(document).ready(function () {
 
         var storedUserAuth = sessionStorage.getItem('userauth');
         var userAuth = JSON.parse(storedUserAuth);
 
-        if(userAuth === null)
-        {
+        if (userAuth === null) {
             window.location.href = "/Authorization/Signin";
         }
-        else if(userAuth.userType !== 'admin')
-        {
-            if(userAuth.userType === 'instructor')
-            {
+        else if (userAuth.userType !== 'admin') {
+            if (userAuth.userType === 'instructor') {
                 window.location.href = "/PageInstructor/PageInstructorIndex";
             }
-            else if(userAuth.userType === 'student')
-            {
+            else if (userAuth.userType === 'student') {
                 window.location.href = "/PageStudent/PageStudentIndex";
             }
         }
@@ -87,79 +89,104 @@
         getData();
 
         //every 500 milliseconds it will check the function
-        t1=window.setInterval(function(){foo()},500);
-        
-        function foo()
-        {
+        t1 = window.setInterval(function () { foo() }, 500);
+
+        function foo() {
             // write function definition here
-            if($('#acadYearSelect').val() == null || $('#semesterSelect').val() == null)
-            {
+            if ($('#acadYearSelect').val() == null || $('#semesterSelect').val() == null) {
                 document.getElementById('generateSchedBtn').disabled = true;
+                //underConstruction
+                //Call the room schedule if it has any academic year id and semester value
+
             }
-            else
-            {
+            else {
                 document.getElementById('generateSchedBtn').disabled = false;
             }
         }
 
-        function getData()
-        {
-            $.ajax("../api/adminapi/getDepartment").done(function(result){
+        //Make a select checker here instead of interval checkGenerate
+        //get the select action when selecting an option
+        $("#acadYearSelect").change(function () {
+            //after selection, get the department ID and compare it to existing course list
+            if ($('#acadYearSelect').val() == null || $('#semesterSelect').val() == null)
+            {
+                document.getElementById('generateSchedBtn').disabled = true;
+            }
+            else{
+                document.getElementById('generateSchedBtn').disabled = false;
+            }
+        });
+
+        $("#acadYearSelect").change(function () {
+            //after selection, get the department ID and compare it to existing course list
+            if ($('#acadYearSelect').val() == null || $('#semesterSelect').val() == null)
+            {
+                document.getElementById('generateSchedBtn').disabled = true;
+            }
+            else{
+                document.getElementById('generateSchedBtn').disabled = false;
+            }
+
+        });
+
+
+        function getData() {
+            $.ajax("../api/adminapi/getDepartment").done(function (result) {
                 Departments = result;
                 console.log(result);
             });
 
-            $.ajax("../api/adminapi/getRooms").done(function(result){
+            $.ajax("../api/adminapi/getRooms").done(function (result) {
                 Rooms = result;
                 console.log(result);
             });
 
-            $.ajax("../api/adminapi/getCourse").done(function(result){
+            $.ajax("../api/adminapi/getCourse").done(function (result) {
                 Courses = result;
                 console.log(result);
             });
 
-            $.ajax("../api/adminapi/getInstructors").done(function(result){
+            $.ajax("../api/adminapi/getInstructors").done(function (result) {
                 Instructors = result;
                 console.log(result);
             });
 
-            $.ajax("../api/adminapi/getUnavailableperiods").done(function(result){
+            $.ajax("../api/adminapi/getUnavailableperiods").done(function (result) {
                 Unavailableperiods = result;
                 console.log(result);
             });
 
-            $.ajax("../api/adminapi/getAssignsubjects").done(function(result){
+            $.ajax("../api/adminapi/getAssignsubjects").done(function (result) {
                 Assignsubjects = result;
                 console.log(result);
             });
 
-            $.ajax("../api/adminapi/getSubjects").done(function(result){
+            $.ajax("../api/adminapi/getSubjects").done(function (result) {
                 Subjects = result;
                 console.log(result);
             });
 
-            $.ajax("../api/adminapi/getSubjecthandleds").done(function(result){
+            $.ajax("../api/adminapi/getSubjecthandleds").done(function (result) {
                 Subjecthandleds = result;
                 console.log(result);
             });
 
-            $.ajax("../api/adminapi/getSections").done(function(result){
+            $.ajax("../api/adminapi/getSections").done(function (result) {
                 Sections = result;
                 console.log(result);
             });
 
-            $.ajax("../api/adminapi/getRegissections").done(function(result){
+            $.ajax("../api/adminapi/getRegissections").done(function (result) {
                 Regissections = result;
                 console.log(result);
             });
 
-            $.ajax("../api/adminapi/getTimeSlots").done(function(result){
+            $.ajax("../api/adminapi/getTimeSlots").done(function (result) {
                 Timeslots = result;
                 console.log(result);
             });
 
-            $.ajax("../api/adminapi/getAcademicYear").done(function(result){
+            $.ajax("../api/adminapi/getAcademicYear").done(function (result) {
                 AcadYears = result;
                 console.log(result);
             });
@@ -167,57 +194,54 @@
 
         //for header
         const headerData = {
-            "COURSE NO." : "COURSE NO.",
+            "COURSE NO.": "COURSE NO.",
             "DESCRIPTIVE TITLE": "DESCRIPTIVE TITLE",
-            "UNITS" : "UNITS",
+            "UNITS": "UNITS",
             "DAY": "DAY",
             "TIME": "TIME",
             "ROOM": "ROOM",
             "INSTRUCTOR": "INSTRUCTOR",
         };
 
-        const headerRoom = 
+        const headerRoom =
         {
             "SECTION": "SECTION",
-            "DAY" : "DAY",
+            "DAY": "DAY",
             "TIME": "TIME",
             "INSTRUCTOR": "INSTRUCTOR",
         };
 
-        document.getElementById('generateSchedBtn').addEventListener('click', function() {
-            
+        document.getElementById('generateSchedBtn').addEventListener('click', function () {
+
             //Check first if the database already has the schedule
             acadVal = $('#acadYearSelect').val();
             semesterVal = $('#semesterSelect').val();
 
             $.ajax({
-            url: "../api/generatescheduleapi/checkGenerate",
-            type: "POST",
-            data:
-            {
-                acadVal : acadVal,
-                semesterVal : semesterVal,
-            },
+                url: "../api/generatescheduleapi/checkGenerate",
+                type: "POST",
+                data:
+                {
+                    acadVal: acadVal,
+                    semesterVal: semesterVal,
+                },
             })
-            .done(function(result){
-                if(result.length <= 0)
-                {
-                    //If the academic year and semester has no schedule yet, proceed to generate
-                    proceedGenerating();
-                }
-                else
-                {
-                    //If it already has a schedule, then choose to open, cancel or delete
-                    GeneratedSched = result;
-                    alertAction();
-                }
-            });
+                .done(function (result) {
+                    if (result.length <= 0) {
+                        //If the academic year and semester has no schedule yet, proceed to generate
+                        proceedGenerating();
+                    }
+                    else {
+                        //If it already has a schedule, then choose to open, cancel or delete
+                        GeneratedSched = result;
+                        alertAction();
+                    }
+                });
 
         });
 
 
-        function proceedGenerating()
-        {
+        function proceedGenerating() {
             // Disable the button
             acadVal = $('#acadYearSelect').val();
             semesterVal = $('#semesterSelect').val();
@@ -225,72 +249,68 @@
             showLoading();
             //Call API to generate a schedule
             $.ajax({
-            url: "../api/generatescheduleapi/startGenerate",
-            type: "POST",
-            data:
-            {
-                acadVal : acadVal,
-                semesterVal : semesterVal,
-            },
+                url: "../api/generatescheduleapi/startGenerate",
+                type: "POST",
+                data:
+                {
+                    acadVal: acadVal,
+                    semesterVal: semesterVal,
+                },
             })
-            .done(function(result){
-                GeneratedSched = result;
-                closeSwalWhilePageLoaded();
-                console.log(result);
-            });
+                .done(function (result) {
+                    GeneratedSched = result;
+                    closeSwalWhilePageLoaded();
+                    console.log(result);
+                });
         }
 
 
-        function deleteData()
-        {
+        function deleteData() {
             acadVal = $('#acadYearSelect').val();
             semesterVal = $('#semesterSelect').val();
 
             $.ajax({
-            url: "../api/generatescheduleapi/deleteSched",
-            type: "POST",
-            data:
-            {
-                acadVal : acadVal,
-                semesterVal : semesterVal,
-            },
+                url: "../api/generatescheduleapi/deleteSched",
+                type: "POST",
+                data:
+                {
+                    acadVal: acadVal,
+                    semesterVal: semesterVal,
+                },
             })
-            .done(function(result){
-                alertDoneSave();
-            });
+                .done(function (result) {
+                    alertDoneSave();
+                });
         }
 
-        function activateButton()
-        {
+        function activateButton() {
             document.getElementById('generateSchedBtn').disabled = false;
         }
 
         //to populate the academic year
-        function populateAcademicYear()
-        {
+        function populateAcademicYear() {
             $.ajax("../api/adminapi/getAcademicYear")
-            .done(function(result){
-            var template = document.querySelector("template#academicYearTemplate");
-            var parent = document.querySelectorAll("#acadYearSelect");
-            
-            for(i = 0; i < parent.length; i++){
-            result.forEach(function (item){
-                var cloned = template.content.cloneNode(true);
-                cloned.querySelector("option").value = item.acadYearId;
-                cloned.querySelector("option").innerText = item.acadYearName;
+                .done(function (result) {
+                    var template = document.querySelector("template#academicYearTemplate");
+                    var parent = document.querySelectorAll("#acadYearSelect");
 
-                parent[i].prepend(cloned);
-            });
-            }
+                    for (i = 0; i < parent.length; i++) {
+                        result.forEach(function (item) {
+                            var cloned = template.content.cloneNode(true);
+                            cloned.querySelector("option").value = item.acadYearId;
+                            cloned.querySelector("option").innerText = item.acadYearName;
 
-            //to deselect a selected option
-            $("select").val([]);
-            });
+                            parent[i].prepend(cloned);
+                        });
+                    }
+
+                    //to deselect a selected option
+                    $("select").val([]);
+                });
         }
 
 
-        function generateExcel()
-        {
+        function generateExcel() {
             /* create workbook & add worksheet */
             var wb = XLSX.utils.book_new();
 
@@ -316,7 +336,7 @@
 
                 if (matchingSection) {
                     // Merge the properties from all three objects
-                    return {...dd, ...matchingSection };
+                    return { ...dd, ...matchingSection };
                 }
                 return null; // No match found
             }).filter(result => result !== null);
@@ -324,9 +344,8 @@
             //Inner join the section with the department
             var resultDepartment = resultSection.map(rs => {
                 var matchingDepartment = Departments.find(dep => dep.departmentId === rs.departmentId);
-                if(matchingDepartment)
-                {
-                    return {...rs, ...matchingDepartment};
+                if (matchingDepartment) {
+                    return { ...rs, ...matchingDepartment };
                 }
             }).filter(result => result !== null)
 
@@ -350,7 +369,7 @@
                 //const distinctSections = Array.from(uniqueSect.values());
 
                 // Adding data rows
-                wsData.push(["","", "", "", "", "", ""]);
+                wsData.push(["", "", "", "", "", "", ""]);
                 wsData.push(["", "                                                           " + item.departmentName.toUpperCase(), "", "", "", "", ""]);
 
 
@@ -358,7 +377,7 @@
 
                     var resSection = Sections.find(sec => sec.sectionId == item.sectionId) ?? defaultValue;
 
-                    wsData.push(["","", "", "", "", "", ""]);
+                    wsData.push(["", "", "", "", "", "", ""]);
                     wsData.push([resSection.sectionName, "", "", "", "", "", ""]);
                     wsData.push(Object.keys(headerData));
 
@@ -367,8 +386,8 @@
                     const uniqueHolderLoadSchedule = new Map();
 
                     var uniqueLoadSchedules = Array.from(new Set(
-                    GeneratedSched
-                        .filter(rs => rs.sectionId == item.sectionId)
+                        GeneratedSched
+                            .filter(rs => rs.sectionId == item.sectionId)
                     ));
 
                     uniqueLoadSchedules.forEach((obj) => {
@@ -384,21 +403,20 @@
 
                         // Assuming GeneratedSched is an array of objects with properties like SectionId, SubjectId, InstructorId, RoomId, and Day
                         var uniqueDayRoomSchedules = GeneratedSched
-                        .filter(rs =>
-                            rs.sectionId === item.sectionId &&
-                            rs.subjectId === item.subjectId &&
-                            rs.instructorId === item.instructorId &&
-                            rs.roomId === item.roomId
-                        )
-                        .map(rs => rs.day)
-                        .filter((value, index, self) => self.indexOf(value) === index);
+                            .filter(rs =>
+                                rs.sectionId === item.sectionId &&
+                                rs.subjectId === item.subjectId &&
+                                rs.instructorId === item.instructorId &&
+                                rs.roomId === item.roomId
+                            )
+                            .map(rs => rs.day)
+                            .filter((value, index, self) => self.indexOf(value) === index);
 
                         var dayConvert = "";
                         var dayCombined = "";
 
                         uniqueDayRoomSchedules.forEach(item => {
-                            switch(item)
-                            {
+                            switch (item) {
                                 case 1:
                                     dayConvert = "M";
                                     break;
@@ -444,8 +462,7 @@
                             timeCounter++;
                             var resTime = Timeslots.find(tm => tm.timeId == item.timeId) ?? defaultValue;
 
-                            if(timeCounter == 1)
-                            {
+                            if (timeCounter == 1) {
                                 //Convert 24 hour format to 12 hour format
                                 // Parse the input time in HH:mm format
                                 var [hours, minutes] = resTime.startTime.split(':');
@@ -460,8 +477,7 @@
                                 startTime = time12;
 
                             }
-                            else if(timeCounter == timeCount)
-                            {
+                            else if (timeCounter == timeCount) {
                                 //Convert 24 hour format to 12 hour format
                                 // Parse the input time in HH:mm format
                                 var [hours, minutes] = resTime.endTime.split(':');
@@ -480,13 +496,13 @@
                         //combine the time
                         var timeRange = startTime + " - " + endTime;
 
-                        wsData.push([resSubject.subjectCode, resSubject.subjectName, resSubject.subjectUnit,dayCombined, timeRange, resRoom.roomName, resInstructor.instructorFname]);
+                        wsData.push([resSubject.subjectCode, resSubject.subjectName, resSubject.subjectUnit, dayCombined, timeRange, resRoom.roomName, resInstructor.instructorFname]);
                     });
 
                 });
 
                 var ws = XLSX.utils.aoa_to_sheet(wsData);
-                
+
                 //auto size feature
                 ws['!cols'] = fitToColumn(wsData);
                 function fitToColumn(wsData) {
@@ -515,15 +531,15 @@
             distinctRoomData.forEach(item => {
 
                 var resRoom = Rooms.find(rom => rom.roomId == item.roomId) ?? defaultValue;
-                wsData.push(["","", "", ""]);
+                wsData.push(["", "", "", ""]);
                 wsData.push(["ROOM NAME: " + resRoom.roomName, "", "", ""]);
                 wsData.push(Object.keys(headerRoom));
 
                 const uniqueHolderRoomSchedule = new Map();
 
                 var uniqueRoomSchedules = Array.from(new Set(
-                GeneratedSched
-                    .filter(rs => rs.roomId == item.roomId)
+                    GeneratedSched
+                        .filter(rs => rs.roomId == item.roomId)
                 ));
 
                 uniqueRoomSchedules.forEach((obj) => {
@@ -532,18 +548,18 @@
 
                 // Sorting by day and startTime
                 const sortedRoomSchedules = Array.from(uniqueHolderRoomSchedule.values())
-                .sort((a, b) => {
-                    // First, compare by day
-                    const dayComparison = a.day.propertyName - b.day.propertyName;
-                    if (dayComparison !== 0) {
-                        return dayComparison;
-                    }
+                    .sort((a, b) => {
+                        // First, compare by day
+                        const dayComparison = a.day.propertyName - b.day.propertyName;
+                        if (dayComparison !== 0) {
+                            return dayComparison;
+                        }
 
-                    //return a.day.localeCompare(b.day);
+                        //return a.day.localeCompare(b.day);
 
-                    // If days are the same, compare by startTime
-                    return a.timeId.localeCompare(b.timeId);
-                });
+                        // If days are the same, compare by startTime
+                        return a.timeId.localeCompare(b.timeId);
+                    });
 
                 // Clear the original Map
                 uniqueHolderRoomSchedule.clear();
@@ -559,21 +575,20 @@
 
                     // Assuming GeneratedSched is an array of objects with properties like SectionId, SubjectId, InstructorId, RoomId, and Day
                     var uniqueDayRoomSchedules = GeneratedSched
-                    .filter(rs =>
-                        rs.sectionId === item.sectionId &&
-                        rs.subjectId === item.subjectId &&
-                        rs.instructorId === item.instructorId &&
-                        rs.roomId === item.roomId
-                    )
-                    .map(rs => rs.day)
-                    .filter((value, index, self) => self.indexOf(value) === index);
+                        .filter(rs =>
+                            rs.sectionId === item.sectionId &&
+                            rs.subjectId === item.subjectId &&
+                            rs.instructorId === item.instructorId &&
+                            rs.roomId === item.roomId
+                        )
+                        .map(rs => rs.day)
+                        .filter((value, index, self) => self.indexOf(value) === index);
 
                     var dayConvert = "";
                     var dayCombined = "";
 
                     uniqueDayRoomSchedules.forEach(item => {
-                        switch(item)
-                        {
+                        switch (item) {
                             case 1:
                                 dayConvert = "M";
                                 break;
@@ -619,8 +634,7 @@
                         timeCounter++;
                         var resTime = Timeslots.find(tm => tm.timeId == item.timeId) ?? defaultValue;
 
-                        if(timeCounter == 1)
-                        {
+                        if (timeCounter == 1) {
                             //Convert 24 hour format to 12 hour format
                             // Parse the input time in HH:mm format
                             var [hours, minutes] = resTime.startTime.split(':');
@@ -635,8 +649,7 @@
                             startTime = time12;
 
                         }
-                        else if(timeCounter == timeCount)
-                        {
+                        else if (timeCounter == timeCount) {
                             //Convert 24 hour format to 12 hour format
                             // Parse the input time in HH:mm format
                             var [hours, minutes] = resTime.endTime.split(':');
@@ -669,12 +682,12 @@
                 return wsData[0].map((a, i) => ({ wch: Math.max(...wsData.map(a2 => a2[i] ? a2[i].toString().length : 0)) }));
             }
 
-                /* add worksheet to workbook */
-                XLSX.utils.book_append_sheet(wb, ws, "Room Schedule".toUpperCase());
+            /* add worksheet to workbook */
+            XLSX.utils.book_append_sheet(wb, ws, "Room Schedule".toUpperCase());
 
 
             /* write workbook */
-            
+
             var convertAcad = AcadYears.find(ay => ay.acadYearId == acadVal);
             var filename = convertAcad.acadYearName + " - " + semesterVal + ".xlsx";
 
@@ -687,38 +700,36 @@
             }
         }
 
-        function saveData()
-        {
+        function saveData() {
             //Call API to compress and save the schedule
             showLoadingSavingData();
             $.ajax({
-            url: "../api/generatescheduleapi/compressData",
-            type: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({ semester: semesterVal, acadYearId: acadVal, valRooms: GeneratedSched }),
+                url: "../api/generatescheduleapi/compressData",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ semester: semesterVal, acadYearId: acadVal, valRooms: GeneratedSched }),
             })
-            .done(function(result){
-                console.log("Compressed data : ");
-                console.log(result);
-                closeAfterSaving();
-            });
+                .done(function (result) {
+                    console.log("Compressed data : ");
+                    console.log(result);
+                    closeAfterSaving();
+                });
         }
 
         //SWEET ALERT FUNCTIONS
         function showLoading() {
-            @* let timerValue = 0; // Initial timer value in seconds
-            let timerMinute = 0; *@
+    @* let timerValue = 0; // Initial timer value in seconds
+                let timerMinute = 0; *@
 
-            let timerInterval = setInterval(() => {
-                timerValue++;
-                if(timerValue == 60)
-                {
-                    timerMinute++;
-                    timerValue = 0;
-                }
-                document.getElementById('timerSeconds').innerText = timerValue; // Update the timer value in the modal
-                document.getElementById('timerMinutes').innerText = timerMinute; // Update the timer value in the modal
-            }, 1000);
+                let timerInterval = setInterval(() => {
+                    timerValue++;
+                    if (timerValue == 60) {
+                        timerMinute++;
+                        timerValue = 0;
+                    }
+                    document.getElementById('timerSeconds').innerText = timerValue; // Update the timer value in the modal
+                    document.getElementById('timerMinutes').innerText = timerMinute; // Update the timer value in the modal
+                }, 1000);
 
             Swal.fire({
                 title: 'Processing',
@@ -741,20 +752,19 @@
 
 
         function showLoadingSavingData() {
-            @* let timerVal = 0; // Initial timer value in seconds
-            let timerMin = 0; *@
+    @* let timerVal = 0; // Initial timer value in seconds
+                let timerMin = 0; *@
 
-            // Define a named function for the interval
-            let timerInterval = setInterval(() => {
-                timerVal++;
-                if(timerVal == 60)
-                {
-                    timerMin++;
-                    timerVal = 0;
-                }
-                document.getElementById('timerSeconds').innerText = timerVal; // Update the timer value in the modal
-                document.getElementById('timerMinutes').innerText = timerMin; // Update the timer value in the modal
-            }, 1000);
+                // Define a named function for the interval
+                let timerInterval = setInterval(() => {
+                    timerVal++;
+                    if (timerVal == 60) {
+                        timerMin++;
+                        timerVal = 0;
+                    }
+                    document.getElementById('timerSeconds').innerText = timerVal; // Update the timer value in the modal
+                    document.getElementById('timerMinutes').innerText = timerMin; // Update the timer value in the modal
+                }, 1000);
 
             Swal.fire({
                 title: 'Processing',
@@ -778,62 +788,57 @@
         }
 
 
-        function closeSwalWhilePageLoaded(){
+        function closeSwalWhilePageLoaded() {
             setTimeout(() => {
                 Swal.close();
                 clearInterval(timerInterval); // Clear the timer interval when the modal is closed
                 timerInterval = null;
-                @* timerVal = 0;
-                timerMin = 0; *@
-                if(GeneratedSched.length > 0)
-                {
+    @* timerVal = 0;
+                    timerMin = 0; *@
+                if (GeneratedSched.length > 0) {
                     alertSuccess();
                 }
-                else
-                {
+                else {
                     alertError("Cannot open the file because it's empty. Closely check your data before generating.");
                 }
             }, 500);
         }
 
-        function closeAfterSaving(){
+        function closeAfterSaving() {
             setTimeout(() => {
                 Swal.close();
                 clearInterval(timerInterval); // Clear the timer interval when the modal is closed
                 timerInterval = null;
-                @* timerValue = 0;
-                timerMinute = 0; *@
-                alertDoneSave();
+    @* timerValue = 0;
+                    timerMinute = 0; *@
+                    alertDoneSave();
                 generateExcel();
             }, 500);
         }
 
         //display success action
-        function alertSuccess()
-        {
+        function alertSuccess() {
             Swal.fire({
                 icon: 'success',
-                title: 'Done Generating', 
+                title: 'Done Generating',
                 showConfirmButton: false,
                 timer: 1500
             }).then(() => {
                 //Call the generating of sched to excel
-                @* console.log("Hello");
-                console.log(GeneratedSched); *@
-                if(GeneratedSched.length > 0)
-                {
+    @* console.log("Hello");
+                    console.log(GeneratedSched); *@
+                if (GeneratedSched.length > 0) {
                     confirmSave();
                 }
-                @* else
-                {
+    @* else
+                    {
                     alertError("Cannot open the file because it's empty. Closely check your data before generating.");
-                } *@
+                    } *@
             });
         }
 
         //display error alert
-        function alertError(message)
-        {
+        function alertError(message) {
             Swal.fire({
                 icon: 'error',
                 title: 'Error occured',
@@ -843,14 +848,13 @@
 
 
         //display update confirmation
-        function confirmSave()
-        {
+        function confirmSave() {
             Swal.fire({
                 title: 'Do you want to download and save this schedule?',
                 showCancelButton: true,
                 confirmButtonText: 'Save',
             }).then((result) => {
-                if(result.isConfirmed){
+                if (result.isConfirmed) {
                     //proceedUpdate();
                     saveData();
                     //generateExcel();
@@ -859,19 +863,17 @@
         }
 
         //display success action
-        function alertDoneSave()
-        {
+        function alertDoneSave() {
             Swal.fire({
                 icon: 'success',
-                title: 'Successfully saved.', 
+                title: 'Successfully saved.',
                 showConfirmButton: false,
                 timer: 1500
             })
         }
 
         //display update confirmation
-        function alertAction(result)
-        {
+        function alertAction(result) {
             Swal.fire({
                 html: '<h5>It already has an existing schedule.</h5> <br> Would you like to open it instead?',
                 showCancelButton: true,
@@ -880,7 +882,7 @@
                 showDenyButton: true,
                 denyButtonText: 'Delete',
             }).then((result) => {
-                if(result.isConfirmed){
+                if (result.isConfirmed) {
                     generateExcel();
                 }
                 else if (result.isDenied) {
@@ -895,8 +897,7 @@
 </script>
 
 <style>
-    #formDiv
-    {
+    #formDiv {
         padding: 5%;
     }
 </style>
