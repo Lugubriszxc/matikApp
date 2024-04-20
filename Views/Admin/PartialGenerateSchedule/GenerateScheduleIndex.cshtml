@@ -15,6 +15,7 @@
     <center>
         <h1>Generate Class Schedules</h1>
     </center>
+  @Html.Partial("PartialGenerateSchedule/Backlogs")
     <center>
         <div id="formDiv">
             <form id="createRegisSectionForm">
@@ -66,6 +67,8 @@
 
     let timerInterval;
 
+    let isExist = false;
+
     $(document).ready(function () {
 
         var storedUserAuth = sessionStorage.getItem('userauth');
@@ -87,48 +90,103 @@
         activateButton();
         populateAcademicYear();
         getData();
+        checkEmptySelect();
 
-        //every 500 milliseconds it will check the function
-        t1 = window.setInterval(function () { foo() }, 500);
-
-        function foo() {
-            // write function definition here
+        function checkEmptySelect() {
             if ($('#acadYearSelect').val() == null || $('#semesterSelect').val() == null) {
                 document.getElementById('generateSchedBtn').disabled = true;
-                //underConstruction
-                //Call the room schedule if it has any academic year id and semester value
-
             }
             else {
                 document.getElementById('generateSchedBtn').disabled = false;
             }
         }
 
+        //underConstruction
+
+        function checkRoomSchedule(acadYearId, semester) {
+            try {
+                $.ajax({
+                    url: "../api/adminapi/getRoomSchedule",
+                    type: "POST",
+                    data:
+                    {
+                        acadYearId: acadYearId,
+                        semester: semester
+                    },
+                }).done(function (result) {
+                    console.log(result);
+                    if (result.length === 0 || result === null) {
+                        isExist = false;
+                        document.getElementById('viewBacklogsBtn').disabled = true;
+                    }
+                    else {
+                        isExist = true;
+                        document.getElementById('viewBacklogsBtn').disabled = false;
+                        acadVal = acadYearId;
+                        semesterVal = semester;
+
+                        getInstructorBacklog(acadYearId, semester);
+                    }
+                })
+            } catch (error) {
+                console.log(error);
+            }
+
+        }
+
+        function getInstructorBacklog(acadVal, semesterVal)
+        {
+            $.ajax({
+                    url: "../api/schedulebacklogsapi/instructorBacklogs",
+                    type: "POST",
+                    data:
+                    {
+                        acadVal: acadVal,
+                        semesterVal: semesterVal
+                    },
+                }).done(function (result) {
+                    console.log(result);
+                    if (result.length === 0 || result === null) {
+                        isExist = false;
+                        
+                        //Doesn't have any backlogs
+                        $("#instructorBacklogsBtn").removeClass("btn-primary").addClass("btn-success");
+                    }
+                    else {
+                        $("#instructorBacklogVal").text(result.length);
+                        $("#instructorBacklogsBtn").removeClass("btn-primary").addClass("btn-warning");
+
+                    }
+                })
+        }
+
         //Make a select checker here instead of interval checkGenerate
         //get the select action when selecting an option
         $("#acadYearSelect").change(function () {
             //after selection, get the department ID and compare it to existing course list
-            if ($('#acadYearSelect').val() == null || $('#semesterSelect').val() == null)
-            {
+            if ($('#acadYearSelect').val() == null || $('#semesterSelect').val() == null) {
                 document.getElementById('generateSchedBtn').disabled = true;
             }
-            else{
+            else {
                 document.getElementById('generateSchedBtn').disabled = false;
+                checkRoomSchedule($('#acadYearSelect').val(), $('#semesterSelect').val());
             }
         });
 
-        $("#acadYearSelect").change(function () {
+        $("#semesterSelect").change(function () {
             //after selection, get the department ID and compare it to existing course list
-            if ($('#acadYearSelect').val() == null || $('#semesterSelect').val() == null)
-            {
+            if ($('#acadYearSelect').val() == null || $('#semesterSelect').val() == null) {
                 document.getElementById('generateSchedBtn').disabled = true;
             }
-            else{
+            else {
                 document.getElementById('generateSchedBtn').disabled = false;
+                checkRoomSchedule($('#acadYearSelect').val(), $('#semesterSelect').val());
             }
-
         });
 
+        $("#viewBacklogsBtn").click(function () {
+            $("#modalBacklogs").modal("toggle");
+        });
 
         function getData() {
             $.ajax("../api/adminapi/getDepartment").done(function (result) {

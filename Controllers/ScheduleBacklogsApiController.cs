@@ -8,7 +8,6 @@ using matikApp.Models;
 namespace matikApp.Controllers
 {
     [Route("api/[controller]/[action]")]
-
     public class ScheduleBacklogsApiController : ControllerBase
     {
         private readonly matikdbContext _context;

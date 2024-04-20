@@ -1405,7 +1405,7 @@ namespace matikApp.Controllers
         }
 
         public ActionResult<List<Roomschedule>> getRoomSchedule(int acadYearId, string semester){
-            return  _context.Roomschedules.Where(rs => rs.AcadYearId == acadYearId && rs.Semester == semester).ToList();
+            return _context.Roomschedules.Where(rs => rs.AcadYearId == acadYearId && rs.Semester == semester).ToList();
         }
 
         // public IActionResult updateTotalStudents()
