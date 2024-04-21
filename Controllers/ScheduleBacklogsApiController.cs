@@ -23,6 +23,12 @@ namespace matikApp.Controllers
             public string InstructorName { get; set; }
         }
 
+        public class SectionClass
+        {
+            public int SectionID { get; set; }
+            public string SectionName { get; set; }
+        }
+
         public IActionResult instructorBacklogs(int acadVal, string semesterVal)
         {
 
@@ -36,13 +42,15 @@ namespace matikApp.Controllers
                 if (!instructorExists)
                 {
                     var getInstructor = _context.Instructors.Where(s => s.InstructorId == ins.InstructorId).FirstOrDefault();
-                    Console.WriteLine("Instructor doesn't have a schedule detected : " + ins.InstructorId);
-                    Instructor insGet = new Instructor
+                    if (getInstructor != null)
                     {
-                        InstructorID = getInstructor.InstructorId,
-                        InstructorName = getInstructor.InstructorFname + " " + getInstructor.InstructorLname
-                    };
-                    backlogDetected.Add(insGet);
+                        Instructor insGet = new Instructor
+                        {
+                            InstructorID = getInstructor.InstructorId,
+                            InstructorName = getInstructor.InstructorFname + " " + getInstructor.InstructorLname
+                        };
+                        backlogDetected.Add(insGet);
+                    }
                 }
             }
 
@@ -50,6 +58,35 @@ namespace matikApp.Controllers
             // {
             //     Console.WriteLine("Instructor doesn't have a schedule detected : " + printVal.InstructorName);
             // }
+
+            return Ok(backlogDetected);
+        }
+
+        public IActionResult classBacklogs(int acadVal, string semesterVal)
+        {
+            List<SectionClass> backlogDetected = new List<SectionClass> { };
+
+            var checkSection = _context.Regissections.Where(s => s.AcadYearId == acadVal && s.Semester == semesterVal).ToList();
+            foreach (var sec in checkSection)
+            {
+                //check the room schedules if there is no sectionID existing
+                bool sectionExists = _context.Roomschedules.Any(s => s.SectionId == sec.SectionId && s.AcadYearId == acadVal && s.Semester == semesterVal);
+
+                //If there is a section not existing it means the particular section doesn't have a schedule
+                if (!sectionExists)
+                {
+                    var getSection = _context.Sections.Where(s => s.SectionId == sec.SectionId).FirstOrDefault();
+                    if (getSection != null)
+                    {
+                        SectionClass secGet = new SectionClass
+                        {
+                            SectionID = getSection.SectionId,
+                            SectionName = getSection.SectionName
+                        };
+                        backlogDetected.Add(secGet);
+                    }
+                }
+            }
 
             return Ok(backlogDetected);
         }

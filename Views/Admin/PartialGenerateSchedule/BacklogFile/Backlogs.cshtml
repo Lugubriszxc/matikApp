@@ -3,14 +3,15 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-warning text-dark">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Backlogs Modal</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Backlogs</h5>
                 <button type="button" id="modalBacklogsClose" class="btn-close btn-light" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
             <div class="modal-body backlogs d-flex justify-content-center">
                 <div>
-                    <center><h4>Backlogs</h4></center>
-                    <button type="button" class="btn btn-primary" id="instructorBacklogsBtn">Instructor Backlogs ( <span id="instructorBacklogVal">0</span> )</button>
+                    <button type="button" class="btn btn-primary backlogBtnStyle" id="instructorBacklogsBtn">Instructor Backlogs ( <span id="instructorBacklogVal">0</span> )</button>
+                    <br>
+                    <button type="button" class="btn btn-primary backlogBtnStyle" id="sectionBacklogsBtn">Section Backlogs ( <span id="sectionBacklogVal">0</span> )</button>
                 </div>
             </div>
         </div>
@@ -23,3 +24,11 @@
         
     });
 </script>
+
+<style>
+    .backlogBtnStyle
+    {
+        margin-top: 10px;
+        min-width: 20vw;
+    }
+</style>

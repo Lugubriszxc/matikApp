@@ -111,16 +111,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbERlcGFydG1lbnRcRGVwYXJ0bWVudFVwZGF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Neil Chris/Desktop/4th year 1st sem/for capstone/matikApp/Views/Admin/PartialGenerateSchedule/Backlogs.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEdlbmVyYXRlU2NoZWR1bGVcQmFja2xvZ3MuY3NodG1s
+[C:/Users/Neil Chris/Desktop/4th year 1st sem/for capstone/matikApp/Views/Admin/PartialGenerateSchedule/BacklogFile/Backlogs.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEdlbmVyYXRlU2NoZWR1bGVcQmFja2xvZ0ZpbGVcQmFja2xvZ3MuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Neil Chris/Desktop/4th year 1st sem/for capstone/matikApp/Views/Admin/PartialGenerateSchedule/BacklogFile/InstructorBacklogs.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEdlbmVyYXRlU2NoZWR1bGVcQmFja2xvZ0ZpbGVcSW5zdHJ1Y3RvckJhY2tsb2dzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Neil Chris/Desktop/4th year 1st sem/for capstone/matikApp/Views/Admin/PartialGenerateSchedule/BacklogFile/SectionBacklogs.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEdlbmVyYXRlU2NoZWR1bGVcQmFja2xvZ0ZpbGVcU2VjdGlvbkJhY2tsb2dzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Neil Chris/Desktop/4th year 1st sem/for capstone/matikApp/Views/Admin/PartialGenerateSchedule/GenerateScheduleIndex.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEdlbmVyYXRlU2NoZWR1bGVcR2VuZXJhdGVTY2hlZHVsZUluZGV4LmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Neil Chris/Desktop/4th year 1st sem/for capstone/matikApp/Views/Admin/PartialGenerateSchedule/InstructorBacklogs.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGFydGlhbEdlbmVyYXRlU2NoZWR1bGVcSW5zdHJ1Y3RvckJhY2tsb2dzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Neil Chris/Desktop/4th year 1st sem/for capstone/matikApp/Views/Admin/PartialInstructor/InstructorAddSubjectHandled.cshtml]

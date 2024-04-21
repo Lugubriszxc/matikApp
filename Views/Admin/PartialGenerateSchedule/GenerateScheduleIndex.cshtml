@@ -15,8 +15,9 @@
     <center>
         <h1>Generate Class Schedules</h1>
     </center>
-    @Html.Partial("PartialGenerateSchedule/Backlogs")
-    @Html.Partial("PartialGenerateSchedule/InstructorBacklogs")
+    @Html.Partial("PartialGenerateSchedule/BacklogFile/Backlogs")
+    @Html.Partial("PartialGenerateSchedule/BacklogFile/InstructorBacklogs")
+    @Html.Partial("PartialGenerateSchedule/BacklogFile/SectionBacklogs")
     <center>
         <div id="formDiv">
             <form id="createRegisSectionForm">
@@ -42,6 +43,7 @@
 </html>
 
 <script>
+
     var GeneratedSched = {};
 
     var Departments = {};
@@ -127,6 +129,7 @@
                         semesterVal = semester;
 
                         getInstructorBacklog(acadYearId, semester);
+                        getSectionBacklog(acadYearId, semester);
                     }
                 })
             } catch (error) {
@@ -145,7 +148,7 @@
                 },
             }).done(function (result) {
                 var parent = document.querySelector(".parentInstructorBacklogs");
-                    parent.innerHTML = '';
+                parent.innerHTML = '';
 
                 if (result.length === 0 || result === null) {
                     isExist = false;
@@ -158,7 +161,7 @@
                     var parent = document.querySelector(".parentInstructorBacklogs");
                     var cloned = template.content.cloneNode(true);
 
-                    cloned.querySelector(".instructorBacklogsTemp").innerHTML = "No backlogs recorded. <hr>";
+                    cloned.querySelector(".instructorBacklogsTemp").innerHTML = "<hr> No backlogs recorded.";
                     //cloned.find('.stockHis').remove();
 
                     parent.prepend(cloned);
@@ -166,7 +169,7 @@
                 else {
                     $("#instructorBacklogVal").text(result.length);
                     $("#instructorBacklogsBtn").removeClass("btn-primary").addClass("btn-warning");
-   
+
                     //Setting up the logs for the instructor
                     result.forEach(function (item, index) {
                         var template = document.querySelector("template#card-cardInstructor");
@@ -174,6 +177,53 @@
                         var cloned = template.content.cloneNode(true);
 
                         cloned.querySelector(".instructorBacklogsTemp").innerHTML = index + 1 + ". " + item.instructorName;
+
+                        parent.append(cloned);
+                    });
+                }
+            })
+        }
+
+        function getSectionBacklog(acadVal, semesterVal) {
+            $.ajax({
+                url: "../api/schedulebacklogsapi/classBacklogs",
+                type: "POST",
+                data:
+                {
+                    acadVal: acadVal,
+                    semesterVal: semesterVal
+                },
+            }).done(function (result) {
+                var parent = document.querySelector(".parentSectionBacklogs");
+                parent.innerHTML = '';
+
+                if (result.length === 0 || result === null) {
+                    isExist = false;
+
+                    //Doesn't have any backlogs
+                    $("#sectionBacklogsBtn").removeClass("btn-primary").addClass("btn-success");
+
+                    //Setting up as empty
+                    var template = document.querySelector("template#card-cardSection");
+                    var parent = document.querySelector(".parentSectionBacklogs");
+                    var cloned = template.content.cloneNode(true);
+
+                    cloned.querySelector(".sectionBacklogsTemp").innerHTML = "<hr> No backlogs recorded.";
+                    //cloned.find('.stockHis').remove();
+
+                    parent.prepend(cloned);
+                }
+                else {
+                    $("#sectionBacklogVal").text(result.length);
+                    $("#sectionBacklogsBtn").removeClass("btn-primary").addClass("btn-warning");
+
+                    //Setting up the logs for the instructor
+                    result.forEach(function (item, index) {
+                        var template = document.querySelector("template#card-cardSection");
+                        var parent = document.querySelector(".parentSectionBacklogs");
+                        var cloned = template.content.cloneNode(true);
+
+                        cloned.querySelector(".sectionBacklogsTemp").innerHTML = index + 1 + ". " + item.sectionName;
 
                         parent.append(cloned);
                     });
@@ -212,6 +262,11 @@
         //instructorBacklogsBtn
         $("#instructorBacklogsBtn").click(function () {
             $("#modalInstructorBacklogs").modal("toggle");
+        });
+
+        //sectionBacklogsBtn
+        $("#sectionBacklogsBtn").click(function () {
+            $("#modalSectionBacklogs").modal("toggle");
         });
 
         function getData() {
