@@ -1035,20 +1035,20 @@ namespace matikApp.Controllers
 
             //After this, the system will check the data if there is missing room assignment from the semester and year
             // List<string> sectionNotExisting = new List<string>();
-            var checkSection = Regissections.Where(s => s.AcadYearId == acadValz && s.Semester == semesterValz).ToList();
-            foreach(var sec in checkSection)
-            {
-                //check the room schedules if there is no sectionID existing
-                bool sectionExists = roomSchedule.Any(s => s.SectionId == sec.SectionId);
+             var checkSection = Regissections.Where(s => s.AcadYearId == acadValz && s.Semester == semesterValz).ToList();
+            // foreach(var sec in checkSection)
+            // {
+            //     //check the room schedules if there is no sectionID existing
+            //     bool sectionExists = roomSchedule.Any(s => s.SectionId == sec.SectionId);
 
-                //If there is a section not existing it means the particular section doesn't have a schedule
-                if(!sectionExists)
-                {
-                    //It means it has detected that there is no room schedule with the section provided
-                    Console.WriteLine("Section doesn't have a room schedule detected : " + sec.SectionId);
-                    // sectionNotExisting.Add(sec.SectionId.ToString());
-                }
-            }
+            //     //If there is a section not existing it means the particular section doesn't have a schedule
+            //     if(!sectionExists)
+            //     {
+            //         //It means it has detected that there is no room schedule with the section provided
+            //         Console.WriteLine("Section doesn't have a room schedule detected : " + sec.SectionId);
+            //         // sectionNotExisting.Add(sec.SectionId.ToString());
+            //     }
+            // }
 
             // var checkSectionExists = (from rs in roomSchedule
             //                           join s in Sections on new { rs.SectionId } equals new { s.SectionId }
