@@ -15,7 +15,8 @@
     <center>
         <h1>Generate Class Schedules</h1>
     </center>
-  @Html.Partial("PartialGenerateSchedule/Backlogs")
+    @Html.Partial("PartialGenerateSchedule/Backlogs")
+    @Html.Partial("PartialGenerateSchedule/InstructorBacklogs")
     <center>
         <div id="formDiv">
             <form id="createRegisSectionForm">
@@ -131,33 +132,53 @@
             } catch (error) {
                 console.log(error);
             }
-
         }
 
-        function getInstructorBacklog(acadVal, semesterVal)
-        {
+        function getInstructorBacklog(acadVal, semesterVal) {
             $.ajax({
-                    url: "../api/schedulebacklogsapi/instructorBacklogs",
-                    type: "POST",
-                    data:
-                    {
-                        acadVal: acadVal,
-                        semesterVal: semesterVal
-                    },
-                }).done(function (result) {
-                    console.log(result);
-                    if (result.length === 0 || result === null) {
-                        isExist = false;
-                        
-                        //Doesn't have any backlogs
-                        $("#instructorBacklogsBtn").removeClass("btn-primary").addClass("btn-success");
-                    }
-                    else {
-                        $("#instructorBacklogVal").text(result.length);
-                        $("#instructorBacklogsBtn").removeClass("btn-primary").addClass("btn-warning");
+                url: "../api/schedulebacklogsapi/instructorBacklogs",
+                type: "POST",
+                data:
+                {
+                    acadVal: acadVal,
+                    semesterVal: semesterVal
+                },
+            }).done(function (result) {
+                var parent = document.querySelector(".parentInstructorBacklogs");
+                    parent.innerHTML = '';
 
-                    }
-                })
+                if (result.length === 0 || result === null) {
+                    isExist = false;
+
+                    //Doesn't have any backlogs
+                    $("#instructorBacklogsBtn").removeClass("btn-primary").addClass("btn-success");
+
+                    //Setting up as empty
+                    var template = document.querySelector("template#card-cardInstructor");
+                    var parent = document.querySelector(".parentInstructorBacklogs");
+                    var cloned = template.content.cloneNode(true);
+
+                    cloned.querySelector(".instructorBacklogsTemp").innerHTML = "No backlogs recorded. <hr>";
+                    //cloned.find('.stockHis').remove();
+
+                    parent.prepend(cloned);
+                }
+                else {
+                    $("#instructorBacklogVal").text(result.length);
+                    $("#instructorBacklogsBtn").removeClass("btn-primary").addClass("btn-warning");
+   
+                    //Setting up the logs for the instructor
+                    result.forEach(function (item, index) {
+                        var template = document.querySelector("template#card-cardInstructor");
+                        var parent = document.querySelector(".parentInstructorBacklogs");
+                        var cloned = template.content.cloneNode(true);
+
+                        cloned.querySelector(".instructorBacklogsTemp").innerHTML = index + 1 + ". " + item.instructorName;
+
+                        parent.append(cloned);
+                    });
+                }
+            })
         }
 
         //Make a select checker here instead of interval checkGenerate
@@ -186,6 +207,11 @@
 
         $("#viewBacklogsBtn").click(function () {
             $("#modalBacklogs").modal("toggle");
+        });
+
+        //instructorBacklogsBtn
+        $("#instructorBacklogsBtn").click(function () {
+            $("#modalInstructorBacklogs").modal("toggle");
         });
 
         function getData() {

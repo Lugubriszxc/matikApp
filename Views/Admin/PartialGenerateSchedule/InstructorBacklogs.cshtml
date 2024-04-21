@@ -1,0 +1,42 @@
+<div class="modal fade" id="modalInstructorBacklogs" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-warning text-dark">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Instructor Backlogs</h5>
+                <button type="button" id="modalInstructorBacklogsClose" class="btn-close btn-light"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body InstructorBacklogs d-flex justify-content-center">
+                <div>
+                    <h5>Instructors that don't have a schedule : </h5>
+                    <hr />
+                   <i>Note : The cause of backlogs might come from <b> the lack of rooms available, the student population, the lack of instructors for each subject, or the time slots per day. </b> </i>
+                    <div class="cardInfo" style="width: 100%;">
+                        <center>
+                            <h4>
+                                <div class="info-title" id="info-title">
+                                </div>
+                            </h4>
+                        </center><br />
+                        <strong>
+                            <div class="info-InstructorLogs"></div>
+                        </strong>
+                        <template id="card-cardInstructor">
+                            <div class="instructorBacklogsTemp"></div> <hr/>
+                        </template>
+                        <div class="parentInstructorBacklogs"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<style>
+.InstructorBacklogs {
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+}
+</style>

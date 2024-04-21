@@ -46,10 +46,10 @@ namespace matikApp.Controllers
                 }
             }
 
-            foreach (var printVal in backlogDetected)
-            {
-                Console.WriteLine("Instructor doesn't have a schedule detected : " + printVal.InstructorName);
-            }
+            // foreach (var printVal in backlogDetected)
+            // {
+            //     Console.WriteLine("Instructor doesn't have a schedule detected : " + printVal.InstructorName);
+            // }
 
             return Ok(backlogDetected);
         }
