@@ -31,6 +31,7 @@ namespace matikApp.Controllers
 
         public class SubjectSection
         {
+            public int SectionID {get; set;}
             public string SectionName { get; set; }
             public string SubjectName { get; set; }
         }
@@ -122,6 +123,7 @@ namespace matikApp.Controllers
                                 Console.WriteLine("This section : " + getSec.SectionName + "Don't have : " + getSub.SubjectName);
                                 SubjectSection subGet = new SubjectSection
                                 {
+                                    SectionID = getSec.SectionId,
                                     SectionName = getSec.SectionName,
                                     SubjectName = getSub.SubjectName
                                 };
