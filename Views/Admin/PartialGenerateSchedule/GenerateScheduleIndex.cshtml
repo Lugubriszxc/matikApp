@@ -18,6 +18,7 @@
     @Html.Partial("PartialGenerateSchedule/BacklogFile/Backlogs")
     @Html.Partial("PartialGenerateSchedule/BacklogFile/InstructorBacklogs")
     @Html.Partial("PartialGenerateSchedule/BacklogFile/SectionBacklogs")
+    @Html.Partial("PartialGenerateSchedule/BacklogFile/SubjectBacklogs")
     <center>
         <div id="formDiv">
             <form id="createRegisSectionForm">
@@ -93,7 +94,7 @@
         activateButton();
         populateAcademicYear();
         getData();
-        checkEmptySelect();
+        checkEmptySelect(); //setting the value of select as default
 
         function checkEmptySelect() {
             if ($('#acadYearSelect').val() == null || $('#semesterSelect').val() == null) {
@@ -103,8 +104,6 @@
                 document.getElementById('generateSchedBtn').disabled = false;
             }
         }
-
-        //underConstruction
 
         function checkRoomSchedule(acadYearId, semester) {
             try {
@@ -128,8 +127,10 @@
                         acadVal = acadYearId;
                         semesterVal = semester;
 
+                        //Getting all the backlogs 1 by 1
                         getInstructorBacklog(acadYearId, semester);
                         getSectionBacklog(acadYearId, semester);
+                        getSubjectBacklog(acadYearId, semester);
                     }
                 })
             } catch (error) {
@@ -155,6 +156,7 @@
 
                     //Doesn't have any backlogs
                     $("#instructorBacklogsBtn").removeClass("btn-primary").addClass("btn-success");
+                    document.getElementById('instructorBacklogsBtn').disabled = false;
 
                     //Setting up as empty
                     var template = document.querySelector("template#card-cardInstructor");
@@ -169,6 +171,7 @@
                 else {
                     $("#instructorBacklogVal").text(result.length);
                     $("#instructorBacklogsBtn").removeClass("btn-primary").addClass("btn-warning");
+                    document.getElementById('instructorBacklogsBtn').disabled = false;
 
                     //Setting up the logs for the instructor
                     result.forEach(function (item, index) {
@@ -202,6 +205,7 @@
 
                     //Doesn't have any backlogs
                     $("#sectionBacklogsBtn").removeClass("btn-primary").addClass("btn-success");
+                    document.getElementById('sectionBacklogsBtn').disabled = false;
 
                     //Setting up as empty
                     var template = document.querySelector("template#card-cardSection");
@@ -216,8 +220,9 @@
                 else {
                     $("#sectionBacklogVal").text(result.length);
                     $("#sectionBacklogsBtn").removeClass("btn-primary").addClass("btn-warning");
+                    document.getElementById('sectionBacklogsBtn').disabled = false;
 
-                    //Setting up the logs for the instructor
+                    //Setting up the logs for the section
                     result.forEach(function (item, index) {
                         var template = document.querySelector("template#card-cardSection");
                         var parent = document.querySelector(".parentSectionBacklogs");
@@ -225,6 +230,67 @@
 
                         cloned.querySelector(".sectionBacklogsTemp").innerHTML = index + 1 + ". " + item.sectionName;
 
+                        parent.append(cloned);
+                    });
+                }
+            })
+        }
+
+        //under construction
+        function getSubjectBacklog(acadVal, semesterVal) {
+            $.ajax({
+                url: "../api/schedulebacklogsapi/subjectBacklogs",
+                type: "POST",
+                data:
+                {
+                    acadVal: acadVal,
+                    semesterVal: semesterVal
+                },
+            }).done(function (result) {
+                @* var parent = document.querySelector(".parentSectionBacklogs");
+                parent.innerHTML = ''; *@
+
+                console.log(result);
+                if (result.length === 0 || result === null) {
+                    isExist = false;
+
+                    //Doesn't have any backlogs
+                    $("#subjectBacklogsBtn").removeClass("btn-primary").addClass("btn-success");
+                    document.getElementById('subjectBacklogsBtn').disabled = false;
+
+                    //Setting up as empty
+                    var template = document.querySelector("template#card-cardSubject");
+                    var parent = document.querySelector(".parentSubjectBacklogs");
+                    var cloned = template.content.cloneNode(true);
+
+                    cloned.querySelector(".subjectBacklogsTemp").innerHTML = "<hr> No backlogs recorded.";
+                    //cloned.find('.stockHis').remove();
+
+                    parent.prepend(cloned);
+                }
+                else {
+                    $("#subjectBacklogVal").text(result.length);
+                    $("#subjectBacklogsBtn").removeClass("btn-primary").addClass("btn-warning");
+                    document.getElementById('subjectBacklogsBtn').disabled = false;
+
+                    //Setting up the logs for the subject
+                    let secID = 0;
+                    result.forEach(function (item) {
+                        var template = document.querySelector("template#card-cardSubject");
+                        var parent = document.querySelector(".parentSubjectBacklogs");
+                        var cloned = template.content.cloneNode(true);
+
+                        if(secID === 0 || secID !== item.sectionID)
+                        {
+                            secID = item.sectionID
+                            //Setting this up as a title for the section
+                            cloned.querySelector(".subjectBacklogsTitle").innerHTML = "<b><hr>" + item.sectionName + "</b>";
+                            cloned.querySelector(".subjectBacklogsTemp").innerHTML = "• " + item.subjectName;
+                        }
+                        else
+                        {
+                            cloned.querySelector(".subjectBacklogsTemp").innerHTML = "• " + item.subjectName;
+                        }
                         parent.append(cloned);
                     });
                 }
@@ -267,6 +333,11 @@
         //sectionBacklogsBtn
         $("#sectionBacklogsBtn").click(function () {
             $("#modalSectionBacklogs").modal("toggle");
+        });
+
+        //subjectBacklogsBtn
+        $("#subjectBacklogsBtn").click(function () {
+            $("#modalSubjectBacklogs").modal("toggle");
         });
 
         function getData() {
