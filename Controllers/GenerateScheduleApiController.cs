@@ -1113,6 +1113,29 @@ namespace matikApp.Controllers
                 }
             }
 
+
+            //Get the time schedule that is inaccurate or missing with schedule or end time.
+            /*
+            DETECTED :
+            InstructorID : 26 : Carl Joshua Cosep
+            RoomID : 65 : Computer Lab 1
+            sectionID : 17 : BSIT - 2C
+            SubjectID : 19 : Information Management 1
+            Day : 6 : Saturday
+            TimeID : 191 : 8:30PM
+            */
+
+            //roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day + 1));
+            //get the room schedule first
+            // var subVal = 0;
+            // var secVal = 0;
+            // foreach(var rs in roomSchedule)
+            // {
+            //     //Get the loop to get the time id of each subject and section
+            //     //First : Register the section and subject
+                
+            // }
+
             // var getSectSubj = 
 
             // foreach(var rs in roomSchedule)

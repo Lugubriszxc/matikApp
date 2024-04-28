@@ -238,8 +238,10 @@
 
         //under construction
         function getSubjectBacklog(acadVal, semesterVal) {
+
+            //subjectBacklogs
             $.ajax({
-                url: "../api/schedulebacklogsapi/subjectBacklogs",
+                url: "../api/schedulebacklogsapi/timeBacklogs",
                 type: "POST",
                 data:
                 {
@@ -247,8 +249,6 @@
                     semesterVal: semesterVal
                 },
             }).done(function (result) {
-                @* var parent = document.querySelector(".parentSectionBacklogs");
-                parent.innerHTML = ''; *@
 
                 console.log(result);
                 if (result.length === 0 || result === null) {

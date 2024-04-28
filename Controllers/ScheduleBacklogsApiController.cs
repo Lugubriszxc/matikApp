@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using matikApp.Models;
+using NuGet.Protocol.Plugins;
 
 namespace matikApp.Controllers
 {
@@ -31,7 +32,14 @@ namespace matikApp.Controllers
 
         public class SubjectSection
         {
-            public int SectionID {get; set;}
+            public int SectionID { get; set; }
+            public string SectionName { get; set; }
+            public string SubjectName { get; set; }
+        }
+
+        public class TimeBacklogSection
+        {
+            public int SectionID { get; set; }
             public string SectionName { get; set; }
             public string SubjectName { get; set; }
         }
@@ -134,6 +142,82 @@ namespace matikApp.Controllers
                     }
                 }
             }
+            return Ok(backlogDetected);
+        }
+
+
+
+        public IActionResult timeBacklogs(int acadVal, string semesterVal)
+        {
+            //Get the time schedule that is inaccurate or missing with schedule or end time.
+            /*
+            DETECTED :
+            InstructorID : 26 : Carl Joshua Cosep
+            RoomID : 65 : Computer Lab 1
+            sectionID : 17 : BSIT - 2C
+            SubjectID : 19 : Information Management 1
+            Day : 6 : Saturday
+            TimeID : 191 : 8:30PM
+
+            ID : 173148
+            */
+
+            List<TimeBacklogSection> backlogDetected = new List<TimeBacklogSection> { };
+
+            var checkSection = _context.Regissections.Where(s => s.AcadYearId == acadVal && s.Semester == semesterVal && s.SectionId == 17).ToList();
+            foreach (var sec in checkSection)
+            {
+                //In every section, filter the subjects
+                var getSec = _context.Sections.Where(s => s.SectionId == sec.SectionId).FirstOrDefault();
+                if (getSec != null)
+                {
+                    var getAssignSub = _context.Assignsubjects.Where(asub => asub.CourseId == getSec.CourseId && asub.YearLevel == getSec.YearLevel && asub.Semester == semesterVal).ToList();
+                    foreach (var subJ in getAssignSub)
+                    {
+                        bool subjectExists = _context.Roomschedules.Any(rs => rs.SectionId == sec.SectionId && rs.SubjectId == subJ.SubjectId && rs.AcadYearId == acadVal && rs.Semester == semesterVal);
+                        if (subjectExists != null)
+                        {
+                            //This means to only loop the subject with the room schedules
+                            //Get the day count
+
+                            var getSub = _context.Subjects.Where(s => s.SubjectId == subJ.SubjectId).FirstOrDefault();
+                            if (getSub != null)
+                            {
+                                var uniqueDays = _context.Roomschedules
+                                .Where(rs => rs.SectionId == sec.SectionId && rs.SubjectId == subJ.SubjectId && rs.AcadYearId == acadVal && rs.Semester == semesterVal)
+                                .OrderBy(rs => rs.Day)
+                                .Distinct()
+                                .ToList();
+
+                                var day = 0;
+                                var dayCount = 0;
+                                foreach (var detectTime in uniqueDays)
+                                {
+                                    var countDay = _context.Roomschedules
+                                    .Where(rs => rs.SectionId == sec.SectionId && rs.SubjectId == subJ.SubjectId && rs.AcadYearId == acadVal && rs.Semester == semesterVal && rs.Day == detectTime.Day)
+                                    .Count();
+
+                                    if (countDay <= 1)
+                                    {
+                                        Console.WriteLine("Missing time schedule detected on Section : " + getSec.SectionName + ", Subject : "
+                                            + getSub.SubjectName);
+
+                                        TimeBacklogSection secGet = new TimeBacklogSection
+                                        {
+                                            SectionID = getSec.SectionId,
+                                            SectionName = getSec.SectionName,
+                                            SubjectName = getSub.SubjectName
+                                        };
+
+                                        backlogDetected.Add(secGet);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             return Ok(backlogDetected);
         }
     }
