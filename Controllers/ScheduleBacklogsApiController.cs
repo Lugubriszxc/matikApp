@@ -189,8 +189,6 @@ namespace matikApp.Controllers
                                 .Distinct()
                                 .ToList();
 
-                                var day = 0;
-                                var dayCount = 0;
                                 foreach (var detectTime in uniqueDays)
                                 {
                                     var countDay = _context.Roomschedules
@@ -199,9 +197,6 @@ namespace matikApp.Controllers
 
                                     if (countDay <= 1)
                                     {
-                                        Console.WriteLine("Missing time schedule detected on Section : " + getSec.SectionName + ", Subject : "
-                                            + getSub.SubjectName);
-
                                         TimeBacklogSection secGet = new TimeBacklogSection
                                         {
                                             SectionID = getSec.SectionId,
