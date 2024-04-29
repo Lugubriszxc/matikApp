@@ -18,7 +18,7 @@ namespace matikApp.Controllers
             _context = context;
         }
 
-        public class Instructor
+        public class InstructorClass
         {
             public int InstructorID { get; set; }
             public string InstructorName { get; set; }
@@ -44,27 +44,48 @@ namespace matikApp.Controllers
             public string SubjectName { get; set; }
         }
 
+        private List<Instructor> Instructors { get; set; }
+        private List<Subject> Subjects { get; set; }
+        private List<Subjecthandled> Subjecthandleds { get; set; }
+        private List<Section> Sections { get; set; }
+        private List<Regissection> Regissections { get; set; }
+        private List<Roomschedule> Roomschedules { get; set; }
+        private List<Room> Rooms {get; set;}
+        private List<Instructorunitload> Instructorunitloads { get; set; }
+        private List<Assignsubject> Assignsubjects { get; set; }
+
         public IActionResult getAllData()
         {
+            Instructors = _context.Instructors.ToList();
+            Subjects = _context.Subjects.ToList();
+            Subjecthandleds = _context.Subjecthandleds.ToList();
+            Sections = _context.Sections.ToList();
+            Regissections = _context.Regissections.ToList();
+            Roomschedules = _context.Roomschedules.ToList();
+            Rooms = _context.Rooms.ToList();
+            Instructorunitloads = _context.Instructorunitloads.ToList();
+            Assignsubjects = _context.Assignsubjects.ToList();
+
             return Ok();
         }
 
         public IActionResult instructorBacklogs(int acadVal, string semesterVal)
         {
+            //Make this as a starting point for getting all the data
+            getAllData();
+            List<InstructorClass> backlogDetected = new List<InstructorClass> { };
 
-            List<Instructor> backlogDetected = new List<Instructor> { };
-
-            var checkInstructor = _context.Instructorunitloads.Where(s => s.AcadYearId == acadVal && s.Semester == semesterVal).ToList();
+            var checkInstructor = Instructorunitloads.Where(s => s.AcadYearId == acadVal && s.Semester == semesterVal).ToList();
             foreach (var ins in checkInstructor)
             {
                 //check the room schedules if there is no instructorID existing
-                bool instructorExists = _context.Roomschedules.Any(s => s.InstructorId == ins.InstructorId && s.AcadYearId == acadVal && s.Semester == semesterVal);
+                bool instructorExists = Roomschedules.Any(s => s.InstructorId == ins.InstructorId && s.AcadYearId == acadVal && s.Semester == semesterVal);
                 if (!instructorExists)
                 {
-                    var getInstructor = _context.Instructors.Where(s => s.InstructorId == ins.InstructorId).FirstOrDefault();
+                    var getInstructor = Instructors.Where(s => s.InstructorId == ins.InstructorId).FirstOrDefault();
                     if (getInstructor != null)
                     {
-                        Instructor insGet = new Instructor
+                        InstructorClass insGet = new InstructorClass
                         {
                             InstructorID = getInstructor.InstructorId,
                             InstructorName = getInstructor.InstructorFname + " " + getInstructor.InstructorLname
@@ -74,28 +95,24 @@ namespace matikApp.Controllers
                 }
             }
 
-            // foreach (var printVal in backlogDetected)
-            // {
-            //     Console.WriteLine("Instructor doesn't have a schedule detected : " + printVal.InstructorName);
-            // }
-
             return Ok(backlogDetected);
         }
 
         public IActionResult classBacklogs(int acadVal, string semesterVal)
         {
+            getAllData();
             List<SectionClass> backlogDetected = new List<SectionClass> { };
 
-            var checkSection = _context.Regissections.Where(s => s.AcadYearId == acadVal && s.Semester == semesterVal).ToList();
+            var checkSection = Regissections.Where(s => s.AcadYearId == acadVal && s.Semester == semesterVal).ToList();
             foreach (var sec in checkSection)
             {
                 //check the room schedules if there is no sectionID existing
-                bool sectionExists = _context.Roomschedules.Any(s => s.SectionId == sec.SectionId && s.AcadYearId == acadVal && s.Semester == semesterVal);
+                bool sectionExists = Roomschedules.Any(s => s.SectionId == sec.SectionId && s.AcadYearId == acadVal && s.Semester == semesterVal);
 
                 //If there is a section not existing it means the particular section doesn't have a schedule
                 if (!sectionExists)
                 {
-                    var getSection = _context.Sections.Where(s => s.SectionId == sec.SectionId).FirstOrDefault();
+                    var getSection = Sections.Where(s => s.SectionId == sec.SectionId).FirstOrDefault();
                     if (getSection != null)
                     {
                         SectionClass secGet = new SectionClass
@@ -113,24 +130,25 @@ namespace matikApp.Controllers
 
         public IActionResult subjectBacklogs(int acadVal, string semesterVal)
         {
+            getAllData();
             List<SubjectSection> backlogDetected = new List<SubjectSection> { };
 
-            var checkSection = _context.Regissections.Where(s => s.AcadYearId == acadVal && s.Semester == semesterVal).ToList();
+            var checkSection = Regissections.Where(s => s.AcadYearId == acadVal && s.Semester == semesterVal).ToList();
 
             foreach (var sec in checkSection)
             {
                 //get the section detail from regissections 
-                var getSec = _context.Sections.Where(s => s.SectionId == sec.SectionId).FirstOrDefault();
+                var getSec = Sections.Where(s => s.SectionId == sec.SectionId).FirstOrDefault();
                 if (getSec != null)
                 {
                     //getting the subjects from that section
-                    var getAssignSub = _context.Assignsubjects.Where(asub => asub.CourseId == getSec.CourseId && asub.YearLevel == getSec.YearLevel && asub.Semester == semesterVal).ToList();
+                    var getAssignSub = Assignsubjects.Where(asub => asub.CourseId == getSec.CourseId && asub.YearLevel == getSec.YearLevel && asub.Semester == semesterVal).ToList();
                     foreach (var subJ in getAssignSub)
                     {
-                        bool subjectExists = _context.Roomschedules.Any(rs => rs.SectionId == sec.SectionId && rs.SubjectId == subJ.SubjectId && rs.AcadYearId == acadVal && rs.Semester == semesterVal);
+                        bool subjectExists = Roomschedules.Any(rs => rs.SectionId == sec.SectionId && rs.SubjectId == subJ.SubjectId && rs.AcadYearId == acadVal && rs.Semester == semesterVal);
                         if (!subjectExists)
                         {
-                            var getSub = _context.Subjects.Where(s => s.SubjectId == subJ.SubjectId).FirstOrDefault();
+                            var getSub = Subjects.Where(s => s.SubjectId == subJ.SubjectId).FirstOrDefault();
                             if (getSub != null)
                             {
                                 Console.WriteLine("This section : " + getSec.SectionName + "Don't have : " + getSub.SubjectName);
@@ -154,6 +172,7 @@ namespace matikApp.Controllers
 
         public IActionResult timeBacklogs(int acadVal, string semesterVal)
         {
+
             //Get the time schedule that is inaccurate or missing with schedule or end time.
             /*
             DETECTED :
@@ -167,28 +186,29 @@ namespace matikApp.Controllers
             ID : 173148
             */
 
+            getAllData();
             List<TimeBacklogSection> backlogDetected = new List<TimeBacklogSection> { };
 
-            var checkSection = _context.Regissections.Where(s => s.AcadYearId == acadVal && s.Semester == semesterVal && s.SectionId == 17).ToList();
+            var checkSection = Regissections.Where(s => s.AcadYearId == acadVal && s.Semester == semesterVal && s.SectionId == 17).ToList();
             foreach (var sec in checkSection)
             {
                 //In every section, filter the subjects
-                var getSec = _context.Sections.Where(s => s.SectionId == sec.SectionId).FirstOrDefault();
+                var getSec = Sections.Where(s => s.SectionId == sec.SectionId).FirstOrDefault();
                 if (getSec != null)
                 {
-                    var getAssignSub = _context.Assignsubjects.Where(asub => asub.CourseId == getSec.CourseId && asub.YearLevel == getSec.YearLevel && asub.Semester == semesterVal).ToList();
+                    var getAssignSub = Assignsubjects.Where(asub => asub.CourseId == getSec.CourseId && asub.YearLevel == getSec.YearLevel && asub.Semester == semesterVal).ToList();
                     foreach (var subJ in getAssignSub)
                     {
-                        bool subjectExists = _context.Roomschedules.Any(rs => rs.SectionId == sec.SectionId && rs.SubjectId == subJ.SubjectId && rs.AcadYearId == acadVal && rs.Semester == semesterVal);
+                        bool subjectExists = Roomschedules.Any(rs => rs.SectionId == sec.SectionId && rs.SubjectId == subJ.SubjectId && rs.AcadYearId == acadVal && rs.Semester == semesterVal);
                         if (subjectExists != null)
                         {
                             //This means to only loop the subject with the room schedules
                             //Get the day count
 
-                            var getSub = _context.Subjects.Where(s => s.SubjectId == subJ.SubjectId).FirstOrDefault();
+                            var getSub = Subjects.Where(s => s.SubjectId == subJ.SubjectId).FirstOrDefault();
                             if (getSub != null)
                             {
-                                var uniqueDays = _context.Roomschedules
+                                var uniqueDays = Roomschedules
                                 .Where(rs => rs.SectionId == sec.SectionId && rs.SubjectId == subJ.SubjectId && rs.AcadYearId == acadVal && rs.Semester == semesterVal)
                                 .OrderBy(rs => rs.Day)
                                 .Distinct()
@@ -196,7 +216,7 @@ namespace matikApp.Controllers
 
                                 foreach (var detectTime in uniqueDays)
                                 {
-                                    var countDay = _context.Roomschedules
+                                    var countDay = Roomschedules
                                     .Where(rs => rs.SectionId == sec.SectionId && rs.SubjectId == subJ.SubjectId && rs.AcadYearId == acadVal && rs.Semester == semesterVal && rs.Day == detectTime.Day)
                                     .Count();
 
