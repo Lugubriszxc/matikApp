@@ -44,6 +44,11 @@ namespace matikApp.Controllers
             public string SubjectName { get; set; }
         }
 
+        public IActionResult getAllData()
+        {
+            return Ok();
+        }
+
         public IActionResult instructorBacklogs(int acadVal, string semesterVal)
         {
 

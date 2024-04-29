@@ -401,13 +401,17 @@
 
             //reset the interface first
             resetFetchBacklog();
+            fetchBacklogsAll();
+            
+        });
 
+        function fetchBacklogsAll(){
             //Getting all the backlogs 1 by 1
             getInstructorBacklog(acadVal, semesterVal);
             getSectionBacklog(acadVal, semesterVal);
             getSubjectBacklog(acadVal, semesterVal);
             getTimeBacklog(acadVal, semesterVal);
-        });
+        }
 
         //instructorBacklogsBtn
         $("#instructorBacklogsBtn").click(function () {
@@ -1111,7 +1115,10 @@
     @* timerValue = 0;
                     timerMinute = 0; *@
                     alertDoneSave();
-                generateExcel();
+                    generateExcel();
+
+                    //Check for backlogs
+                    alertOpenBacklog();
             }, 500);
         }
 
@@ -1187,6 +1194,24 @@
                 else if (result.isDenied) {
                     // Delete button clicked
                     deleteData();
+                }
+            })
+        }
+
+        function alertOpenBacklog()
+        {
+            //#5cb85c
+            Swal.fire({
+                html: '<h3>Check for backlogs?</h3>',
+                showCancelButton: true,
+                confirmButtonText: 'Open',
+                cancelButtonText: 'No',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#modalBacklogs").modal("toggle");
+                    resetFetchBacklog();
+                    fetchBacklogsAll();
+
                 }
             })
         }
