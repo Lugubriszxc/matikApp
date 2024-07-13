@@ -598,6 +598,8 @@
             acadVal = $('#acadYearSelect').val();
             semesterVal = $('#semesterSelect').val();
 
+            showDeleteLoading();
+
             $.ajax({
                 url: "../api/generatescheduleapi/deleteSched",
                 type: "POST",
@@ -608,8 +610,7 @@
                 },
             })
                 .done(function (result) {
-                    alertDoneSave();
-                    checkRoomSchedule();
+                    closeAfterDeleting();
                 });
         }
 
@@ -1131,6 +1132,39 @@
             })
         }
 
+        function showDeleteLoading() {
+    @* let timerValue = 0; // Initial timer value in seconds
+                let timerMinute = 0; *@
+
+                let timerInterval = setInterval(() => {
+                    timerValue++;
+                    if (timerValue == 60) {
+                        timerMinute++;
+                        timerValue = 0;
+                    }
+                    document.getElementById('timerSeconds').innerText = timerValue; // Update the timer value in the modal
+                    document.getElementById('timerMinutes').innerText = timerMinute; // Update the timer value in the modal
+                }, 1000);
+
+            Swal.fire({
+                title: 'Processing',
+                html: '<b>Deleting Class Schedules...<br><span id="timerMinutes">0</span> minutes : <span id="timerSeconds">0</span> seconds</b>',// add html attribute if you want or remove
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading()
+                },
+                willClose: () => {
+                    clearInterval(timerInterval); // Clear the timer interval when the modal is closed
+                    timerInterval = null;
+                    timerValue = 0;
+                    timerMinute = 0;
+                    document.getElementById('timerSeconds').innerText = timerValue;
+                    document.getElementById('timerMinutes').innerText = timerMinute;
+                },
+            })
+        }
+
 
         function closeSwalWhilePageLoaded() {
             setTimeout(() => {
@@ -1161,6 +1195,18 @@
 
                 //Check for backlogs
                 alertOpenBacklog();
+
+            }, 500);
+        }
+
+        function closeAfterDeleting() {
+            setTimeout(() => {
+                Swal.close();
+                clearInterval(timerInterval); // Clear the timer interval when the modal is closed
+                timerInterval = null;
+
+                alertDoneSave();
+                checkRoomSchedule();
 
             }, 500);
         }
