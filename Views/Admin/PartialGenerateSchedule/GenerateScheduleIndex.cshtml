@@ -36,8 +36,10 @@
                     </select>
                 </div>
             </form>
-            <button type="button" class="btn btn-success mods" id="generateSchedBtn" disabled>Generate Schedule</button>
-            <button type="button" class="btn btn-warning mods" id="viewBacklogsBtn" disabled>Open Backlogs</button>
+            <button type="button" class="btn btn-success" id="generateSchedBtn" disabled>Generate Schedule</button>
+            <button type="button" class="btn btn-success" id="openExcelBtn" disabled>Download Excel</button>
+            <button type="button" class="btn btn-warning" id="viewBacklogsBtn" disabled>Open Backlogs</button>
+            <button type="button" class="btn btn-danger" id="deleteDataSchedBtn" disabled>Delete Schedule</button>
         </div>
     </center>
 </body>
@@ -97,6 +99,9 @@
         getData();
         checkEmptySelect(); //setting the value of select as default
 
+        //Hide buttons by default
+        hideButton();
+
         function checkEmptySelect() {
             if ($('#acadYearSelect').val() == null || $('#semesterSelect').val() == null) {
                 document.getElementById('generateSchedBtn').disabled = true;
@@ -118,13 +123,29 @@
                     },
                 }).done(function (result) {
                     console.log(result);
+
+                    //Check if schedule already exist.
                     if (result.length === 0 || result === null) {
                         isExist = false;
                         document.getElementById('viewBacklogsBtn').disabled = true;
+                        document.getElementById('openExcelBtn').disabled = true;
+                        document.getElementById('deleteDataSchedBtn').disabled = true;
+
+                        document.getElementById('generateSchedBtn').hidden = false;
+
+                        hideButton();
                     }
                     else {
                         isExist = true;
+                        GeneratedSched = result;
                         document.getElementById('viewBacklogsBtn').disabled = false;
+                        document.getElementById('openExcelBtn').disabled = false;
+                        document.getElementById('deleteDataSchedBtn').disabled = false;
+
+                        document.getElementById('generateSchedBtn').hidden = true;
+
+                        unhideButton();
+
                         acadVal = acadYearId;
                         semesterVal = semester;
                     }
@@ -152,8 +173,8 @@
                 if (result.length === 0 || result === null) {
 
                     //Doesn't have any backlogs
-                    $("#instructorBacklogsBtn").removeClass("btn-primary").addClass("btn-success");
-                    document.getElementById('instructorBacklogsBtn').disabled = false;
+                    $("#instructorBacklogsBtn").removeClass("btn-primary").addClass("btn-secondary");
+                    document.getElementById('instructorBacklogsBtn').disabled = true;
 
                     //Setting up as empty
                     var template = document.querySelector("template#card-cardInstructor");
@@ -200,8 +221,8 @@
                 if (result.length === 0 || result === null) {
 
                     //Doesn't have any backlogs
-                    $("#sectionBacklogsBtn").removeClass("btn-primary").addClass("btn-success");
-                    document.getElementById('sectionBacklogsBtn').disabled = false;
+                    $("#sectionBacklogsBtn").removeClass("btn-primary").addClass("btn-secondary");
+                    document.getElementById('sectionBacklogsBtn').disabled = true;
 
                     //Setting up as empty
                     var template = document.querySelector("template#card-cardSection");
@@ -252,8 +273,8 @@
                 if (result.length === 0 || result === null) {
 
                     //Doesn't have any backlogs
-                    $("#subjectBacklogsBtn").removeClass("btn-primary").addClass("btn-success");
-                    document.getElementById('subjectBacklogsBtn').disabled = false;
+                    $("#subjectBacklogsBtn").removeClass("btn-primary").addClass("btn-secondary");
+                    document.getElementById('subjectBacklogsBtn').disabled = true;
 
                     //Setting up as empty
                     var template = document.querySelector("template#card-cardSubject");
@@ -276,15 +297,13 @@
                         var parent = document.querySelector(".parentSubjectBacklogs");
                         var cloned = template.content.cloneNode(true);
 
-                        if(secID === 0 || secID !== item.sectionID)
-                        {
+                        if (secID === 0 || secID !== item.sectionID) {
                             secID = item.sectionID
                             //Setting this up as a title for the section
                             cloned.querySelector(".subjectBacklogsTitle").innerHTML = "<b><hr>" + item.sectionName + "</b>";
                             cloned.querySelector(".subjectBacklogsTemp").innerHTML = "• " + item.subjectName;
                         }
-                        else
-                        {
+                        else {
                             cloned.querySelector(".subjectBacklogsTemp").innerHTML = "• " + item.subjectName;
                         }
                         parent.append(cloned);
@@ -315,8 +334,8 @@
                 if (result.length === 0 || result === null) {
 
                     //Doesn't have any backlogs
-                    $("#timeBacklogsBtn").removeClass("btn-primary").addClass("btn-success");
-                    document.getElementById('timeBacklogsBtn').disabled = false;
+                    $("#timeBacklogsBtn").removeClass("btn-primary").addClass("btn-secondary");
+                    document.getElementById('timeBacklogsBtn').disabled = true;
 
                     //Setting up as empty
                     var template = document.querySelector("template#card-cardTime");
@@ -339,15 +358,13 @@
                         var parent = document.querySelector(".parentTimeBacklogs");
                         var cloned = template.content.cloneNode(true);
 
-                        if(secID === 0 || secID !== item.sectionID)
-                        {
+                        if (secID === 0 || secID !== item.sectionID) {
                             secID = item.sectionID
                             //Setting this up as a title for the section
                             cloned.querySelector(".timeBacklogsTitle").innerHTML = "<b><hr>" + item.sectionName + "</b>";
                             cloned.querySelector(".timeBacklogsTemp").innerHTML = "• " + item.subjectName;
                         }
-                        else
-                        {
+                        else {
                             cloned.querySelector(".timeBacklogsTemp").innerHTML = "• " + item.subjectName;
                         }
                         parent.append(cloned);
@@ -356,16 +373,15 @@
             })
         }
 
-        function resetFetchBacklog()
-        {
+        function resetFetchBacklog() {
             $("#instructorBacklogVal").text("Fetching");
             $("#sectionBacklogVal").text("Fetching");
             $("#subjectBacklogVal").text("Fetching");
             $("#timeBacklogVal").text("Fetching");
 
             $(".backlogBtnStyle").removeClass("btn-warning").addClass("btn-primary");
-            $(".backlogBtnStyle").removeClass("btn-success").addClass("btn-primary");
-            
+            $(".backlogBtnStyle").removeClass("btn-secondary").addClass("btn-primary");
+
             document.getElementById('instructorBacklogsBtn').disabled = true;
             document.getElementById('sectionBacklogsBtn').disabled = true;
             document.getElementById('subjectBacklogsBtn').disabled = true;
@@ -402,10 +418,20 @@
             //reset the interface first
             resetFetchBacklog();
             fetchBacklogsAll();
-            
+
         });
 
-        function fetchBacklogsAll(){
+        $("#openExcelBtn").click(function () {
+            generateExcel();
+        });
+
+        $("#deleteDataSchedBtn").click(function () {
+
+            //Ask first before deleting.
+            alertDeleteDataSchedule();
+        });
+
+        function fetchBacklogsAll() {
             //Getting all the backlogs 1 by 1
             getInstructorBacklog(acadVal, semesterVal);
             getSectionBacklog(acadVal, semesterVal);
@@ -583,11 +609,24 @@
             })
                 .done(function (result) {
                     alertDoneSave();
+                    checkRoomSchedule();
                 });
         }
 
         function activateButton() {
             document.getElementById('generateSchedBtn').disabled = false;
+        }
+
+        function hideButton() {
+            document.getElementById('openExcelBtn').hidden = true;
+            document.getElementById('viewBacklogsBtn').hidden = true;
+            document.getElementById('deleteDataSchedBtn').hidden = true;
+        }
+
+        function unhideButton() {
+            document.getElementById('openExcelBtn').hidden = false;
+            document.getElementById('viewBacklogsBtn').hidden = false;
+            document.getElementById('deleteDataSchedBtn').hidden = false;
         }
 
         //to populate the academic year
@@ -1016,6 +1055,8 @@
                     console.log("Compressed data : ");
                     console.log(result);
                     closeAfterSaving();
+                    checkRoomSchedule(acadVal, semesterVal);
+
                 });
         }
 
@@ -1115,10 +1156,12 @@
     @* timerValue = 0;
                     timerMinute = 0; *@
                     alertDoneSave();
+
                     generateExcel();
 
-                    //Check for backlogs
-                    alertOpenBacklog();
+                //Check for backlogs
+                alertOpenBacklog();
+
             }, 500);
         }
 
@@ -1159,11 +1202,14 @@
                 title: 'Do you want to download and save this schedule?',
                 showCancelButton: true,
                 confirmButtonText: 'Save',
+                customClass: {
+                    confirmButton: 'btn-success',
+                    cancelButton: 'btn-secondary',
+                },
             }).then((result) => {
                 if (result.isConfirmed) {
-                    //proceedUpdate();
                     saveData();
-                    //generateExcel();
+
                 }
             })
         }
@@ -1198,14 +1244,36 @@
             })
         }
 
-        function alertOpenBacklog()
-        {
+        function alertDeleteDataSchedule() {
+            Swal.fire({
+                html: '<h5>Delete Schedule?</h5>',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                customClass: {
+                    confirmButton: 'btn-danger',
+                    cancelButton: 'btn-secondary',
+                },
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteData();
+                }
+            });
+
+
+        }
+
+        function alertOpenBacklog() {
             //#5cb85c
             Swal.fire({
                 html: '<h3>Check for backlogs?</h3>',
                 showCancelButton: true,
                 confirmButtonText: 'Open',
                 cancelButtonText: 'No',
+                customClass: {
+                    confirmButton: 'btn-success',
+                    cancelButton: 'btn-secondary',
+                },
             }).then((result) => {
                 if (result.isConfirmed) {
                     $("#modalBacklogs").modal("toggle");
