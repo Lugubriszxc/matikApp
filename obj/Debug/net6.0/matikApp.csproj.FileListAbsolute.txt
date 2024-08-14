@@ -251,11 +251,13 @@ C:\Users\Neil Chris\Desktop\for capstone\matikApp\obj\Debug\net6.0\matikApp.pdb
 C:\Users\Neil Chris\Desktop\for capstone\matikApp\obj\Debug\net6.0\matikApp.genruntimeconfig.cache
 C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\bin\Debug\net6.0\appsettings.Development.json
 C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\bin\Debug\net6.0\appsettings.json
+C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\bin\Debug\net6.0\global.json
 C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\bin\Debug\net6.0\matikApp.staticwebassets.runtime.json
 C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\bin\Debug\net6.0\matikApp.exe
 C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\bin\Debug\net6.0\matikApp.deps.json
 C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\bin\Debug\net6.0\matikApp.runtimeconfig.json
 C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\bin\Debug\net6.0\matikApp.dll
+C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\bin\Debug\net6.0\ref\matikApp.dll
 C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\bin\Debug\net6.0\matikApp.pdb
 C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\bin\Debug\net6.0\Humanizer.dll
 C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\bin\Debug\net6.0\MessagePack.dll
@@ -496,8 +498,6 @@ C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\obj\Debug\net
 C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\obj\Debug\net6.0\scopedcss\projectbundle\matikApp.bundle.scp.css
 C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\obj\Debug\net6.0\matikApp.csproj.CopyComplete
 C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\obj\Debug\net6.0\matikApp.dll
+C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\obj\Debug\net6.0\ref\matikApp.dll
 C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\obj\Debug\net6.0\matikApp.pdb
 C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\obj\Debug\net6.0\matikApp.genruntimeconfig.cache
-C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\obj\Debug\net6.0\ref\matikApp.dll
-C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\bin\Debug\net6.0\global.json
-C:\Users\Neil Chris\Desktop\4th year 1st sem\for capstone\matikApp\bin\Debug\net6.0\ref\matikApp.dll
