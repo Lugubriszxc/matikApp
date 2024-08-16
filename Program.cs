@@ -1,10 +1,37 @@
+using System.Configuration;
 using matikApp.Models;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = new ConfigurationBuilder()
+.SetBasePath(builder.Environment.ContentRootPath)
+.AddJsonFile("appsettings.json")
+.Build();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<matikdbContext>();
+// builder.Services.AddDbContext<matikdbContext>();
+var connectionString = configuration.GetConnectionString("DefaultConnection");
+var serverVersion = new MySqlServerVersion(new Version(8, 0, 23));
+
+
+builder.Services.AddDbContext<matikdbContext>(options =>
+options.UseMySql(connectionString, serverVersion,
+mysqlOptions => mysqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null)));
+
+
+//Add cross origin
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyOrigin(); // Allow requests from any origin
+    });
+});
+
 
 var app = builder.Build();
 
@@ -20,6 +47,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseCors();
 
 app.UseAuthorization();
 

@@ -1,12 +1,49 @@
-# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+# version: '3.8'
+
+# services:
+#   matikapp:
+#     image: matikapp
+#     build:
+#       context: .
+#       dockerfile: ./Dockerfile
+#     ports:
+#       - 8080:80
+
+#   sims-mysql:  # Corrected service name
+#     image: mysql
+#     environment:
+#       MYSQL_ROOT_PASSWORD: matik
+#       # MYSQL_DATABASE: matikdb
+#       # MYSQL_USER: root
+#       # MYSQL_PASSWORD: matik
+#     ports:
+#       - 3306:3306
 
 version: '3.4'
+
+networks:
+  matikappnetwork:
 
 services:
   matikapp:
     image: matikapp
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=;Port=3306;Database=matikdb;User=root;Password=matik;
     ports:
-      - 5010:5010
+      - "8080:80"
+    depends_on:
+      - some-mysql
+    networks:
+      - matikappnetwork
+
+  some-mysql:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=matik
+      - MYSQL_DATABASE=matikdb
+    ports:
+      - 3306:3306
+    networks:
+      - matikappnetwork
+

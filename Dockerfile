@@ -1,23 +1,31 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0-nanoserver-1809 AS base
+# Use the official .NET 6.0 SDK image as the base image
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+
+# Set the working directory
 WORKDIR /app
-EXPOSE 5010
 
-ENV ASPNETCORE_URLS=http://+:5010
+# Copy the csproj file and restore any dependencies
+COPY *.csproj ./
+RUN dotnet restore
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0-nanoserver-1809 AS build
-ARG configuration=Release
-WORKDIR /src
-COPY ["matikApp.csproj", "./"]
-RUN dotnet restore "matikApp.csproj"
-COPY . .
-WORKDIR "/src/."
-RUN dotnet build "matikApp.csproj" -c $configuration -o /app/build
+# Copy the rest of the files and build the project
+COPY . ./
+RUN dotnet build -c Release -o /app/build
 
-FROM build AS publish
-ARG configuration=Release
-RUN dotnet publish "matikApp.csproj" -c $configuration -o /app/publish /p:UseAppHost=false
+# Publish the application
+RUN dotnet publish -c Release -o /app/publish
 
-FROM base AS final
+# Use the official .NET 6.0 ASP.NET runtime image for the final stage
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
+
+# Set the working directory
 WORKDIR /app
-COPY --from=publish /app/publish .
+
+# Copy the published application from the build stage
+COPY --from=build /app/publish .
+
+# Expose the port on which the application will run
+EXPOSE 80
+
+# Define the entry point for the container
 ENTRYPOINT ["dotnet", "matikApp.dll"]
