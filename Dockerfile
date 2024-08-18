@@ -29,3 +29,10 @@ EXPOSE 80
 
 # Define the entry point for the container
 ENTRYPOINT ["dotnet", "matikApp.dll"]
+
+#THIS IS FOR THE MYSQL
+# FROM mysql:latest
+
+# ENV MYSQL_ROOT_PASSWORD=matik
+
+# COPY ./matikdb.sql /docker-entrypoint-initdb.d/

@@ -19,31 +19,115 @@
 #     ports:
 #       - 3306:3306
 
-version: '3.4'
+# version: '3.4'
 
-networks:
-  matikappnetwork:
+# networks:
+#   matikappnetwork:
+
+# services:
+#   matikappdb:
+#     container_name: matik_mysql
+#     image: mysql:latest
+#     ports:
+#       - 3306:3306
+#     environment:
+#       - MYSQL_ROOT_PASSWORD=matik
+#       - MYSQL_DATABASE=matikdb
+#     networks:
+#       - matikappnetwork
+#   matikapp:
+#     container_name: elegant_mendeleev
+#     image: matik_project
+#     build:
+#       context: .
+#       dockerfile: ./Dockerfile
+#     ports:
+#       - 8080:80
+#     depends_on:
+#       - matikappdb
+#     environment:
+#       - ASPNETCORE_ENVIRONMENT=Development
+#       # - ConnectionStrings__DefaultConnection=Server=some-mysql;Port=3306;Database=matikdb;User=root;Password=matik;
+#       - DB_HOST=matikappdb
+#       - DB_NAME=matikdb
+#       - DB_SA_PASSWORD=matik
+#     networks:
+#       - matikappnetwork
+
+# version: '3.4'
+
+# networks:
+#   matikappnetwork:
+#     driver: bridge
+
+# volumes:
+#   db_data:
+
+# services:
+#   matikappdb:
+#     container_name: matik_mysql
+#     image: mysql:latest
+#     ports:
+#       - "3306:3306"
+#     environment:
+#       - MYSQL_ROOT_PASSWORD=matik
+#       - MYSQL_DATABASE=matikdb
+#     networks:
+#       - matikappnetwork
+#     volumes:
+#       - db_data:/var/lib/mysql
+
+#   matikapp:
+#     container_name: elegant_mendeleev
+#     image: matik_project
+#     build:
+#       context: .
+#       dockerfile: ./Dockerfile
+#     ports:
+#       - "8080:80"
+#     depends_on:
+#       - matikappdb
+#     environment:
+#       - ASPNETCORE_ENVIRONMENT=Development
+#       - DB_HOST=matik_mysql
+#       - DB_NAME=matikdb
+#       - DB_SA_PASSWORD=matik
+#     networks:
+#       - matikappnetwork
+#     restart: always
+
+version: '3.1'
+
+volumes:
+  db_data:
 
 services:
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: matik
+      MYSQL_DATABASE: matikdb
+      MYSQL_USER: sims
+      MYSQL_PASSWORD: matik
+    ports:
+      - "3306:3306"
+    networks:
+      - my-network
+    # volumes:
+    #   - db_data:/var/lib/mysql
+      
   matikapp:
-    image: matikapp
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=;Port=3306;Database=matikdb;User=root;Password=matik;
+    image: matik_project
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "8080:80"
-    depends_on:
-      - some-mysql
+      - "8080:80"  # Mapping port 8081 on the host to port 80 in the container
     networks:
-      - matikappnetwork
-
-  some-mysql:
-    image: mysql
+      - my-network
     environment:
-      - MYSQL_ROOT_PASSWORD=matik
-      - MYSQL_DATABASE=matikdb
-    ports:
-      - 3306:3306
-    networks:
-      - matikappnetwork
+      - ConnectionStrings__DefaultConnection=Server=mysql;Database=matikdb;User=sims;Password=matik;
 
+networks:
+  my-network:
+    driver: bridge
