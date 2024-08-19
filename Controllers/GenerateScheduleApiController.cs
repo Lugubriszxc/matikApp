@@ -67,9 +67,6 @@ namespace matikApp.Controllers
             Timeslots = _context.Timeslots.ToList();
             Instructorunitloads = _context.Instructorunitloads.ToList();
 
-            // mergedVal.AddRange(Rooms.Select(r => r.RoomName));
-            // mergedVal.AddRange(Buildings.Select(r => r.BuildingName));
-
             return Ok();
         }
 
@@ -83,11 +80,6 @@ namespace matikApp.Controllers
                 yearLevel = section.YearLevel;
                 courseId = section.CourseId;
 
-                //select the subjects that is assigned on the course and its year level and loop it out
-                // foreach(var assignSubject in Assignsubjects.Select(s => s.YearLevel == yearLevel && s.CourseId == courseId))
-                // {
-                //     Console.WriteLine(assignSubject.subjectId);
-                // }
                 //remove this after testing
                 if (section.YearLevel == "1st Year" && section.CourseId == 39)
                 {
@@ -105,54 +97,10 @@ namespace matikApp.Controllers
                         //Console.WriteLine(assignSubject.SubjectId);
                         foreach (var time in Timeslots)
                         {
-                            //remove this after testing
-                            //if(section.YearLevel == "1st Year" && section.CourseId == 39)
-                            //{
-                            //should we loop the room? or yet make another function?
-                            //check the room if there is a time slot registered within the looped.
                             //PLAN : empty list for a room. Register the section, subject and 
                             //time slot if there is available.
                             foreach (var room in Rooms)
                             {
-                                //before room type ; make a condition that if the room is available
-                                //room with time is not registered (the empty list for room)
-
-                                /*
-                                if(room.RoomType == "Computer Laboratory") // change the computer laboratory with subject's needed room type
-                                {
-                                    //check the capacity with the registered section capacity
-                                    //PLAN : with the table (regissection)
-                                    //get the semester, academic year and the section id
-                                    //after that, get the total students to check the capacity
-                                    if(room.RoomCapacity >= 60)
-                                    {
-                                        //Console.WriteLine(room.RoomName);
-                                        //Another condition
-                                        //looping the instructor and get the instructors with the subject handled
-                                        foreach(var instructor in Instructors)
-                                        {
-                                            //make a condition if the instructor.id instructor unavailable time period. should it be looped or not?
-                                            //var timeId = time.TimeId;
-                                            var resUnavailablePeriod = Unavailableperiods.Where(up => up.TimeId == time.TimeId && up.InstructorId == instructor.InstructorId).FirstOrDefault();
-                                            if(resUnavailablePeriod == null) //null means the instructor is available within that time
-                                            {
-                                                //var res;
-                                                var getSubjectHandled = Subjecthandleds.Where(sh => sh.InstructorId == instructor.InstructorId && sh.SubjectId == resultSubject.SubjectId).FirstOrDefault();
-                                                var subName = Subjects.Where(s => s.SubjectId == getSubjectHandled.SubjectId && s.RoomType == "Computer Laboratory").FirstOrDefault();
-                                                if(subName != null)
-                                                {
-                                                    Console.WriteLine(subName.SubjectName);
-                                                }
-                                            }
-                                            //get the instructor id
-                                            //with the instructor id, get the subjects handled with subject id
-
-                                            //var resSubject = _context.Subjecthandleds.Where(sh => sh.InstructorId == instructor.InstructorId && sh.SubjectId == );
-                                        }
-                                    }
-                                    //Console.WriteLine(room.RoomName);
-                                }
-                                */
 
                                 //looping the instructor and get the instructors with the subject handled
                                 foreach (var instructor in Instructors)
@@ -168,31 +116,8 @@ namespace matikApp.Controllers
                                             break;
                                         }
                                     }
-
-                                    //make a condition if the instructor.id instructor unavailable time period. should it be looped or not?
-                                    //var timeId = time.TimeId;
-                                    /*
-                                    var resUnavailablePeriod = Unavailableperiods.Where(up => up.TimeId == time.TimeId && up.InstructorId == instructor.InstructorId).FirstOrDefault();
-                                    if(resUnavailablePeriod == null) //null means the instructor is available within that time
-                                    {
-                                        //var res;
-                                        var getSubjectHandled = Subjecthandleds.Where(sh => sh.InstructorId == instructor.InstructorId && sh.SubjectId == resultSubject.SubjectId).FirstOrDefault();
-                                        var subName = Subjects.Where(s => s.SubjectId == getSubjectHandled.SubjectId && s.RoomType == "Computer Laboratory").FirstOrDefault();
-                                        if(subName != null)
-                                        {
-                                            Console.WriteLine(subName.SubjectName);
-                                        }
-                                    }
-                                    */
-                                    //get the instructor id
-                                    //with the instructor id, get the subjects handled with subject id
-
-                                    //var resSubject = _context.Subjecthandleds.Where(sh => sh.InstructorId == instructor.InstructorId && sh.SubjectId == );
                                 }
                             }
-
-                            //Console.WriteLine(time.Day);
-                            //}
                         }
                     }
                 }
@@ -245,8 +170,6 @@ namespace matikApp.Controllers
 
                               }).ToList();
 
-            //var filterSections = Sections.Where(s =>s.CourseId == 39 || s.CourseId == 40).ToList();
-
             var resInstructorAvailable = Instructorunitloads.Where(rs => rs.AcadYearId == acadValz && rs.Semester == semesterValz).ToList();
 
             //you can replace filterSections with Sections
@@ -269,20 +192,12 @@ namespace matikApp.Controllers
                     //int sectionCount = Sections.Where(s => s.CourseId == section.CourseId).Count();
                     int sectionCount = Sections.Count(); //December 01, 2023 : switch to this if you want to generate all section's schedule
 
-                    //Console.WriteLine(sectionCounter);
-
                     //replace the "1st Year" and 39 with section.YearLevel and section.CourseId
                     //remove section.sectionId
                     if (assignSubject.YearLevel == section.YearLevel && assignSubject.CourseId == section.CourseId)
                     {
                         //get the room type
                         var resultSubject = Subjects.Where(sub => sub.SubjectId == assignSubject.SubjectId).FirstOrDefault();
-                        //Console.WriteLine(resultSubject.SubjectName);
-
-                        //var resInstructorUnitLoad = Instructorunitloads.Where()
-
-                        //filter in the instructors who handled the subject and use it for looping
-                        //var filterIns = Subjecthandleds.Where(x => x.SubjectId == resultSubject.SubjectId).ToList();
                         var filterIns = (from rs in Subjecthandleds
                                          join ins in Instructorunitloads on rs.InstructorId equals ins.InstructorId
                                          where ins.AcadYearId == acadValz && ins.Semester == semesterValz && rs.SubjectId == resultSubject.SubjectId
@@ -519,11 +434,6 @@ namespace matikApp.Controllers
 
                                                 var getLastDay = roomSchedule.Where(rs => rs.SectionId == section.SectionId).LastOrDefault();
 
-
-                                                //ANOTHER STYLE : randomize a number between 1 to 3
-                                                //If 1 then change the day into Tuesday
-                                                //If 2 then change the day into Friday
-                                                //If 3 then change the day into Monday
 
                                                 if (getLastDay != null)
                                                 {
@@ -1033,60 +943,7 @@ namespace matikApp.Controllers
 
         outerLoop:
 
-            //After this, the system will check the data if there is missing room assignment from the semester and year
-            // List<string> sectionNotExisting = new List<string>();
              var checkSection = Regissections.Where(s => s.AcadYearId == acadValz && s.Semester == semesterValz).ToList();
-            // foreach(var sec in checkSection)
-            // {
-            //     //check the room schedules if there is no sectionID existing
-            //     bool sectionExists = roomSchedule.Any(s => s.SectionId == sec.SectionId);
-
-            //     //If there is a section not existing it means the particular section doesn't have a schedule
-            //     if(!sectionExists)
-            //     {
-            //         //It means it has detected that there is no room schedule with the section provided
-            //         Console.WriteLine("Section doesn't have a room schedule detected : " + sec.SectionId);
-            //         // sectionNotExisting.Add(sec.SectionId.ToString());
-            //     }
-            // }
-
-            // var checkSectionExists = (from rs in roomSchedule
-            //                           join s in Sections on new { rs.SectionId } equals new { s.SectionId }
-            //                           join regisSec in Regissections on new { s.SectionId } equals new { regisSec.SectionId }
-            //                           where regisSec.AcadYearId == acadValz && regisSec.Semester == semesterValz
-            //                           select new
-            //                           }).ToList();
-            // {
-            //                               SectionId = regisSec.SectionId,
-            //                               SectionName = s.SectionName
-            //                  
-            // foreach (var checkSec in checkSectionExists)
-            // {
-            //     Console.WriteLine("Joined section that doesn't have schedule : " + checkSec.SectionName);
-            // }
-
-
-
-            //PLAN : Check if each subject of sections has a room schedule
-            // var checkInstructor = Instructorunitloads.Where(s => s.AcadYearId == acadValz && s.Semester == semesterValz).ToList();
-            // foreach (var ins in checkInstructor)
-            // {
-            //     //check the room schedules if there is no instructorID existing
-            //     bool instructorExists = roomSchedule.Any(s => s.InstructorId == ins.InstructorId);
-            //     if (!instructorExists)
-            //     {
-            //         Console.WriteLine("Instructor doesn't have a schedule detected : " + ins.InstructorId);
-            //     }
-            // }
-
-            //calling the instructor backlogs
-
-            // var joinedSubjectSec = from a in Assignsubjects
-            //                        join s in Sections on new { a.CourseId, a.YearLevel } equals new { s.CourseId, s.YearLevel }
-            //                        join rs in Regissections on new { s.SectionId } equals new { rs.SectionId }
-            //                        where rs.AcadYearId == acadValz && rs.Semester == semesterValz
-            //                        select new { SectionId = s.SectionId, SubjectId = a.SubjectId };
-
 
             // PLAN : TO FIND OUT IF ALL OF THE SUBJECTS FOR EACH SECTION HAS A SCHEDULE
             // ANOTHER PLAN : TO FIND OUT IF THERE IS BLANK IN EVERY ROW
@@ -1113,42 +970,10 @@ namespace matikApp.Controllers
                 }
             }
 
-
-            //Get the time schedule that is inaccurate or missing with schedule or end time.
-            /*
-            DETECTED :
-            InstructorID : 26 : Carl Joshua Cosep
-            RoomID : 65 : Computer Lab 1
-            sectionID : 17 : BSIT - 2C
-            SubjectID : 19 : Information Management 1
-            Day : 6 : Saturday
-            TimeID : 191 : 8:30PM
-            */
-
-            //roomSchedule.Add(new RoomSchedule(section.SectionId, subName.SubjectId, instructor.InstructorId, fRoom.RoomId, time.TimeId, day + 1));
-            //get the room schedule first
-            // var subVal = 0;
-            // var secVal = 0;
-            // foreach(var rs in roomSchedule)
-            // {
-            //     //Get the loop to get the time id of each subject and section
-            //     //First : Register the section and subject
-                
-            // }
-
-            // var getSectSubj = 
-
-            // foreach(var rs in roomSchedule)
-            // {
-            //     Console.WriteLine(rs.SectionId);
-            // }
-
             var getValueSection = roomSchedule.Where(s => s.Day == 6).ToList();
 
             //Get the value of the room schedules from the database roomShedule (compressed data) that has no end time. TimeID.Count <= 1
             //Which means it doesn't have an end time
-
-
             if (roomSchedule != null)
             {
                 var uniqueRoomSchedules = roomSchedule
@@ -1162,12 +987,6 @@ namespace matikApp.Controllers
                     var resSubject = Subjects.Where(sub => sub.SubjectId == roomSched.SubjectId).FirstOrDefault();
                     var resInstructor = Instructors.Where(ins => ins.InstructorId == roomSched.InstructorId).FirstOrDefault();
                     var resRoom = Rooms.Where(rom => rom.RoomId == roomSched.RoomId).FirstOrDefault();
-
-
-                    Console.WriteLine(resSection.SectionName);
-                    Console.WriteLine(resSubject.SubjectName);
-                    Console.WriteLine(resInstructor.InstructorFname);
-                    Console.WriteLine(resRoom.RoomName);
 
                     //get the day and filter it and loop it
                     var uniqueDayRoomSchedules = roomSchedule
