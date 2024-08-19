@@ -98,23 +98,23 @@
 
 version: '3.1'
 
-volumes:
-  mysql-data:
+# volumes:
+#   mysql-data:
 
 services:
-  mysql:
-    image: mysql:latest
-    environment:
-      MYSQL_ROOT_PASSWORD: matik
-      MYSQL_DATABASE: matikdb
-      MYSQL_USER: sims
-      MYSQL_PASSWORD: matik
-    ports:
-      - "3306:3306"
-    networks:
-      - my-network
-    volumes:
-      - mysql-data:/var/lib/mysql
+  # mysql:
+  #   image: mysql:latest
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: matik
+  #     MYSQL_DATABASE: matikdb
+  #     MYSQL_USER: sims
+  #     MYSQL_PASSWORD: matik
+  #   ports:
+  #     - "3306:3306"
+  #   networks:
+  #     - my-network
+  #   volumes:
+  #     - mysql-data:/var/lib/mysql
       
   matikapp:
     image: matik_project
@@ -123,11 +123,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:80"  # Mapping port 8081 on the host to port 80 in the container
-    networks:
-      - my-network
-    environment:
-      - ConnectionStrings__DefaultConnection=Server=mysql;Database=matikdb;User=sims;Password=matik;
+    # networks:
+    #   - my-network
+    # environment:
+    #   - ConnectionStrings__DefaultConnection=Server=mysql;Database=matikdb;User=sims;Password=matik;
 
-networks:
-  my-network:
-    driver: bridge
+# networks:
+#   my-network:
+#     driver: bridge
