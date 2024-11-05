@@ -1,3 +1,11 @@
 dotnet ef dbcontext scaffold "server=localhost;database=matikdb;user=root;pwd=" "Pomelo.EntityFrameworkCore.MySql" -o .\Models -f
 
 https://github.com/habibmhamadi/multi-select-tag
+
+
+XAMPP CONNECTION:
+"DefaultConnection": "server=localhost;userid=root;database=matikdb"
+
+
+Cloud Database Connection:
+"DefaultConnection": "Server=sql12.freesqldatabase.com;Port=3306;Database=sql12726764;User=sql12726764;Password=P546Bzm8FV;"
