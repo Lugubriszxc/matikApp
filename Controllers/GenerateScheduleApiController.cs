@@ -358,24 +358,12 @@ namespace matikApp.Controllers
                             var resultSubHandle = Subjecthandleds.Where(sh => sh.InstructorId == instructor.InstructorId && sh.SubjectId == resultSubject.SubjectId).FirstOrDefault();
                             if (resultSubHandle != null)
                             {
-                                //Looping back the room to 1
-
-                                // bool bypassLecture = false;
-
-                                bool bypassLecture = false;
+                            //Looping back the room to 1
                             loopRoomBack:
                                 //Here, since we got the room type of the subject we will filter the rooms and loop it.
                                 var subName = Subjects.Where(s => s.SubjectId == resultSubHandle.SubjectId).FirstOrDefault();
                                 //Console.WriteLine(subName.SubjectName);
-
-                                //set this as default
                                 var filterRoom = Rooms.Where(r => r.RoomType == subName.RoomType).ToList();
-
-                                //if the room type is Lecture Room Criminology then include a lecture room for them as well.
-                                if (subName.RoomType == "Lecture Room Criminology" && bypassLecture == true)
-                                {
-                                    filterRoom = Rooms.Where(r => r.RoomType == subName.RoomType || r.RoomType == "Lecture Room").ToList();
-                                }
 
                                 //count the filteredRoom
                                 // loopRoomBack: //loop the room back
@@ -386,7 +374,6 @@ namespace matikApp.Controllers
                                     //Prioritize the lesser count of room scheds
                                     int roomId = 0;
                                     int roomCount = 0;
-
                                     foreach (var fRoomLow in filterRoom)
                                     {
                                         var resRoomPrio = roomSchedule.Where(rs => rs.RoomId == fRoomLow.RoomId).Distinct().Count();
@@ -403,30 +390,25 @@ namespace matikApp.Controllers
                                         }
                                     }
 
-
                                     int prioNumberRoom = 0;
                                     bool bypassRoomCondition = false;
 
                                 loopRoomAgain:
-
                                     filterRoomCounter = 0;
                                     foreach (var fRoom in filterRoom)
                                     {
                                         filterRoomCounter++;
 
-                                        //Check if the room is LSU and the Program should be Criminology. If it isn't then it should find another room instead.
-                                        // if(fRoom.RoomId == 66 && section.CourseId != 31)
-                                        // {
-                                        //     goto outRoomLoop;
-                                        // }
-
                                         //Prioritize the room that was set
                                         //Priority room only works in first loop
-                                        if (roomId != fRoom.RoomId && bypassRoomCondition == false)
+                                        if (prioNumberRoom == 0)
                                         {
-                                            if (filterRoomCounter != filterRoomCount)
+                                            if (roomId != fRoom.RoomId && bypassRoomCondition == false)
                                             {
-                                                goto outRoomLoop;
+                                                if (filterRoomCounter != filterRoomCount)
+                                                {
+                                                    goto outRoomLoop;
+                                                }
                                             }
                                         }
 
@@ -865,6 +847,7 @@ namespace matikApp.Controllers
                                                                         //if the subject is ROTC then bypass the mother if condition
                                                                         if (subName.SubjectId == 17)
                                                                         {
+                                                                            bypassCheck = true;
                                                                             goto bypassCondition;
                                                                         }
                                                                         else
@@ -928,9 +911,6 @@ namespace matikApp.Controllers
 
                                     outRoomLoop:
 
-                                        //CHECK IF ADDING THE SCHEDULE WAS SUCCESSFUL
-
-
                                         //CHECK FOR ROOM SCHEDULE THAT HAS NO ROOM ASSIGNMENT AT THE END OF THE LOOP
                                         if (filterRoomCounter == filterRoomCount)
                                         {
@@ -940,27 +920,13 @@ namespace matikApp.Controllers
                                             {
                                                 //This means that it has found a row that no room assignment
                                                 Console.WriteLine("I have no room");
-                                            }
-                                        }
-
-                                        //If the room id Lecture Room Criminology is full and can't be allocated. It will attempt to rerun again with another lecture room.
-                                        if (fRoom.RoomId == 66)
-                                        {
-                                            var findNoRoom = roomSchedule.Where(r => r.RoomId == 66 && r.SectionId == section.SectionId && r.SubjectId == subName.SubjectId).ToList();
-                                            if (findNoRoom.Count() <= 0 || findNoRoom == null)
-                                            {
-                                                //This means that the room assignment was unsuccessful
-                                                bypassLecture = true;
-                                                goto loopRoomBack;
+                                                Console.ReadLine();
                                             }
                                         }
 
                                         Console.Write(""); //this is temp
                                     }
                                 }
-
-                                //add sections and subject
-
                             }
 
                         outInstructorLoop:
@@ -977,7 +943,7 @@ namespace matikApp.Controllers
 
         outerLoop:
 
-            var checkSection = Regissections.Where(s => s.AcadYearId == acadValz && s.Semester == semesterValz).ToList();
+             var checkSection = Regissections.Where(s => s.AcadYearId == acadValz && s.Semester == semesterValz).ToList();
 
             // PLAN : TO FIND OUT IF ALL OF THE SUBJECTS FOR EACH SECTION HAS A SCHEDULE
             // ANOTHER PLAN : TO FIND OUT IF THERE IS BLANK IN EVERY ROW
@@ -985,19 +951,19 @@ namespace matikApp.Controllers
             {
                 //get the section detail from regissections 
                 var getSec = Sections.Where(s => s.SectionId == sec.SectionId).FirstOrDefault();
-                if (getSec != null)
+                if(getSec != null)
                 {
                     //getting the subjects from that section
                     var getAssignSub = Assignsubjects.Where(asub => asub.CourseId == getSec.CourseId && asub.YearLevel == getSec.YearLevel && asub.Semester == semesterValz).ToList();
-                    foreach (var subJ in getAssignSub)
+                    foreach(var subJ in getAssignSub)
                     {
                         bool subjectExists = roomSchedule.Any(rs => rs.SectionId == sec.SectionId && rs.SubjectId == subJ.SubjectId);
-                        if (!subjectExists)
+                        if(!subjectExists)
                         {
                             var getSub = Subjects.Where(s => s.SubjectId == subJ.SubjectId).FirstOrDefault();
-                            if (getSub != null)
+                            if(getSub != null)
                             {
-                                Console.WriteLine("This section : " + getSec.SectionName + "Don't have : " + getSub.SubjectName);
+                                Console.WriteLine("This section : " + getSec.SectionName +  "Don't have : " + getSub.SubjectName);
                             }
                         }
                     }
